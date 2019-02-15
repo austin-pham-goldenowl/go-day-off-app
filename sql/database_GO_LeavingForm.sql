@@ -221,6 +221,13 @@ VALUES ("i53FItHeMK","Daphne","Zachery","1982-03-05 04:26:11","U4d4k","P.O. Box 
 -- Insert data for teams
 INSERT INTO `teams` (`fId`,`fTeamName`,`fTeamLead`) VALUES ("4TCgb","Ruby/Ruby on Rails","i53FItHeMK"),("FfI2V","Javascript","i53FItHeMK"),("1LwZq","PHP","i53FItHeMK"),("5eMvD","Design","i53FItHeMK"),("Gg6sG","QA","i53FItHeMK"),("kTW7B","PA","i53FItHeMK"),("G81cf","Leaders","i53FItHeMK"),("A91fa","Khác","i53FItHeMK");
 
+
+-- Update table users
+UPDATE`users` SET `fTeamId` = "4TCgb" WHERE `users`.`fId` = "i53FItHeMK";
+UPDATE`users` SET `fTeamId` = "FfI2V" WHERE `fId` =  "MytsQhUPQG";
+UPDATE`users` SET `fTeamId` = "1LwZq" WHERE `fId` =  "H8UIAdsy7T";
+
+select * from `users`;
 -- Insert data for rejectedLetterDetail
 -- --> Tam thoi bo qua
 
