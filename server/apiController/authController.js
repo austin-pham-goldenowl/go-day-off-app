@@ -77,7 +77,7 @@ router.post('/login', (req, res) => {
  * GET new accessToken
  */
 
-router.post('/token', (req, res) => {
+router.get('/token', (req, res) => {
   let refToken = req.headers['x-ref-token'];
   console.log(refToken);
   if (refToken !== '') {

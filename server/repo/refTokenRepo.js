@@ -69,7 +69,7 @@ exports.updateRefreshToken = (userId, rfToken) => {
 
 exports.receiveNewAccessToken = rfToken => {
   return new Promise((resolve, reject) => {
-    let sql = `select fUserId from userRefToken where fUserId = '${rfToken}'`;
+    let sql = `select fUserId from userRefToken where fRefToken = '${rfToken}'`;
     db.load(sql)
       .then(rows => {
         console.log('userID -> ');
@@ -85,7 +85,7 @@ exports.receiveNewAccessToken = rfToken => {
 
               if (rows_user.length > 0) {
                 let userEntity = rows_user[0];
-                let access_token = generateAccessToken(userEntity);
+                let access_token = this.generateAccessToken(userEntity);
                 resolve(access_token);
               } else {
                 reject({
