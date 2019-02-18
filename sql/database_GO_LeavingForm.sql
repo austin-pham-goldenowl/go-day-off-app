@@ -168,7 +168,7 @@ DROP TABLE IF EXISTS `leavingForm`.`userRefToken` ;
 
 CREATE TABLE IF NOT EXISTS `leavingForm`.`userRefToken` (
   `fUserId` VARCHAR(10) NOT NULL,
-  `fRefToken` VARCHAR(20) NOT NULL,
+  `fRefToken` VARCHAR(80) NOT NULL,
   `fRdt` DATETIME NOT NULL,
   `users_fId` VARCHAR(10) NOT NULL,
   PRIMARY KEY (`fUserId`),
