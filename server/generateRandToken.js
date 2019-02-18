@@ -28,12 +28,6 @@ for (let i = 0; i < 7; i++){
 }
 buff = buff.slice(0, -1);
 
-buff += '\n================ [Team ID - 5 characters] ================\n';
-for (let i = 0; i < 7; i++){
-  buff += `${uid(5)}|`;
-}
-buff = buff.slice(0, -1);
-
 buff += '\n================ [User Password - 64 characters] ================\n';
 for (let i = 0; i < 3; i++){
   buff += `${sha("password")}|`;
