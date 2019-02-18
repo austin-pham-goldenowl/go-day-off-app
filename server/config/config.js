@@ -8,3 +8,5 @@ exports.USER_ID_LEN = 10;
 exports.TEAM_ID_LEN = 5;
 exports.USER_PERM_ID_LEN = 5;
 exports.LEAVING_FORM_ID_LEN = 10;
+
+exports.DATETIME_FORMAT_TYPE1 = 'YYYY-MM-DD HH:mm:ss';

@@ -3,8 +3,9 @@ var rndToken = require('rand-token');
 var moment = require('moment');
 var db = require('../fn/mysql-db');
 
-const { AUTH_CONFIG } = require('../config/config');
+const { AUTH_CONFIG, DATETIME_FORMAT_TYPE1 } = require('../config/config');
 
+// Generate access-token
 exports.generateAccessToken = userEntity => {
   let payload = {
     user: userEntity
@@ -17,6 +18,7 @@ exports.generateAccessToken = userEntity => {
   return token;
 }
 
+// Verify access-token
 exports.verifyAccessToken = (req, res, next) => {
   let token = req.headers["x-access-token"];
   console.log(token);
@@ -49,16 +51,18 @@ exports.verifyAccessToken = (req, res, next) => {
   }
 };
 
+// Generate Refresh Token
 exports.generateRefreshToken = () => {
   return rndToken.generate(AUTH_CONFIG.REF_TOKEN_SIZE);
 }
 
+// Update Refresh Token
 exports.updateRefreshToken = (userId, rfToken) => {
   let sql = `delete from userRefToken where fUserId = "${userId}"`;
   return new Promise((resolve, reject) => {
     db.save(sql)
       .then(value => {
-        let rdt = moment().format('YYYY-MM-DD HH:mm:ss');
+        let rdt = moment().format(DATETIME_FORMAT_TYPE1);
         sql = `insert into userRefToken(fUserId, fRefToken, fRdt) values('${userId}', '${rfToken}', '${rdt}')`;
         return db.save(sql);
       })
@@ -67,6 +71,7 @@ exports.updateRefreshToken = (userId, rfToken) => {
   });
 };
 
+// Receive New Access Token
 exports.receiveNewAccessToken = rfToken => {
   return new Promise((resolve, reject) => {
     let sql = `select fUserId from userRefToken where fRefToken = '${rfToken}'`;
