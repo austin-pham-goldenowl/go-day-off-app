@@ -9,6 +9,7 @@ let PORT = process.env.PORT || 3001;
 */
 let authCtrl = require('./apiController/authController');
 let userCtrl = require('./apiController/userController');
+let leaveLetterCtrl = require('./apiController/leaveLetterController');
 
 /**
  * Middlewares
@@ -28,6 +29,7 @@ app.use(cors());
 //Applying controllers
 app.use('/api/auth', authCtrl);
 app.use('/api/user', verifyAccessToken, userCtrl);
+app.use('/api/leaveLetter', leaveLetterCtrl); //temporary disable verifyAccessToken
 
 app.listen(PORT, () => {
   console.log(`[GO-LeavingForm] Express server is running on port ${PORT}...`)
