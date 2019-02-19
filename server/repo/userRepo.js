@@ -1,4 +1,3 @@
-var moment = require('moment');
 var db = require('../fn/mysql-db');
 
 let standardizeKeys = (key) => {
