@@ -7,3 +7,5 @@ insert into leavingForm.rejectedLetterDetail(fLetterId, fReason, fRejectType) va
 
 SELECT * FROM leavingForm.users;
 SELECT * FROM leavingForm.leaveLetters;
+
+update leavingForm.users set fEmail = "" where fId = "12345" 

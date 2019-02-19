@@ -38,7 +38,7 @@ exports.verifyAccessToken = (req, res, next) => {
         }
       } else {
         console.log('[SUCCESS]->RefTokenRepo->VerifyAccessToken:', payload);
-        req.payload = payload;
+        req.token_payload = payload;
         next();
       }
     });
