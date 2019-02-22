@@ -30,8 +30,9 @@ class Calendar extends React.Component {
     renderDays() {
         const dateFormat = 'dddd';
         const days = [];
-        let startDate = this.state.currentMonth.startOf('week');
+        let startDate = this.state.currentMonth.startOf('week').clone();
 
+        startDate.subtract(1, 'days');
         for (let i = 0; i < 7; i++) {
             days.push(
                 <div className="col col-center" key={shortid.generate()}>
@@ -46,31 +47,36 @@ class Calendar extends React.Component {
         const { currentMonth, selectedDate } = this.state;
         console.log('Current month: ', currentMonth.toString());
 
-        const monthStart = currentMonth.startOf('month').clone();
+        const monthStart = currentMonth.clone().startOf('month');
         console.log('Month start: ', monthStart.toString());
 
-        const monthEnd = monthStart.endOf('month').clone();
+        const monthEnd = monthStart.clone().endOf('month');
         console.log('Month end: ', monthEnd.toString());
 
         // console.log('--> ', monthStart);
 
-        const startDate = monthStart.startOf('month').startOf('week').clone();
+        const startDate = monthStart.clone().startOf('month').startOf('week');
         console.log('Date start: ', startDate.toString());
 
-        const endDate = monthEnd.endOf('week').clone();
+        const endDate = monthEnd.clone().endOf('week');
         console.log('Date end: ', endDate.toString());
         //
         const dateFormat = 'D';
         const rows = [];
         let days = [];
-        let day = startDate;
+        let day = startDate.clone();
         let formattedDate = "";
 
         while (day <= endDate) {
             for (let i = 0; i < 7; i++) {
                 formattedDate = day.format(dateFormat);
+                const cloneDate = day.clone(); //Must have this line of code
+                let styleClassName = day.month() !== currentMonth.month() ? "disabled" : (selectedDate.date() === day.date() ? "selected" : "");
                 days.push(
-                    <div className="col cell" key={shortid.generate()}>
+                    <div className={`col cell ${styleClassName}`}
+                         key={shortid.generate()}
+                         onClick={() => this.onDateClick(cloneDate)}
+                    >
                         <span className="number">{formattedDate}</span>
                         <span className="bg">{formattedDate}</span>
                     </div>
@@ -87,7 +93,12 @@ class Calendar extends React.Component {
         return <div className="body">{rows}</div>;
     };
 
-    onDateClick = day => {};
+    onDateClick = date => {
+        console.log('selected day, ', date);
+        this.setState({
+            selectedDate: date
+        })
+    };
     nextMonth = () => {
         this.setState( {
             currentMonth: this.state.currentMonth.add(1, 'months')
