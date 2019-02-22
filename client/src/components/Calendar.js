@@ -4,6 +4,7 @@ import shortid from 'shortid';
 
 class Calendar extends React.Component {
     state = {
+        currentDate: new moment(),
         currentMonth: new moment(),
         selectedDate: new moment()
     };
