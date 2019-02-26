@@ -1,9 +1,13 @@
 import React, { Component, Suspense, lazy } from 'react';
 import './App.css';
 import {BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
-import { LeaveRegForm } from './components/LeavingRegForm';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import AbsenceLetter from './components/AbsenceLetter';
+
 
 const Calendar = lazy(() => import('./components/Calendar'));
+const DemoUI = lazy(() => import('./components/demoUI'));
+
 
 const MainRouter = () => (
 	<Router>
@@ -17,6 +21,13 @@ const MainRouter = () => (
 				)
 			}/>
 			<Route path="/leaveForm" component={LeaveForm}/>
+			<Route path="/demoUI" component={
+				() => (
+					<Suspense fallback={<div><CircularProgress /></div>}>
+						<DemoUIWrapper/>
+					</Suspense>
+				)
+			}/>
 		</Switch>
 	</Router>
 );
@@ -27,6 +38,7 @@ const Home = () => {
 			<li><Link to="/">Home</Link></li>
 			<li><Link to="/calendar">Calendar</Link></li>
 			<li><Link to="/leaveForm">Leaving Form</Link></li>
+			<li><Link to="/demoUI">Demo UI</Link></li>
 		</ol>
 	);
 };
@@ -34,11 +46,19 @@ const Home = () => {
 const LeaveForm = () => {
 	return (
 		<div>
-			<h2>Leaving Form</h2>
-			<LeaveRegForm/>
+			<h1>Leaving Form</h1>
+			<AbsenceLetter />
 		</div>
 	);
 };
+
+const DemoUIWrapper = () => {
+	return (
+		<div>
+			<DemoUI/>
+		</div>
+	)
+}
 
 class App extends Component {
   render() {
