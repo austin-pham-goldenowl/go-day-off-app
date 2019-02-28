@@ -2,10 +2,10 @@ import React, { Component, Suspense, lazy } from 'react';
 import './App.css';
 import {BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import AbsenceLetter from './components/AbsenceLetter';
+import AbsenceLetter from './containers/absenceLetter';
 
 
-const Calendar = lazy(() => import('./components/Calendar'));
+const Calendar = lazy(() => import('./components/calendar'));
 const DemoUI = lazy(() => import('./components/demoUI'));
 
 
