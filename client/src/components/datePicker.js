@@ -2,8 +2,6 @@ import React, { PureComponent } from 'react';
 import MomentUtils from '@date-io/moment';
 import { MuiPickersUtilsProvider } from 'material-ui-pickers';
 import { DatePicker } from 'material-ui-pickers';
-import { IconButton } from '@material-ui/core';
-import Icon from '@material-ui/core/Icon';
 //Localization
 import moment from 'moment';
 import 'moment/locale/vi';

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { 
   FormControl, 
@@ -11,14 +12,11 @@ import shortid from 'shortid';
 
 const styles = theme => ({
   formControl: {
-    // margin: theme.spacing.unit,
-    minWidth: 120,
-    maxWidth: 300,
     display: 'flex',
   },
 });
 
-class OutlinedSelectComponent extends React.Component {
+class SelectCustom extends React.Component {
   state = {
     selected: '',
     labelWidth: 0
@@ -34,15 +32,14 @@ class OutlinedSelectComponent extends React.Component {
     this.setState({
       selected: event.target.value
     });
+    this.props.onChange && this.props.onChange(event.target.value);
   }
 
   render() {
     const { classes, values, name, label } = this.props;
     return (
       <FormControl className={classes.formControl}>
-        <InputLabel
-          htmlFor="select-box"
-        >
+        <InputLabel htmlFor="select-box">
           {label}
         </InputLabel>
         <Select
@@ -62,4 +59,11 @@ class OutlinedSelectComponent extends React.Component {
   }
 }
 
-export default withStyles(styles)(OutlinedSelectComponent);
+SelectCustom.propTypes = {
+  classes: PropTypes.object.isRequired,
+  values: PropTypes.array.isRequired,
+  label: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+}
+
+export default withStyles(styles)(SelectCustom);
