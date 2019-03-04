@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import { 
-  FormControl, 
-  InputLabel, 
-  Select, 
-  MenuItem 
+import {
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
 } from '@material-ui/core';
 
 import shortid from 'shortid';
@@ -16,53 +16,45 @@ const styles = theme => ({
   },
 });
 
-class SelectCustom extends React.Component {
-  state = {
-    selected: '',
-    labelWidth: 0
-  }
-  componentDidMount() {
-    let { values } = this.props;
-    this.setState({
-      selected: `${(values.length > 0) ? values[0].value : ''}`,
-    });
-  }
-
-  handleChange = (event) => {
-    this.setState({
-      selected: event.target.value
-    });
-    this.props.onChange && this.props.onChange(event.target.value);
-  }
-
-  render() {
-    const { classes, values, name, label } = this.props;
-    return (
-      <FormControl className={classes.formControl}>
+const SelectCustom = ({
+  name,
+  label,
+  value,
+  options,
+  classes,
+  onChange,
+}) => {
+  return (
+    <FormControl className={classes.formControl}>
+    {
+      (label && label.length > 0) ?
+      (
         <InputLabel htmlFor="select-box">
-          {label}
-        </InputLabel>
-        <Select
-          value={this.state.selected}
-          onChange={this.handleChange}
-          inputProps={{id: 'select-box'}}
-        >
-          { values.map(item => (
-            <MenuItem 
-              key={shortid.generate()}
-              value={item.value}
-            >{item.label}</MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-    );
-  }
-}
+        {label}
+      </InputLabel>
+      )
+      : null
+    }
+    <Select
+      name={name}
+      value={value}
+      onChange={onChange}
+      inputProps={{id: 'select-box'}}
+    >
+      { options.map(item => (
+        <MenuItem
+          key={shortid.generate()}
+          value={item.value}
+        >{item.label}</MenuItem>
+      ))}
+    </Select>
+  </FormControl>
+  );
+};
 
 SelectCustom.propTypes = {
   classes: PropTypes.object.isRequired,
-  values: PropTypes.array.isRequired,
-  label: PropTypes.string.isRequired,
+  options: PropTypes.array.isRequired,
   onChange: PropTypes.func.isRequired,
 }
 
