@@ -28,7 +28,7 @@ Router.get("/details", async (req, res) => {
     if (!fId) throw { msg: "INVALID_QUERY" };
     const team = await teamModel.loadAll([], { where: { fId } });
     if (!team || team.length !== 1) throw { msg: "TEAM_NOT_FOUND" };
-    handleSuccess(res, { team });
+    handleSuccess(res, { team: team[0] });
   } catch (err) {
     console.log("Controller > team > getDetails > err: ", err);
     const { code, msg } = err;
