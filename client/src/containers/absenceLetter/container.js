@@ -1,40 +1,24 @@
 import React from 'react';
-// import { Formik, Field, Form, ErrorMessage } from 'formik';
-import { 
-  Paper, 
-  Grid, 
-  Typography, 
+import { Formik, Field, Form, ErrorMessage } from 'formik';
+import {
+  Paper,
+  Grid,
+  Typography,
   TextField,
-  Button, 
+  Button,
 } from '@material-ui/core';
 import Icon from '@material-ui/core/Icon';
 import { withStyles } from '@material-ui/core/styles';
 
 import { connect } from 'react-redux';
-import { 
-  changeLeaveType,
-  changeApprover,
-  changeInformTo,
-  changeReason,
-  changeDateStart,
-  changeDateEnd,
-} from './actions';
 
 import SelectCustom from '../../components/customSelect';
 import TextFieldReadOnly from '../../components/readOnlyTextField';
-import DatePicker from '../../components/datePicker';
+import DatePickerField from '../../components/datePicker';
 import SelectWithChips from '../../components/selectWithChips';
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    onChangeLeaveType: value => dispatch(changeLeaveType(value)),
-    onChangeApprover: value => dispatch(changeApprover(value)),
-    onChangeInformTo: value => dispatch(changeInformTo(value)),
-    onChangeReason: value => dispatch(changeReason(value)),
-    onChangeDateStart: value => dispatch(changeDateStart(value)),
-    onChangeDateEnd: value => dispatch(changeDateEnd(value)),
-  }
-}
+import ValidationSchema from './validationSchema';
+
 // const emailRegexPattern = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 
 const styles = theme => ({
@@ -97,146 +81,250 @@ const styles = theme => ({
   },
   smallIcon: {
     fontSize: 20,
+  },
+  formTitle: {
+    marginBottom: theme.spacing.unit * 3,
   }
 });
 
-class ConnectedAbsenceLetter extends React.Component {
-  render() {
-    const { classes } = this.props;
+class AbsenceLetterWithFormik extends React.Component{
 
+  componentDidMount() {
+    // Call api request:
+    // + loadLeaveType
+    // + loadApprover
+    // + loadInformto
+  }
+
+  render() {
+  const {
+    classes,
+    initialValues } = this.props;
+    console.log('initialValues', initialValues);
     return (
       <div>
         <main className={classes.layout}>
           <Paper className={classes.paper}>
-            <Grid item container xs={12} className={classes.buttonGroupTop}>
-            {/* Top buttons */}
-                <Button 
-                  className={classes.button} 
-                  size="small"
-                  variant="contained" 
-                  color="primary"
-                >
-                  Send
-                </Button>
-                <Button 
-                  className={classes.button}
-                  size="small"
-                  variant="outlined"
-                  color="secondary"
-                >
-                  Discard
-                </Button>
-            </Grid>
-            <Typography component="h1" variant="h5" align="center">
-              Create new request
-            </Typography>
-            <React.Fragment>
-              <Grid container spacing={24}>
-                <Grid item xs={12} sm={6}>
-                  <Grid item xs={12}> 
-                    {/* Select Leave type*/}
-                    <SelectCustom 
-                      name="leaveTypes"
-                      label="Leave Type"
-                      values={mockup_LeaveType}
-                      onChange={this.props.onChangeLeaveType}
-                    />
-                  </Grid>
-                  <Grid item xs={12} >
-                    {/* Show Duration */}
-                    <TextFieldReadOnly 
-                      label="Duration"
-                      defaultValue={3}
-                      />
-                  </Grid>
-                  <Grid item container spacing={24}>
-                    {/* Date picker */}
-                    <Grid item xs={6}>
-                      {/* From startDate - to endDate*/}
-                      <DatePicker label="From" fullWidth/>
-                    </Grid>
-                    <Grid item xs={6}>
-                      {/* From startDate - to endDate*/}
-                      <DatePicker label="To" fullWidth/>
-                    </Grid>
-                  </Grid>
+            <Formik
+              initialValues={initialValues}
+              onSubmit={(values, actions) => {
+                console.log('[AbsenceLetterWithFormik] - onSubmit - values: ',values);
+                console.log('[AbsenceLetterWithFormik] - onSubmit - actions: ',actions);
+              }}
+              render={({ 
+                errors, 
+                values, 
+                handleReset, 
+                handleSubmit,
+                setFieldValue, 
+                handleChange, 
+                ...formikProps 
+              }) => {
+                return (
+                  <Form>
+                    {/* Top buttons */}
+                    <React.Fragment>
+                      <Grid item container xs={12} className={classes.buttonGroupTop}>
+                        <Field render={({ field, form }) => (
+                          <Button
+                            className={classes.button}
+                            size="small"
+                            variant="contained"
+                            color="primary"
+                            onClick={handleSubmit}
+                          >
+                            Send
+                          </Button>
+                        )} />
+                        <Field render={({ field, form }) => (
+                          <Button
+                            className={classes.button}
+                            size="small"
+                            variant="outlined"
+                            color="secondary"
+                            onClick={handleReset}
+                          >
+                            Discard
+                          </Button>
+                        )}/>
+                      </Grid>
+                    </React.Fragment>
+                    {/* End - Top buttons */}
+                    <React.Fragment>
+                      <Typography className={classes.formTitle} component="h1" variant="h5" align="center">
+                        Create new request
+                      </Typography>
+                    </React.Fragment>
+                    {/* Form's content*/}
+                    <React.Fragment>
+                      {/* Form */}
+                      <Grid container spacing={24}>
+                      {/* Left side */}
+                        <Grid item xs={12} sm={6}>
+                          <Grid item xs={12}>
+                            {/* Select Leave type */}
+                            <Field
+                              render={({ field, form, ...otherProps }) => {
+                                console.log(values);
+                                console.log('otherProps', otherProps);
+                                return (
+                                  <SelectCustom
+                                    name="leaveType"
+                                    label="Leave Types"
+                                    value={values.leaveType}
+                                    options={mockup_LeaveType} //this will load after api request
+                                    onChange={({target: {name, value}}) => {
+                                      setFieldValue(name, value);
+                                    }}
+                                  />
+                                )
+                              }}/>
+                          </Grid>
+                          <Grid item xs={12} >
+                            {/* Show Duration */}
+                            <Field name="duration" render={({ field, form }) => {
+                              //do something
+                              return (
+                                <TextFieldReadOnly
+                                  label="Duration"
+                                  defaultValue={`${initialValues.endDate-initialValues.startDate+1}`}
+                                />
+                              )
+                            }}/>
+                          </Grid>
 
-                  
-                </Grid>
-                {/* Right side */}
-                <Grid item xs={12} sm={6}>
-                <Grid item xs={12}>
-                    {/* Supervisor */}
-                    <SelectCustom 
-                      name="approver"
-                      label="Approver"
-                      values={mockup_Approver}
-                      onChange={this.props.onChangeApprover}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    {/* Inform to  */}
-                    <SelectWithChips 
-                      multiple
-                      label="Inform to"
-                      data={mockup_InformTo}
-                      onChange={this.props.onChangeInformTo}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    {/* Reason Selection  */}
-                    <SelectCustom 
-                      name="reason"
-                      label="Reason"
-                      values={mockup_Reason}
-                      onChange={this.props.onChangeReason}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    {/* Reason in detail */}
-                    <TextField
-                      required
-                      multiline
-                      disabled={true}
-                      id="otherReason"
-                      name="otherReason"
-                      label="Reason detail"
-                      fullWidth
-                      autoComplete="fOtherReason"
-                    />
-                  </Grid>
-                </Grid>
-                {/* Bottom buttons */}
-                <Grid item xs={12} className={classes.buttonGroupBottom} >
-                  <Button 
-                    className={classes.button} 
-                    size="small"
-                    variant="contained" 
-                    color="primary"
-                  >
-                    Send
-                  </Button>
-                  <Button 
-                    className={classes.button}
-                    size="small"
-                    variant="outlined"
-                    color="secondary"
-                  >
-                    Discard
-                  </Button>
-                </Grid>
-                  {/* End - Right side */}
-                </Grid>
-              </React.Fragment>
+                          {/* Date picker */}
+                          <Grid item container spacing={24}>
+                            <Grid item xs={6}>
+                              {/* From startDate - to endDate*/}
+                              <Field 
+                                fullWidth
+                                name="startDate" 
+                                component={DatePickerField}
+                              />
+                            </Grid>
+                            <Grid item xs={6}>
+                            <Field 
+                              fullWidth 
+                              name="endDate" 
+                              component={DatePickerField}
+                            />
+                            </Grid>
+                          </Grid>
+                          {/* End - Date picker */}
+                        </Grid>
+                        {/* End - Left side */}
+                        {/* Right side */}
+                        <Grid item xs={12} sm={6}>
+                          <Grid item xs={12}>
+                            {/* Supervisor */}
+                            <Field render={({ field, form }) => (
+                              <SelectCustom
+                                name="approver"
+                                label="Approver"
+                                value={values.approver}
+                                options={mockup_Approver}
+                                onChange={({ target: {name, value} }) => 
+                                  setFieldValue(name, value)
+                                }
+                              />
+                            )} />
+                          </Grid>
+                          <Grid item xs={12}>
+                            {/* Inform to  */}
+                            <Field 
+                              multiple 
+                              name="informTo" 
+                              label='Inform to' 
+                              options={mockup_InformTo}
+                              component={SelectWithChips} 
+                            />
+                          </Grid>
+                          <Grid item xs={12}>
+                            {/* Reason Selection  */}
+                            <Field render={({ field, form }) => (
+                              <SelectCustom
+                                name="reason"
+                                label="Reason"
+                                value={values.reason}
+                                options={mockup_Reason}
+                                onChange={({ target: {name, value}}) => 
+                                  setFieldValue(name, value)
+                                }
+                              />
+                            )} />
+                          </Grid>
+                          {/* Reason in detail */}
+                          <Grid item xs={12}>
+                            <Field name="otherReason" render={({ field, form }) => (
+                              <TextField
+                                required
+                                multiline
+                                fullWidth
+                                id="otherReason"
+                                name="otherReason"
+                                label="Reason detail"
+                                onChange={({ target: {name, value} }) =>
+                                  setFieldValue(name, value)
+                                }
+                              />
+                            )} />
+                          </Grid>
+                          {/* End - Reason in detail */}
+                        </Grid>
+                        {/* End - Right side */}
+                      </Grid>
+                      {/* End - Form */}
+                    </React.Fragment>
+                    <React.Fragment>
+                      {/* Bottom buttons */}
+                      <Grid item xs={12} className={classes.buttonGroupBottom} >
+                      <Button
+                        size="small"
+                        color="primary"
+                        variant="contained"
+                        onClick={handleSubmit}
+                        className={classes.button}
+                      >
+                        Send
+                      </Button>
+                      <Button
+                        size="small"
+                        color="secondary"
+                        variant="outlined"
+                        onClick={handleReset}
+                        className={classes.button}
+                      >
+                        Discard
+                      </Button>
+                    </Grid>
+                    </React.Fragment>
+                  </Form>
+                )
+              }}
+            />
           </Paper>
         </main>
       </div>
-    )
+    );
   }
 }
 
-const AbsenceLetter = connect(null, mapDispatchToProps) (withStyles(styles)(ConnectedAbsenceLetter));
-export default AbsenceLetter
+AbsenceLetterWithFormik.defaultProps = {
+  initialValues: {
+    leaveType: 1,
+    startDate: new Date(),
+    endDate: new Date(),
+    approver: {},
+    informTo: [],
+    reason: '',
+    otherReason: '',
+  },
+}
+
+export default connect(null, null)(
+  withStyles(styles)(AbsenceLetterWithFormik)
+);
 // Mockup data
 let mockup_LeaveType = [
   {
@@ -266,8 +354,6 @@ let mockup_Approver= [
     label: 'Ôn Thanh Phước',
   }
 ];
-
-
 let mockup_InformTo = [
   { label: 'Timon', value: 'timon@email.com' },
   { label: 'Jayce', value: 'jayce@email.com' },

@@ -3,7 +3,7 @@ import * as Actions from './actionType';
 const initialState = {
   content: {
     leaveType: 1,
-    stateDate: new Date(),
+    startDate: new Date(),
     endDate: new Date(),
     approver: { id: '222', label: 'Nguyen Quoc Cuong', value: '@awfawfawf'},
     informTo: [
