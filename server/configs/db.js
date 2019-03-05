@@ -7,10 +7,10 @@ if (process.env.NODE_ENV !== "production") {
 
 module.exports = {
   development: {
-    username: process.env.SERVER_HOST_USER,
-    password: process.env.SERVER_HOST_PWD,
-    database: process.env.SERVER_HOST_DB_NAME,
-    host: process.env.DB_HOST || "127.0.0.1",
+    username: process.env.DB_USER,
+    password: process.env.DB_PWD,
+    database: process.env.DB_NAME,
+    host: process.env.SERVER_HOST_ADDRESS || "127.0.0.1",
     dialect: process.env.DIALECT || "mysql",
     operatorsAliases: Sequelize.Op,
     dialectOptions: {

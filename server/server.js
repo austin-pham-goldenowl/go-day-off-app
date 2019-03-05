@@ -1,5 +1,8 @@
+require("@babel/register")({
+  presets: ["@babel/preset-env"]
+});
+require("@babel/polyfill");
 const bodyParser = require("body-parser");
-const compression = require("compression");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const errorHandler = require("errorhandler");
@@ -18,8 +21,7 @@ dotenv.load({ path: ".env.dev" });
  * Declaring express server
  */
 const server = express();
-server.set("port", process.env.SERVER_HOST_PORT || 8080);
-server.use(compression);
+server.set("port", process.env.SERVER_HOST_PORT || 3001);
 server.use(morgan("dev"));
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: true }));
@@ -47,15 +49,15 @@ const authCtrl = require("./controllers/auth");
 server.use("/api/auth", authCtrl);
 // ---
 const userCtrl = require("./controllers/user");
-const { verifyAccessToken } = require("./models/refToken");
-server.use("/api/user", verifyAccessToken, userCtrl);
+const { verifyAccToken } = require("./helpers/jwt");
+server.use("/api/user", verifyAccToken, userCtrl);
 // ---
 const leaveLetterCtrl = require("./controllers/leaveLetter");
 server.use("/api/leaveLetter", leaveLetterCtrl);
 
 /**
- * Start Express server.
+ * Start Express server
  */
 server.listen(server.get("port"), () => {
-  console.log("%s [GO-LeavingForm] Express server is running at http://localhost:%d in %s mode");
+  console.log(`[GO-LeavingForm] Express server is running at http://localhost:${server.get("port")}`);
 });

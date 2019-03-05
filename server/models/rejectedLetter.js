@@ -14,7 +14,11 @@ export default (sequelize, DataTypes) => {
         allowNull: false
       }
     },
-    { freezeTableName: true, tableName: "rejectedLetterDetail" });
+    {
+      timestamps: false,
+      freezeTableName: true,
+      tableName: "rejectedLetterDetail"
+    });
 
   RejectedLetter.associate = models => {
     RejectedLetter.belongsTo(models.leaveLetters, {

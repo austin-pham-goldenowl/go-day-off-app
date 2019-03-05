@@ -1,14 +1,16 @@
-const Router = require("express").Router();
+const express = require("express");
+const Router = express.Router();
 
 /**
  * Models
  */
-const { userModel } = require("../models");
+const { users: userModel } = require("../models");
 
 /**
  * Helpers
  */
 const { handleSuccess, handleFailure } = require("../helpers/handleResponse");
+const { standardizeObj } = require("../helpers/standardize");
 
 // Get user profile
 Router.get("/profile", (req, res) => {
@@ -19,11 +21,13 @@ Router.get("/profile", (req, res) => {
 
 // Get user id
 Router.get("/id", (req, res) => {
-  const id =
-    req.token_payload && req.token_payload.user && req.token_payload.user.fId;
-  if (id)
+  const fUserId =
+    req.token_payload &&
+    req.token_payload.userId &&
+    req.token_payload.userId.fUserId;
+  if (fUserId)
     handleSuccess(res, {
-      id
+      fUserId
     });
   else handleFailure(res, { msg: "SOMETHING_WENT_WRONG" });
 });
@@ -32,16 +36,21 @@ Router.get("/id", (req, res) => {
 Router.patch("/profile", async (req, res) => {
   try {
     const userEntity = req.body.info;
-    const userId = req.body.user && req.body.user.id;
-
+    const userId = req.body.id;
     if (Object.keys(userEntity).length === 0 || !userId)
-      throw { code: 400, msg: "NO_VALUE" };
+      throw { code: 400, msg: "INVALID_VALUES" };
 
-    const user = await userModel.modify(userEntity, { fId: userId });
-    handleSuccess(res, { user });
+    const affected = await userModel.modify(standardizeObj(userEntity), {
+      where: { fId: userId }
+    });
+    if (affected[0] < 1) throw { msg: "USER_NOT_FOUND" };
+
+    handleSuccess(res);
   } catch (err) {
-    console.log("[Controller][user][update]: catch -> err", err);
+    console.log("Controller > user > update > err: ", err);
     const { code, msg } = err;
     handleFailure(res, { code, msg });
   }
 });
+
+module.exports = Router;

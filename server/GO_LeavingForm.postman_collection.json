@@ -1,0 +1,229 @@
+{
+	"info": {
+		"_postman_id": "77dc901b-75a0-4623-aa9b-53380304b18a",
+		"name": "GO_LeavingForm",
+		"description": "Golden Owl - Leaving Form",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Add New Account",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "d944404f-ec2e-4b8c-8ac8-b191f4c6129c",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "4c0f5c8e-6b1a-496e-ad1b-6786af915dc0",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\": \"Quoc Cuong\",\n    \"lastName\": \"Nguyen\",\n    \"bday\": \"1999-10-20 12:12:12\",\n    \"position\": \"B4QIq\",\n    \"posId\": \"hGKx5\",\n    \"address\": \"40E Ngo Duc Ke street, Ben Nghe ward, Dist. 1, HCMC\",\n    \"phone\": \"0123456789\",\n    \"teamId\": \"\",\n    \"typeId\": \"\",\n    \"email\": \"abc@go.com\",\n    \"rawPwd\": \"sayohyeah\",\n    \"username\": \"abc2\"\n}"
+				},
+				"url": {
+					"raw": "localhost:3001/api/auth/account",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"auth",
+						"account"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"username\" : \"abc2\",\n\t\"rawPwd\" : \"sayohyeah\"\n}"
+				},
+				"url": {
+					"raw": "localhost:3001/api/auth/login",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Renew access token",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "x-ref-token",
+						"value": "yvFzpBZ6KFXCIBeI04pM7nibh6cWSuG5RUvOrYOuu2kT9vTxcbFCIduoQ0aEvdvTznj58bWPbKPd9Fkw",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:3001/api/auth/token",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"auth",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update user profile",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxNzUzNTQxLCJleHAiOjE1NTE4MTM1NDF9.6OXl0EtKUtOJPl6-vzeX5jtdlRxyUkbwk2zqXJbBOjY",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"3DsDkigku2\",\n    \"info\": {\n        \"phone\": \"0968338972\"\n    }\n}"
+				},
+				"url": {
+					"raw": "localhost:3001/api/user/profile",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"user",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get user profile",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxNzUzNTQxLCJleHAiOjE1NTE4MTM1NDF9.6OXl0EtKUtOJPl6-vzeX5jtdlRxyUkbwk2zqXJbBOjY",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:3001/api/user/profile",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"user",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get user id",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxNzUzNTQxLCJleHAiOjE1NTE4MTM1NDF9.6OXl0EtKUtOJPl6-vzeX5jtdlRxyUkbwk2zqXJbBOjY",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:3001/api/user/id",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"user",
+						"id"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

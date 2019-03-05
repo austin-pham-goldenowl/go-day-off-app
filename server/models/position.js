@@ -11,7 +11,7 @@ export default (sequelize, DataTypes) => {
         allowNull: false
       }
     },
-    { freezeTableName: true, tableName: "positions" });
+    { timestamps: false, freezeTableName: true, tableName: "positions" });
 
   Position.loadAll = (params = [], queryWhere = {}) =>
     new Promise(async (resolve, reject) => {

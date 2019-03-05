@@ -10,7 +10,7 @@ export default (sequelize, DataTypes) => {
         allowNull: false
       }
     },
-    { freezeTableName: true, tableName: "absencesTypes" });
+    { timestamps: false, freezeTableName: true, tableName: "absencesTypes" });
 
   Absence.loadAll = (params = [], queryWhere = {}) =>
     new Promise(async (resolve, reject) => {

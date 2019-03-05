@@ -2,16 +2,19 @@
   "name": "server-go-leavingOfAbsenseLetter",
   "version": "0.0.1",
   "description": "Server for go-leavingOfAbsenseLetter project",
-  "main": "server.js",
   "scripts": {
+    "start": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Nolan",
   "license": "ISC",
   "dependencies": {
+    "@babel/core": "^7.3.4",
+    "@babel/polyfill": "^7.2.5",
+    "@babel/preset-env": "^7.3.4",
+    "@babel/register": "^7.0.0",
     "axios": "^0.18.0",
     "body-parser": "^1.18.3",
-    "compression": "^1.7.3",
     "cors": "^2.8.5",
     "dotenv": "^6.2.0",
     "errorhandler": "^1.5.0",
@@ -21,15 +24,18 @@
     "method-override": "^3.0.0",
     "moment": "^2.24.0",
     "morgan": "^1.9.1",
+    "mysql2": "^1.6.5",
     "nodemailer": "^5.1.1",
     "rand-token": "^0.4.0",
     "sanitizer": "^0.1.3",
     "sequelize": "^4.42.1",
+    "sha256": "^0.2.0",
     "validator": "^10.11.0"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.1",
-    "eslint": "^5.14.1"
+    "eslint": "^5.14.1",
+    "nodemon": "^1.18.10"
   },
   "engines": {
     "node": ">=8.11.3",

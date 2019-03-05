@@ -42,19 +42,22 @@ export default (sequelize, DataTypes) => {
         allowNull: false
       }
     },
-    { freezeTableName: true, tableName: "leaveLetters" });
-
-  LeaveLetter.associate = models => {
-    LeaveLetter.belongsTo(models.absenceTypes, {
-      foreignKey: "fId",
-      as: "absenceTypes_fId"
+    {
+      timestamps: false,
+      freezeTableName: true,
+      tableName: "leaveLetters",
+      classMethods: {
+        associate: models => {
+          LeaveLetter.belongsTo(models.absenceTypes, {
+            foreignKey: "absenceTypes_fId"
+          });
+          LeaveLetter.belongsTo(models.users, { foreignKey: "users_fId" });
+          LeaveLetter.belongsTo(models.users, {
+            foreignKey: "users_fId1"
+          });
+        }
+      }
     });
-    LeaveLetter.belongsTo(models.users, { foreignKey: "fId", as: "users_fId" });
-    LeaveLetter.belongsTo(models.users, {
-      foreignKey: "fId",
-      as: "users_fId1"
-    });
-  };
 
   LeaveLetter.loadAll = (params = [], queryWhere = {}) =>
     new Promise(async (resolve, reject) => {

@@ -10,7 +10,7 @@ export default (sequelize, DataTypes) => {
         allowNull: false
       }
     },
-    { freezeTableName: true, tableName: "userPermission" });
+    { timestamps: false, freezeTableName: true, tableName: "userPermission" });
 
   Permission.loadAll = (params = [], queryWhere = {}) =>
     new Promise(async (resolve, reject) => {
