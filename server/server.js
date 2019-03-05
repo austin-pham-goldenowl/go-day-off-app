@@ -58,6 +58,9 @@ server.use("/api/user", verifyAccToken, userCtrl);
 // ---
 const leaveLetterCtrl = require("./controllers/leaveLetter");
 server.use("/api/leaveLetter", verifyAccToken, leaveLetterCtrl);
+// ---
+const absenceCtrl = require("./controllers/absence");
+server.use("/api/absenceType", verifyAccToken, absenceCtrl);
 
 /**
  * Start Express server

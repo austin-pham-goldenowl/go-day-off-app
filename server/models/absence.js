@@ -10,16 +10,21 @@ export default (sequelize, DataTypes) => {
         allowNull: false
       }
     },
-    { timestamps: false, freezeTableName: true, tableName: "absencesTypes" });
+    { timestamps: false, freezeTableName: true, tableName: "absenceTypes" });
 
-  Absence.loadAll = (params = [], queryWhere = {}) =>
+  Absence.loadAll = (attributes = [], queryWhere = {}) =>
     new Promise(async (resolve, reject) => {
       try {
-        const query = {
-          attributes: params,
-          where: queryWhere
-        };
-        const absenceTypes = await Absence.findAll(query);
+        let absenceTypes = null;
+        if (attributes.length < 1)
+          absenceTypes = await Absence.findAll({
+            ...queryWhere
+          });
+        else
+          absenceTypes = await Absence.findAll({
+            attributes,
+            ...queryWhere
+          });
         resolve(absenceTypes);
       } catch (err) {
         reject(err);

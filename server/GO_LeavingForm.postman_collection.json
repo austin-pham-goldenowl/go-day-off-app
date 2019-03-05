@@ -367,6 +367,72 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Get all absence types",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxNzUzNTQxLCJleHAiOjE1NTE4MTM1NDF9.6OXl0EtKUtOJPl6-vzeX5jtdlRxyUkbwk2zqXJbBOjY",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:3001/api/absenceType/",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"absenceType",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get absence type details",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxNzUzNTQxLCJleHAiOjE1NTE4MTM1NDF9.6OXl0EtKUtOJPl6-vzeX5jtdlRxyUkbwk2zqXJbBOjY",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:3001/api/absenceType/details?id=1",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"absenceType",
+						"details"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
