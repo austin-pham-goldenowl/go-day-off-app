@@ -1,36 +1,61 @@
-var express = require('express');
-var morgan = require('morgan'),
-  bodyParser = require('body-parser'),
-  cors = require('cors');
-
-let PORT = process.env.PORT || 3001;
-/**
- * Controller
-*/
-let authCtrl = require('./apiController/authController');
-let userCtrl = require('./apiController/userController');
-let leaveLetterCtrl = require('./apiController/leaveLetterController');
+const bodyParser = require("body-parser");
+const compression = require("compression");
+const cors = require("cors");
+const dotenv = require("dotenv");
+const errorHandler = require("errorhandler");
+const express = require("express");
+const expressValidator = require("express-validator");
+const methodOverride = require("method-override");
+const morgan = require("morgan");
 
 /**
- * Middlewares
+ * Load environment variables from .env file,
+ * where API keys and passwords are configured.
  */
-let {verifyAccessToken} = require('./repo/refTokenRepo');
+dotenv.load({ path: ".env.dev" });
 
-// Declaring express app
-var app = express();
+/**
+ * Declaring express server
+ */
+const server = express();
+server.set("port", process.env.SERVER_HOST_PORT || 8080);
+server.use(compression);
+server.use(morgan("dev"));
+server.use(bodyParser.json());
+server.use(bodyParser.urlencoded({ extended: true }));
+server.use(methodOverride("X-HTTP-Method-Override"));
+server.use(expressValidator());
+server.use(cors());
 
-app.use(morgan('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-  extended: true
-}));
-app.use(cors());
+/**
+ * Error Handler.
+ */
+if (process.env.NODE_ENV === "development") {
+  // only use in development
+  server.use(errorHandler());
+} else {
+  server.use((err, req, res, next) => {
+    console.error(err);
+    res.status(500).send("Server Error");
+  });
+}
 
-//Applying controllers
-app.use('/api/auth', authCtrl);
-app.use('/api/user', verifyAccessToken, userCtrl);
-app.use('/api/leaveLetter', leaveLetterCtrl); //temporary disable verifyAccessToken
+/**
+ * Controllers
+ */
+const authCtrl = require("./controllers/auth");
+server.use("/api/auth", authCtrl);
+// ---
+const userCtrl = require("./controllers/user");
+const { verifyAccessToken } = require("./models/refToken");
+server.use("/api/user", verifyAccessToken, userCtrl);
+// ---
+const leaveLetterCtrl = require("./controllers/leaveLetter");
+server.use("/api/leaveLetter", leaveLetterCtrl);
 
-app.listen(PORT, () => {
-  console.log(`[GO-LeavingForm] Express server is running on port ${PORT}...`)
+/**
+ * Start Express server.
+ */
+server.listen(server.get("port"), () => {
+  console.log("%s [GO-LeavingForm] Express server is running at http://localhost:%d in %s mode");
 });

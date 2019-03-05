@@ -1,2 +1,0 @@
-var nodemailer = require('nodemailer');
-
