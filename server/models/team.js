@@ -25,59 +25,20 @@ export default (sequelize, DataTypes) => {
       }
     });
 
-  Team.loadAll = (params = [], queryWhere = {}) =>
+  Team.loadAll = (attributes = [], queryWhere = {}) =>
     new Promise(async (resolve, reject) => {
       try {
-        const query = {
-          attributes: params,
-          where: queryWhere
-        };
-        const teams = await Team.findAll(query);
+        let teams = null;
+        if (attributes.length < 1)
+          teams = await Team.findAll({
+            ...queryWhere
+          });
+        else
+          teams = await Team.findAll({
+            attributes,
+            ...queryWhere
+          });
         resolve(teams);
-      } catch (err) {
-        reject(err);
-      }
-    });
-
-  Team.delete = (queryWhere = {}) =>
-    new Promise(async (resolve, reject) => {
-      try {
-        const query = {
-          where: queryWhere
-        };
-        const result = await Team.destroy(query);
-        resolve(result);
-      } catch (err) {
-        reject(err);
-      }
-    });
-
-  Team.add = (params = {}) =>
-    new Promise(async (resolve, reject) => {
-      try {
-        const team = await Team.create(params);
-        const result = {
-          team: team.get({ plain: true }),
-          success: true
-        };
-        resolve(result);
-      } catch (err) {
-        reject(err);
-      }
-    });
-
-  Team.modify = (params = {}, queryWhere = {}) =>
-    new Promise(async (resolve, reject) => {
-      try {
-        const query = {
-          where: queryWhere
-        };
-        const modifiedTeam = await Team.update(params, query);
-        const result = {
-          team: modifiedTeam.get({ plain: true }),
-          success: true
-        };
-        resolve(result);
       } catch (err) {
         reject(err);
       }
