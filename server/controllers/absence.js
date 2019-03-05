@@ -36,6 +36,4 @@ Router.get("/details", async (req, res) => {
   }
 });
 
-Router.get("/details");
-
 module.exports = Router;
