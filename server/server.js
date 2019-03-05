@@ -58,6 +58,9 @@ server.use("/api/user", verifyAccToken, userCtrl);
 // ---
 const leaveLetterCtrl = require("./controllers/leaveLetter");
 server.use("/api/leaveLetter", verifyAccToken, leaveLetterCtrl);
+// --
+const positionCtrl = require("./controllers/position");
+server.use("/api/position", verifyAccToken, positionCtrl);
 
 /**
  * Start Express server
