@@ -23,8 +23,11 @@ const { genRefToken } = require("../helpers/jwt");
  */
 Router.post("/account", async (req, res) => {
   try {
+    if (Object.keys(req.body).length < 1) throw { msg: "INVALID_VALUES" };
+
     const user = { ...req.body, id: uid(USER_ID_LEN) };
     await userModel.add(user);
+
     delete user.rawPwd;
     handleSuccess(res, { code: 201, user });
   } catch (err) {

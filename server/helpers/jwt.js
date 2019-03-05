@@ -6,6 +6,11 @@ import jwt from "jsonwebtoken";
  */
 import { AUTH_CONFIG } from "../configs/config";
 
+/**
+ * Helpers
+ */
+import { handleFailure } from "./handleResponse";
+
 export const genRefToken = () => rndToken.generate(AUTH_CONFIG.REF_TOKEN_SIZE);
 
 export const verifyAccToken = (req, res, next) => {

@@ -224,6 +224,149 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Get all letters",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxNzUzNTQxLCJleHAiOjE1NTE4MTM1NDF9.6OXl0EtKUtOJPl6-vzeX5jtdlRxyUkbwk2zqXJbBOjY",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:3001/api/leaveletter/all",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"leaveletter",
+						"all"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get leave letter details",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxNzUzNTQxLCJleHAiOjE1NTE4MTM1NDF9.6OXl0EtKUtOJPl6-vzeX5jtdlRxyUkbwk2zqXJbBOjY",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:3001/api/leaveletter/details?id=LTddvId9Yq",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"leaveletter",
+						"details"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "LTddvId9Yq"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update leave letter",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxNzUzNTQxLCJleHAiOjE1NTE4MTM1NDF9.6OXl0EtKUtOJPl6-vzeX5jtdlRxyUkbwk2zqXJbBOjY",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": \"LTddvId9Yq\",\n\t\"info\": {\n\t\t\"absenceType\": \"1\",\n\t\t\"status\": \"2\"\n\t}\n}"
+				},
+				"url": {
+					"raw": "localhost:3001/api/leaveletter/details?id=LTddvId9Yq",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"leaveletter",
+						"details"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "LTddvId9Yq"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add new leave letter",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxNzUzNTQxLCJleHAiOjE1NTE4MTM1NDF9.6OXl0EtKUtOJPl6-vzeX5jtdlRxyUkbwk2zqXJbBOjY",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"absenceType\": \"1\",\n\t\"fromDT\": \"2019-02-19T16:29:56.000Z\",\n\t\"status\": \"1\",\n\t\"substituteId\": \"i53FItHeMK\",\n\t\"toDT\": \"2019-02-17T16:29:56.000Z\",\n\t\"userId\": \"3DsDkigku2\"\n}"
+				},
+				"url": {
+					"raw": "localhost:3001/api/leaveletter/",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"leaveletter",
+						""
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }

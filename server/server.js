@@ -43,17 +43,21 @@ if (process.env.NODE_ENV === "development") {
 }
 
 /**
+ * Middlewares/Helpers
+ */
+const { verifyAccToken } = require("./helpers/jwt");
+
+/**
  * Controllers
  */
 const authCtrl = require("./controllers/auth");
 server.use("/api/auth", authCtrl);
 // ---
 const userCtrl = require("./controllers/user");
-const { verifyAccToken } = require("./helpers/jwt");
 server.use("/api/user", verifyAccToken, userCtrl);
 // ---
 const leaveLetterCtrl = require("./controllers/leaveLetter");
-server.use("/api/leaveLetter", leaveLetterCtrl);
+server.use("/api/leaveLetter", verifyAccToken, leaveLetterCtrl);
 
 /**
  * Start Express server

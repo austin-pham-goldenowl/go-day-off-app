@@ -74,24 +74,41 @@ export default (sequelize, DataTypes) => {
       }
     });
 
-  User.loadAll = (params = [], queryWhere = {}) =>
+  const permittedFields = [
+    "fAddress",
+    "fBday",
+    "fEmail",
+    "fFirstName",
+    "fPassword",
+    "fLastName",
+    "fPhone",
+    "fPosition",
+    "fTeamId",
+    "fTypeId",
+    "fUsername"
+  ];
+  const publicFields = permittedFields.filter(field => field === "fPassword");
+
+  User.loadAll = (attributes = [], queryWhere = {}) =>
     new Promise(async (resolve, reject) => {
       try {
-        const users = await User.findAll({ attributes: params, queryWhere });
+        const users = await User.findAll({ attributes, ...queryWhere });
         resolve(users);
       } catch (err) {
+        err.code = 500;
+        err.msg = "DB_QUERY_ERROR";
         reject(err);
       }
     });
 
-  User.modify = (attributes, queryWhere = {}) =>
+  User.modify = (attributes = {}, queryWhere = {}) =>
     new Promise(async (resolve, reject) => {
       try {
         const affected = await User.update(attributes, queryWhere);
         resolve(affected);
       } catch (err) {
         err.code = 500;
-        err.msg = "Something went wrong with database server";
+        err.msg = "DB_QUERY_ERROR";
         reject(err);
       }
     });
@@ -108,7 +125,7 @@ export default (sequelize, DataTypes) => {
         resolve(user);
       } catch (err) {
         err.code = 500;
-        err.msg = "Something went wrong";
+        err.msg = "DB_QUERY_ERROR";
         reject(err);
       }
     });
