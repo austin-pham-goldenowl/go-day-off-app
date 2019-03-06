@@ -14,11 +14,16 @@ export default (sequelize, DataTypes) => {
         allowNull: false
       }
     },
-    { freezeTableName: true, tableName: "teams" });
-
-  Team.associate = models => {
-    Team.belongsTo(models.users, { foreignKey: "fId", as: "users_fId" });
-  };
+    {
+      timestamps: false,
+      freezeTableName: true,
+      tableName: "teams",
+      classMethods: {
+        associate: models => {
+          Team.belongsTo(models.users, { foreignKey: "users_fId" });
+        }
+      }
+    });
 
   Team.loadAll = (params = [], queryWhere = {}) =>
     new Promise(async (resolve, reject) => {

@@ -1,31 +1,37 @@
-const Router = require("express").Router();
+const express = require("express");
+const Router = express.Router();
 const uid = require("rand-token").uid;
 
 /**
  * Models
  */
-const { userModel, refTokenModel } = require("../models");
+const { userRefToken: refTokenModel, users: userModel } = require("../models");
 
 /**
  * Configs
  */
-const { USER_ID_LEN } = require("../config/config");
+const { USER_ID_LEN } = require("../configs/config");
 
 /**
  * Helpers
  */
 const { handleSuccess, handleFailure } = require("../helpers/handleResponse");
+const { genRefToken } = require("../helpers/jwt");
 
 /**
  * ADD NEW User
  */
 Router.post("/account", async (req, res) => {
   try {
-    const userEntity = { ...req.body, fId: uid(USER_ID_LEN) };
-    await userModel.add(userEntity);
-    handleSuccess(res, { code: 201, created: userEntity });
+    if (Object.keys(req.body).length < 1) throw { msg: "INVALID_VALUES" };
+
+    const user = { ...req.body, id: uid(USER_ID_LEN) };
+    await userModel.add(user);
+
+    delete user.rawPwd;
+    handleSuccess(res, { code: 201, user });
   } catch (err) {
-    console.log("Controller > auth > addUser -> err", err);
+    console.log("Controller > auth > addUser > err: ", err);
     const { code, msg } = err;
     handleFailure(res, { code, msg });
   }
@@ -36,30 +42,29 @@ Router.post("/account", async (req, res) => {
  */
 Router.post("/login", async (req, res) => {
   try {
-    const { username, password: rawPwd } = req.body;
-    if (!username || !rawPwd) throw { msg: "Missing some of required fields" };
+    const { username, rawPwd } = req.body;
+    if (!username || !rawPwd) throw { msg: "MISSING_REQUIRED_FIELDS" };
 
     const user = await userModel.login({
       fUsername: username,
       rawPwd
     });
-    if (user.length < 1)
-      throw { msg: "User not found or wrong username and/or password" };
+    if (!user) throw { msg: "INVALID_USERNAME_PASSWORD" };
 
-    const userEntity = user[0];
-    const refToken = refTokenModel.genRefToken();
-    const accToken = await refTokenModel.genAccToken(userEntity);
+    const userEntity = user.get({ plain: true });
+    const fRefToken = genRefToken();
+    await refTokenModel.refresh({ fUserId: userEntity.fId, fRefToken });
+    const accToken = await refTokenModel.genAccToken(fRefToken);
 
-    await refTokenModel.refresh({ userId: userEntity.id, refToken });
     handleSuccess(res, {
       access_token: accToken,
-      refresh_token: refToken,
+      refresh_token: fRefToken,
       fname: userEntity.firstName,
       lname: userEntity.lastName,
       typeId: userEntity.typeId
     });
   } catch (err) {
-    console.log("Controller > auth > login -> err", err);
+    console.log("Controller > auth > login > err: ", err);
     const { code, msg } = err;
     handleFailure(res, { code, msg });
   }
@@ -68,16 +73,17 @@ Router.post("/login", async (req, res) => {
 /**
  * GET new accessToken
  */
-
 Router.get("/token", async (req, res) => {
   try {
-    const refToken = req.headers["x-ref-token"];
-    if (!refToken) throw { code: 401, msg: "Unauthorized" };
-
-    const accToken = await refTokenModel.genAccToken(refToken);
+    // validate refToken
+    const fRefToken = req.headers["x-ref-token"];
+    if (!fRefToken) throw { code: 401, msg: "NO_REFRESH_TOKEN" };
+    await refTokenModel.validateRefToken(fRefToken);
+    // refToken is valid, gen & return new accToken
+    const accToken = await refTokenModel.genAccToken(fRefToken);
     handleSuccess(res, { access_token: accToken });
   } catch (err) {
-    console.log("Controller > auth > getToken -> err", err);
+    console.log("Controller > auth > getToken > err: ", err);
     const { code, msg } = err;
     handleFailure(res, { code, msg });
   }

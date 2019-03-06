@@ -1,3 +1,10 @@
+import moment from "moment";
+
+/**
+ * Configs
+ */
+import { DATETIME_FORMAT_TYPE1 } from "../configs/config";
+
 export default (sequelize, DataTypes) => {
   const LeaveLetter = sequelize.define("leaveLetters",
     {
@@ -42,30 +49,46 @@ export default (sequelize, DataTypes) => {
         allowNull: false
       }
     },
-    { freezeTableName: true, tableName: "leaveLetters" });
-
-  LeaveLetter.associate = models => {
-    LeaveLetter.belongsTo(models.absenceTypes, {
-      foreignKey: "fId",
-      as: "absenceTypes_fId"
+    {
+      timestamps: false,
+      freezeTableName: true,
+      tableName: "leaveLetters",
+      classMethods: {
+        associate: models => {
+          LeaveLetter.belongsTo(models.absenceTypes, {
+            foreignKey: "absenceTypes_fId"
+          });
+          LeaveLetter.belongsTo(models.users, { foreignKey: "users_fId" });
+          LeaveLetter.belongsTo(models.users, {
+            foreignKey: "users_fId1"
+          });
+        }
+      }
     });
-    LeaveLetter.belongsTo(models.users, { foreignKey: "fId", as: "users_fId" });
-    LeaveLetter.belongsTo(models.users, {
-      foreignKey: "fId",
-      as: "users_fId1"
-    });
-  };
 
-  LeaveLetter.loadAll = (params = [], queryWhere = {}) =>
+  const permittedFields = [
+    "fAbsenceType",
+    "fFromDt",
+    "fId",
+    "fRdt",
+    "fStatus",
+    "fSubstituteId",
+    "fToDT",
+    "fUserId"
+  ];
+
+  LeaveLetter.loadAll = (attributes = [], queryWhere = {}) =>
     new Promise(async (resolve, reject) => {
       try {
-        const query = {
-          attributes: params,
-          where: queryWhere
-        };
-        const letters = await LeaveLetter.findAll(query);
-        resolve(letters);
+        console.log(queryWhere);
+        const leaveLetters = await LeaveLetter.findAll({
+          attributes,
+          ...queryWhere
+        });
+        resolve(leaveLetters);
       } catch (err) {
+        err.code = 500;
+        err.msg = "DB_QUERY_ERROR";
         reject(err);
       }
     });
@@ -73,12 +96,11 @@ export default (sequelize, DataTypes) => {
   LeaveLetter.delete = (queryWhere = {}) =>
     new Promise(async (resolve, reject) => {
       try {
-        const query = {
-          where: queryWhere
-        };
-        const result = await LeaveLetter.destroy(query);
+        const result = await LeaveLetter.destroy(queryWhere);
         resolve(result);
       } catch (err) {
+        err.code = 500;
+        err.msg = "DB_QUERY_ERROR";
         reject(err);
       }
     });
@@ -86,30 +108,27 @@ export default (sequelize, DataTypes) => {
   LeaveLetter.add = (params = {}) =>
     new Promise(async (resolve, reject) => {
       try {
-        const letter = await LeaveLetter.create(params);
+        params.fRdt = moment().format(DATETIME_FORMAT_TYPE1);
+        const leaveLetter = await LeaveLetter.create(params);
         const result = {
-          letter: letter.get({ plain: true }),
-          success: true
+          leaveLetter: leaveLetter.get({ plain: true })
         };
         resolve(result);
       } catch (err) {
+        err.code = 500;
+        err.msg = "DB_QUERY_ERROR";
         reject(err);
       }
     });
 
-  LeaveLetter.modify = (params = {}, queryWhere = {}) =>
+  LeaveLetter.modify = (attributes = {}, queryWhere = {}) =>
     new Promise(async (resolve, reject) => {
       try {
-        const query = {
-          where: queryWhere
-        };
-        const modifiedLetter = await LeaveLetter.update(params, query);
-        const result = {
-          letter: modifiedLetter.get({ plain: true }),
-          success: true
-        };
-        resolve(result);
+        const affected = await LeaveLetter.update(attributes, queryWhere);
+        resolve(affected);
       } catch (err) {
+        err.code = 500;
+        err.msg = "DB_QUERY_ERROR";
         reject(err);
       }
     });
