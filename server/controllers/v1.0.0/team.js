@@ -4,12 +4,15 @@ const Router = express.Router();
 /**
  * Helpers
  */
-const { handleSuccess, handleFailure } = require("../helpers/handleResponse");
+const {
+  handleSuccess,
+  handleFailure
+} = require("../../helpers/handleResponse");
 
 /**
  * Models
  */
-const { teams: teamModel } = require("../models");
+const { teams: teamModel } = require("../../models");
 
 Router.get("/", async (req, res) => {
   try {

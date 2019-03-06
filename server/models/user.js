@@ -1,10 +1,5 @@
 import sha256 from "sha256";
 
-/**
- * Helpers
- */
-import { standardizeObj } from "../helpers/standardize";
-
 export default (sequelize, DataTypes) => {
   const User = sequelize.define("users",
     {
@@ -64,11 +59,22 @@ export default (sequelize, DataTypes) => {
       classMethods: {
         associate: models => {
           User.belongsTo(models.userPermission, {
-            foreignKey: "userPermission_fId"
+            foreignKey: {
+              name: "userPermission_fId",
+              allowNull: false
+            }
           });
-          User.belongsTo(models.teams, { foreignKey: "teams_fId" });
+          User.belongsTo(models.teams, {
+            foreignKey: {
+              name: "teams_fId",
+              allowNull: false
+            }
+          });
           User.belongsTo(models.positions, {
-            foreignKey: "positions_fId"
+            foreignKey: {
+              name: "positions_fId",
+              allowNull: false
+            }
           });
         }
       }
@@ -113,15 +119,15 @@ export default (sequelize, DataTypes) => {
       }
     });
 
-  User.add = ({ rawPwd, ...others }) =>
+  User.add = ({ fRawPwd, ...others }) =>
     new Promise(async (resolve, reject) => {
       try {
-        const userEntity = standardizeObj({
-          password: sha256(rawPwd),
+        const entity = {
+          fPassword: sha256(fRawPwd),
           ...others
-        });
+        };
 
-        const user = await User.create(userEntity);
+        const user = await User.create(entity);
         resolve(user);
       } catch (err) {
         err.code = 500;

@@ -1,438 +1,669 @@
 {
 	"info": {
-		"_postman_id": "77dc901b-75a0-4623-aa9b-53380304b18a",
+		"_postman_id": "88e01c4f-b24d-4971-a22a-0046d535a16d",
 		"name": "GO_LeavingForm",
 		"description": "Golden Owl - Leaving Form",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "Add New Account",
-			"event": [
+			"name": "v1.0.0",
+			"item": [
 				{
-					"listen": "prerequest",
-					"script": {
-						"id": "d944404f-ec2e-4b8c-8ac8-b191f4c6129c",
-						"exec": [
-							""
+					"name": "Add New Account",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "d944404f-ec2e-4b8c-8ac8-b191f4c6129c",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "4c0f5c8e-6b1a-496e-ad1b-6786af915dc0",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxODQwNzQwLCJleHAiOjE1NTE5MDA3NDB9.E6A9njzlqNWOm6SdHca6Tl_jhTkTyvkkj3r7VPdFFoo",
+								"type": "text"
+							}
 						],
-						"type": "text/javascript"
-					}
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Quoc Cuong\",\n    \"lastName\": \"Nguyen\",\n    \"bday\": \"1999-10-20 12:12:12\",\n    \"position\": \"B4QIq\",\n    \"posId\": \"hGKx5\",\n    \"address\": \"40E Ngo Duc Ke street, Ben Nghe ward, Dist. 1, HCMC\",\n    \"phone\": \"0123456789\",\n    \"teamId\": \"1LwZq\",\n    \"typeId\": \"3sVfP\",\n    \"email\": \"abc@go.com\",\n    \"rawPwd\": \"sayohyeah\",\n    \"username\": \"abc2\"\n}"
+						},
+						"url": {
+							"raw": "localhost:3001/api/v1.0.0/auth/account",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"api",
+								"v1.0.0",
+								"auth",
+								"account"
+							]
+						}
+					},
+					"response": []
 				},
 				{
-					"listen": "test",
-					"script": {
-						"id": "4c0f5c8e-6b1a-496e-ad1b-6786af915dc0",
-						"exec": [
-							""
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
 						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"firstName\": \"Quoc Cuong\",\n    \"lastName\": \"Nguyen\",\n    \"bday\": \"1999-10-20 12:12:12\",\n    \"position\": \"B4QIq\",\n    \"posId\": \"hGKx5\",\n    \"address\": \"40E Ngo Duc Ke street, Ben Nghe ward, Dist. 1, HCMC\",\n    \"phone\": \"0123456789\",\n    \"teamId\": \"\",\n    \"typeId\": \"\",\n    \"email\": \"abc@go.com\",\n    \"rawPwd\": \"sayohyeah\",\n    \"username\": \"abc2\"\n}"
-				},
-				"url": {
-					"raw": "localhost:3001/api/auth/account",
-					"host": [
-						"localhost"
-					],
-					"port": "3001",
-					"path": [
-						"api",
-						"auth",
-						"account"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Login",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n\t\"username\" : \"abc2\",\n\t\"rawPwd\" : \"sayohyeah\"\n}"
-				},
-				"url": {
-					"raw": "localhost:3001/api/auth/login",
-					"host": [
-						"localhost"
-					],
-					"port": "3001",
-					"path": [
-						"api",
-						"auth",
-						"login"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Renew access token",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					},
-					{
-						"key": "x-ref-token",
-						"value": "yvFzpBZ6KFXCIBeI04pM7nibh6cWSuG5RUvOrYOuu2kT9vTxcbFCIduoQ0aEvdvTznj58bWPbKPd9Fkw",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "localhost:3001/api/auth/token",
-					"host": [
-						"localhost"
-					],
-					"port": "3001",
-					"path": [
-						"api",
-						"auth",
-						"token"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Update user profile",
-			"request": {
-				"method": "PATCH",
-				"header": [
-					{
-						"key": "x-access-token",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxNzUzNTQxLCJleHAiOjE1NTE4MTM1NDF9.6OXl0EtKUtOJPl6-vzeX5jtdlRxyUkbwk2zqXJbBOjY",
-						"type": "text"
-					},
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"id\": \"3DsDkigku2\",\n    \"info\": {\n        \"phone\": \"0968338972\"\n    }\n}"
-				},
-				"url": {
-					"raw": "localhost:3001/api/user/profile",
-					"host": [
-						"localhost"
-					],
-					"port": "3001",
-					"path": [
-						"api",
-						"user",
-						"profile"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get user profile",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "x-access-token",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxNzUzNTQxLCJleHAiOjE1NTE4MTM1NDF9.6OXl0EtKUtOJPl6-vzeX5jtdlRxyUkbwk2zqXJbBOjY",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "localhost:3001/api/user/profile",
-					"host": [
-						"localhost"
-					],
-					"port": "3001",
-					"path": [
-						"api",
-						"user",
-						"profile"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get user id",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "x-access-token",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxNzUzNTQxLCJleHAiOjE1NTE4MTM1NDF9.6OXl0EtKUtOJPl6-vzeX5jtdlRxyUkbwk2zqXJbBOjY",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "localhost:3001/api/user/id",
-					"host": [
-						"localhost"
-					],
-					"port": "3001",
-					"path": [
-						"api",
-						"user",
-						"id"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get all letters",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "x-access-token",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxNzUzNTQxLCJleHAiOjE1NTE4MTM1NDF9.6OXl0EtKUtOJPl6-vzeX5jtdlRxyUkbwk2zqXJbBOjY",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "localhost:3001/api/leaveletter/all",
-					"host": [
-						"localhost"
-					],
-					"port": "3001",
-					"path": [
-						"api",
-						"leaveletter",
-						"all"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get leave letter details",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "x-access-token",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxNzUzNTQxLCJleHAiOjE1NTE4MTM1NDF9.6OXl0EtKUtOJPl6-vzeX5jtdlRxyUkbwk2zqXJbBOjY",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "localhost:3001/api/leaveletter/details?id=LTddvId9Yq",
-					"host": [
-						"localhost"
-					],
-					"port": "3001",
-					"path": [
-						"api",
-						"leaveletter",
-						"details"
-					],
-					"query": [
-						{
-							"key": "id",
-							"value": "LTddvId9Yq"
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\" : \"abc2\",\n\t\"rawPwd\" : \"sayohyeah\"\n}"
+						},
+						"url": {
+							"raw": "localhost:3001/api/v1.0.0/auth/login",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"api",
+								"v1.0.0",
+								"auth",
+								"login"
+							]
 						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Update leave letter",
-			"request": {
-				"method": "PATCH",
-				"header": [
-					{
-						"key": "x-access-token",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxNzUzNTQxLCJleHAiOjE1NTE4MTM1NDF9.6OXl0EtKUtOJPl6-vzeX5jtdlRxyUkbwk2zqXJbBOjY",
-						"type": "text"
 					},
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n\t\"id\": \"LTddvId9Yq\",\n\t\"info\": {\n\t\t\"absenceType\": \"1\",\n\t\t\"status\": \"2\"\n\t}\n}"
+					"response": []
 				},
-				"url": {
-					"raw": "localhost:3001/api/leaveletter/details?id=LTddvId9Yq",
-					"host": [
-						"localhost"
-					],
-					"port": "3001",
-					"path": [
-						"api",
-						"leaveletter",
-						"details"
-					],
-					"query": [
-						{
-							"key": "id",
-							"value": "LTddvId9Yq"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Add new leave letter",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "x-access-token",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxNzUzNTQxLCJleHAiOjE1NTE4MTM1NDF9.6OXl0EtKUtOJPl6-vzeX5jtdlRxyUkbwk2zqXJbBOjY",
-						"type": "text"
+				{
+					"name": "Renew access token",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
 					},
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n\t\"absenceType\": \"1\",\n\t\"fromDT\": \"2019-02-19T16:29:56.000Z\",\n\t\"status\": \"1\",\n\t\"substituteId\": \"i53FItHeMK\",\n\t\"toDT\": \"2019-02-17T16:29:56.000Z\",\n\t\"userId\": \"3DsDkigku2\"\n}"
-				},
-				"url": {
-					"raw": "localhost:3001/api/leaveletter/",
-					"host": [
-						"localhost"
-					],
-					"port": "3001",
-					"path": [
-						"api",
-						"leaveletter",
-						""
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get all absence types",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "x-access-token",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxNzUzNTQxLCJleHAiOjE1NTE4MTM1NDF9.6OXl0EtKUtOJPl6-vzeX5jtdlRxyUkbwk2zqXJbBOjY",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "localhost:3001/api/absenceType/",
-					"host": [
-						"localhost"
-					],
-					"port": "3001",
-					"path": [
-						"api",
-						"absenceType",
-						""
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get absence type details",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "x-access-token",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxNzUzNTQxLCJleHAiOjE1NTE4MTM1NDF9.6OXl0EtKUtOJPl6-vzeX5jtdlRxyUkbwk2zqXJbBOjY",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "localhost:3001/api/absenceType/details?id=1",
-					"host": [
-						"localhost"
-					],
-					"port": "3001",
-					"path": [
-						"api",
-						"absenceType",
-						"details"
-					],
-					"query": [
-						{
-							"key": "id",
-							"value": "1"
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "x-ref-token",
+								"value": "yvFzpBZ6KFXCIBeI04pM7nibh6cWSuG5RUvOrYOuu2kT9vTxcbFCIduoQ0aEvdvTznj58bWPbKPd9Fkw",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "localhost:3001/api/v1.0.0/auth/token",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"api",
+								"v1.0.0",
+								"auth",
+								"token"
+							]
 						}
-					]
+					},
+					"response": []
+				},
+				{
+					"name": "Update user profile",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxODQwNzQwLCJleHAiOjE1NTE5MDA3NDB9.E6A9njzlqNWOm6SdHca6Tl_jhTkTyvkkj3r7VPdFFoo",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"3DsDkigku2\",\n    \"info\": {\n        \"phone\": \"0968338972\"\n    }\n}"
+						},
+						"url": {
+							"raw": "localhost:3001/api/v1.0.0/user/profile",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"api",
+								"v1.0.0",
+								"user",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxODQwNzQwLCJleHAiOjE1NTE5MDA3NDB9.E6A9njzlqNWOm6SdHca6Tl_jhTkTyvkkj3r7VPdFFoo",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "localhost:3001/api/v1.0.0/user/profile",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"api",
+								"v1.0.0",
+								"user",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxODQwNzQwLCJleHAiOjE1NTE5MDA3NDB9.E6A9njzlqNWOm6SdHca6Tl_jhTkTyvkkj3r7VPdFFoo",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "localhost:3001/api/v1.0.0/user/id",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"api",
+								"v1.0.0",
+								"user",
+								"id"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all letters",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxODQwNzQwLCJleHAiOjE1NTE5MDA3NDB9.E6A9njzlqNWOm6SdHca6Tl_jhTkTyvkkj3r7VPdFFoo",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "localhost:3001/api/v1.0.0/leaveletter/",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"api",
+								"v1.0.0",
+								"leaveletter",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get leave letter details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxODQwNzQwLCJleHAiOjE1NTE5MDA3NDB9.E6A9njzlqNWOm6SdHca6Tl_jhTkTyvkkj3r7VPdFFoo",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "localhost:3001/api/v1.0.0/leaveletter/details?id=L38RQ1GA2p",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"api",
+								"v1.0.0",
+								"leaveletter",
+								"details"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "L38RQ1GA2p"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update leave letter",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxODQwNzQwLCJleHAiOjE1NTE5MDA3NDB9.E6A9njzlqNWOm6SdHca6Tl_jhTkTyvkkj3r7VPdFFoo",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\": \"LTddvId9Yq\",\n\t\"info\": {\n\t\t\"absenceType\": \"1\",\n\t\t\"status\": \"2\"\n\t}\n}"
+						},
+						"url": {
+							"raw": "localhost:3001/api/v1.0.0/leaveletter/details?id=LTddvId9Yq",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"api",
+								"v1.0.0",
+								"leaveletter",
+								"details"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "LTddvId9Yq"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add new leave letter",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxODQwNzQwLCJleHAiOjE1NTE5MDA3NDB9.E6A9njzlqNWOm6SdHca6Tl_jhTkTyvkkj3r7VPdFFoo",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"absenceType\": \"2\",\n\t\"fromDT\": \"2019-02-19T16:29:56.000Z\",\n\t\"status\": \"2\",\n\t\"substituteId\": \"i53FItHeMK\",\n\t\"toDT\": \"2019-02-17T16:29:56.000Z\",\n\t\"userId\": \"ofZzPspPVb\"\n}"
+						},
+						"url": {
+							"raw": "localhost:3001/api/v1.0.0/leaveletter/",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"api",
+								"v1.0.0",
+								"leaveletter",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get position details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxODQwNzQwLCJleHAiOjE1NTE5MDA3NDB9.E6A9njzlqNWOm6SdHca6Tl_jhTkTyvkkj3r7VPdFFoo",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "localhost:3001/api/v1.0.0/position/details?id=mXLNt",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"api",
+								"v1.0.0",
+								"position",
+								"details"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "mXLNt"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all positions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxODQwNzQwLCJleHAiOjE1NTE5MDA3NDB9.E6A9njzlqNWOm6SdHca6Tl_jhTkTyvkkj3r7VPdFFoo",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "localhost:3001/api/v1.0.0/position/",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"api",
+								"v1.0.0",
+								"position",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all teams",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxODQwNzQwLCJleHAiOjE1NTE5MDA3NDB9.E6A9njzlqNWOm6SdHca6Tl_jhTkTyvkkj3r7VPdFFoo",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "localhost:3001/api/v1.0.0/team/",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"api",
+								"v1.0.0",
+								"team",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get team details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxODQwNzQwLCJleHAiOjE1NTE5MDA3NDB9.E6A9njzlqNWOm6SdHca6Tl_jhTkTyvkkj3r7VPdFFoo",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "localhost:3001/api/v1.0.0/team/details?id=FfI2V",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"api",
+								"v1.0.0",
+								"team",
+								"details"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "FfI2V"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all absences",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxODQwNzQwLCJleHAiOjE1NTE5MDA3NDB9.E6A9njzlqNWOm6SdHca6Tl_jhTkTyvkkj3r7VPdFFoo",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "localhost:3001/api/v1.0.0/absenceType/",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"api",
+								"v1.0.0",
+								"absenceType",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get absence details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxODQwNzQwLCJleHAiOjE1NTE5MDA3NDB9.E6A9njzlqNWOm6SdHca6Tl_jhTkTyvkkj3r7VPdFFoo",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "localhost:3001/api/v1.0.0/absenceType/details?id=3",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"api",
+								"v1.0.0",
+								"absenceType",
+								"details"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get reject details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxODQwNzQwLCJleHAiOjE1NTE5MDA3NDB9.E6A9njzlqNWOm6SdHca6Tl_jhTkTyvkkj3r7VPdFFoo",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "localhost:3001/api/v1.0.0/reject?id=L38RQ1GA2p",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"api",
+								"v1.0.0",
+								"reject"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "L38RQ1GA2p"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add rejection",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxODQwNzQwLCJleHAiOjE1NTE5MDA3NDB9.E6A9njzlqNWOm6SdHca6Tl_jhTkTyvkkj3r7VPdFFoo",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"letterId\": \"4SkHd5mhm4\",\n\t\"reason\": \"Thích thì nhích\",\n\t\"rejectType\": \"2\"\n}"
+						},
+						"url": {
+							"raw": "localhost:3001/api/v1.0.0/reject/",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"api",
+								"v1.0.0",
+								"reject",
+								""
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		}
 	]
 }

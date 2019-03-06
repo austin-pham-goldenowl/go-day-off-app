@@ -4,12 +4,15 @@ const Router = express.Router();
 /**
  * Helpers
  */
-const { handleSuccess, handleFailure } = require("../helpers/handleResponse");
+const {
+  handleSuccess,
+  handleFailure
+} = require("../../helpers/handleResponse");
 
 /**
  * Models
  */
-const { absenceTypes: absenceTypeModel } = require("../models");
+const { absenceTypes: absenceTypeModel } = require("../../models");
 
 Router.get("/", async (req, res) => {
   try {

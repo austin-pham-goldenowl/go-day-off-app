@@ -5,30 +5,42 @@ const uid = require("rand-token").uid;
 /**
  * Models
  */
-const { userRefToken: refTokenModel, users: userModel } = require("../models");
+const {
+  userRefToken: refTokenModel,
+  users: userModel
+} = require("../../models");
 
 /**
  * Configs
  */
-const { USER_ID_LEN } = require("../configs/config");
+const { USER_ID_LEN } = require("../../configs/config");
 
 /**
  * Helpers
  */
-const { handleSuccess, handleFailure } = require("../helpers/handleResponse");
-const { genRefToken, verifyAccToken } = require("../helpers/jwt");
+const {
+  handleSuccess,
+  handleFailure
+} = require("../../helpers/handleResponse");
+const { genRefToken, verifyAccToken } = require("../../helpers/jwt");
+const { standardizeObj } = require("../../helpers/standardize");
 
 /**
  * ADD NEW User
  */
 Router.post("/account", verifyAccToken, async (req, res) => {
   try {
-    if (Object.keys(req.body).length < 1) throw { msg: "INVALID_VALUES" };
+    const entity = standardizeObj(req.body);
+    if (Object.keys(entity).length < 1) throw { msg: "INVALID_VALUES" };
+    entity.fId = uid(USER_ID_LEN);
+    // add foreign keys
+    const { fPosition, fTeamId, fTypeId } = entity;
+    if (fPosition) entity.positions_fId = fPosition;
+    if (fTeamId) entity.teams_fId = fTeamId;
+    if (fTypeId) entity.userPermission_fId = fTypeId;
 
-    const user = { ...req.body, id: uid(USER_ID_LEN) };
-    await userModel.add(user);
-
-    delete user.rawPwd;
+    const user = await userModel.add(entity);
+    delete user.fRawPdw;
     handleSuccess(res, { code: 201, user });
   } catch (err) {
     handleFailure(res, { err, route: req.originalUrl });
@@ -49,17 +61,21 @@ Router.post("/login", async (req, res) => {
     });
     if (!user) throw { msg: "INVALID_USERNAME_PASSWORD" };
 
-    const userEntity = user.get({ plain: true });
+    const entity = user.get({ plain: true });
     const fRefToken = genRefToken();
-    await refTokenModel.refresh({ fUserId: userEntity.fId, fRefToken });
+    await refTokenModel.refresh({
+      fUserId: entity.fId,
+      fRefToken,
+      users_fId: entity.fId // foreign key
+    });
     const accToken = await refTokenModel.genAccToken(fRefToken);
 
     handleSuccess(res, {
       access_token: accToken,
       refresh_token: fRefToken,
-      fname: userEntity.firstName,
-      lname: userEntity.lastName,
-      typeId: userEntity.typeId
+      fname: entity.firstName,
+      lname: entity.lastName,
+      typeId: entity.typeId
     });
   } catch (err) {
     handleFailure(res, { err, route: req.originalUrl });

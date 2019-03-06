@@ -4,13 +4,16 @@ const Router = express.Router();
 /**
  * Models
  */
-const { users: userModel } = require("../models");
+const { users: userModel } = require("../../models");
 
 /**
  * Helpers
  */
-const { handleSuccess, handleFailure } = require("../helpers/handleResponse");
-const { standardizeObj } = require("../helpers/standardize");
+const {
+  handleSuccess,
+  handleFailure
+} = require("../../helpers/handleResponse");
+const { standardizeObj } = require("../../helpers/standardize");
 
 // Get user profile
 Router.get("/profile", async (req, res) => {
@@ -58,12 +61,18 @@ Router.get("/id", (req, res) => {
 // Update user profile
 Router.patch("/profile", async (req, res) => {
   try {
-    const userEntity = req.body.info;
+    const userEntity = req.body.info && standardizeObj(req.body.info);
     const userId = req.body.id;
     if (!userEntity || Object.keys(userEntity).length < 1 || !userId)
       throw { msg: "INVALID_VALUES" };
 
-    const affected = await userModel.modify(standardizeObj(userEntity), {
+    // update foreign keys
+    const { fTeamId, fPositionId, fTypeId } = userEntity;
+    if (fTeamId) userEntity.teams_fId = fTeamId;
+    if (fPositionId) userEntity.positions_fId = fPositionId;
+    if (fTypeId) userEntity.userPermission_fId = fTypeId;
+
+    const affected = await userModel.modify(userEntity, {
       where: { fId: userId }
     });
     if (affected[0] < 1) throw { msg: "USER_NOT_FOUND" };

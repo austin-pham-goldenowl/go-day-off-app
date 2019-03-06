@@ -50,23 +50,26 @@ const { verifyAccToken } = require("./helpers/jwt");
 /**
  * Controllers
  */
-const authCtrl = require("./controllers/auth");
-server.use("/api/auth", authCtrl);
+const authCtrl = require("./controllers/v1.0.0/auth");
+server.use("/api/v1.0.0/auth", authCtrl);
 // ---
-const userCtrl = require("./controllers/user");
-server.use("/api/user", verifyAccToken, userCtrl);
+const userCtrl = require("./controllers/v1.0.0/user");
+server.use("/api/v1.0.0/user", verifyAccToken, userCtrl);
 // ---
-const leaveLetterCtrl = require("./controllers/leaveLetter");
-server.use("/api/leaveLetter", verifyAccToken, leaveLetterCtrl);
+const leaveLetterCtrl = require("./controllers/v1.0.0/leaveLetter");
+server.use("/api/v1.0.0/leaveLetter", verifyAccToken, leaveLetterCtrl);
 // ---
-const absenceCtrl = require("./controllers/absence");
-server.use("/api/absenceType", verifyAccToken, absenceCtrl);
+const absenceCtrl = require("./controllers/v1.0.0/absence");
+server.use("/api/v1.0.0/absenceType", verifyAccToken, absenceCtrl);
 // --
-const teamCtrl = require("./controllers/team");
-server.use("/api/team", verifyAccToken, teamCtrl);
+const teamCtrl = require("./controllers/v1.0.0/team");
+server.use("/api/v1.0.0/team", verifyAccToken, teamCtrl);
 // --
-const positionCtrl = require("./controllers/position");
-server.use("/api/position", verifyAccToken, positionCtrl);
+const positionCtrl = require("./controllers/v1.0.0/position");
+server.use("/api/v1.0.0/position", verifyAccToken, positionCtrl);
+// --
+const rejectCtrl = require("./controllers/v1.0.0/reject");
+server.use("/api/v1.0.0/reject", verifyAccToken, rejectCtrl);
 
 /**
  * Start Express server

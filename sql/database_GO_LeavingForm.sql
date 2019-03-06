@@ -81,6 +81,7 @@ CREATE TABLE IF NOT EXISTS `leavingForm`.`users` (
   `fTeamId` VARCHAR(5) NULL,
   `fTypeId` VARCHAR(5) NOT NULL,
   `fEmail` VARCHAR(45) NOT NULL,
+  `fGender` INT NOT NULL,
   `fPassword` VARCHAR(64) NOT NULL,
   `fUsername` VARCHAR(45) NOT NULL,
   `positions_fId` VARCHAR(5) NULL DEFAULT NULL,

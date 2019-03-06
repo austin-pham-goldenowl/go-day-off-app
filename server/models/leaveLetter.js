@@ -56,11 +56,19 @@ export default (sequelize, DataTypes) => {
       classMethods: {
         associate: models => {
           LeaveLetter.belongsTo(models.absenceTypes, {
-            foreignKey: "absenceTypes_fId"
+            foreignKey: {
+              name: "absenceTypes_fId",
+              allowNull: false
+            }
           });
-          LeaveLetter.belongsTo(models.users, { foreignKey: "users_fId" });
           LeaveLetter.belongsTo(models.users, {
-            foreignKey: "users_fId1"
+            foreignKey: { name: "users_fId", allowNull: false }
+          });
+          LeaveLetter.belongsTo(models.users, {
+            foreignKey: {
+              name: "users_fId1",
+              allowNull: false
+            }
           });
         }
       }
@@ -115,10 +123,8 @@ export default (sequelize, DataTypes) => {
       try {
         params.fRdt = moment().format(DATETIME_FORMAT_TYPE1);
         const leaveLetter = await LeaveLetter.create(params);
-        const result = {
-          leaveLetter: leaveLetter.get({ plain: true })
-        };
-        resolve(result);
+
+        resolve({ leaveLetter: leaveLetter.get({ plain: true }) });
       } catch (err) {
         err.code = 500;
         err.msg = "DB_QUERY_ERROR";

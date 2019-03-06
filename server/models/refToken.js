@@ -28,7 +28,12 @@ export default (sequelize, DataTypes) => {
       tableName: "userRefToken",
       classMethods: {
         associate: models => {
-          RefToken.belongsTo(models.User, { foreignKey: "users_fId" });
+          RefToken.belongsTo(models.User, {
+            foreignKey: {
+              name: "users_fId",
+              allowNull: false
+            }
+          });
         }
       }
     });
