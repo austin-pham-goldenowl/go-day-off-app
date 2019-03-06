@@ -40,6 +40,8 @@ export default (sequelize, DataTypes) => {
           });
         resolve(teams);
       } catch (err) {
+        err.code = 500;
+        err.msg = "DB_QUERY_ERROR";
         reject(err);
       }
     });

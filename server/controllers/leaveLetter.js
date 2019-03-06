@@ -24,7 +24,7 @@ const { standardizeObj } = require("../helpers/standardize");
 Router.get("/details", async (req, res) => {
   try {
     const fId = req.query.id;
-    if (!fId) throw { msg: "LETTER_NOT_FOUND" };
+    if (!fId) throw { msg: "INVALID_VALUES" };
 
     const attributes = [
       "fAbsenceType",
@@ -44,32 +44,16 @@ Router.get("/details", async (req, res) => {
 
     handleSuccess(res, { leaveLetter: leaveLetters[0] });
   } catch (err) {
-    console.log("Controller > leaveLetter > getDetails > err: ", err);
-    const { code, msg } = err;
-    handleFailure(res, { code, msg });
+    handleFailure(res, { err, route: req.originalUrl });
   }
 });
 
-Router.get("/all", async (req, res) => {
+Router.get("/", async (req, res) => {
   try {
-    const attributes = [
-      "fAbsenceType",
-      "fFromDt",
-      "fId",
-      "fRdt",
-      "fStatus",
-      "fSubstituteId",
-      "fToDT",
-      "fUserId"
-    ];
-    const leaveLetters = await leaveLetterModel.loadAll(attributes, {});
-    if (!leaveLetters || leaveLetters.length < 1) throw { msg: "NO_LETTER" };
-
+    const leaveLetters = await leaveLetterModel.loadAll();
     handleSuccess(res, { leaveLetters });
   } catch (err) {
-    console.log("Controller > leaveLetter > getAll > err: ", err);
-    const { code, msg } = err;
-    handleFailure(res, { code, msg });
+    handleFailure(res, { err, route: req.originalUrl });
   }
 });
 
@@ -82,9 +66,7 @@ Router.post("/", async (req, res) => {
 
     handleSuccess(res, { code: 201, leaveLetter: leaveLetterEntity });
   } catch (err) {
-    console.log("Controller > leaveLetter > post > err: ", err);
-    const { code, msg } = err;
-    handleFailure(res, { code, msg });
+    handleFailure(res, { err, route: req.originalUrl });
   }
 });
 
@@ -101,9 +83,7 @@ Router.patch("/details", async (req, res) => {
 
     handleSuccess(res, { leaveLetter: leaveLetterEntity });
   } catch (err) {
-    console.log("Controller > leaveLetter > updateDetails > err: ", err);
-    const { code, msg } = err;
-    handleFailure(res, { code, msg });
+    handleFailure(res, { err, route: req.originalUrl });
   }
 });
 

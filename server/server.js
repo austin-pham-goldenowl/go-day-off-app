@@ -72,9 +72,5 @@ server.use("/api/position", verifyAccToken, positionCtrl);
  * Start Express server
  */
 server.listen(server.get("port"), () => {
-  console.log(
-    `[GO-LeavingForm] Express server is running at http://localhost:${server.get(
-      "port"
-    )}`
-  );
+  console.log(`[GO-LeavingForm] Express server is running at http://localhost:${server.get("port")}`);
 });

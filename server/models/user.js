@@ -141,6 +141,8 @@ export default (sequelize, DataTypes) => {
         });
         resolve(user);
       } catch (err) {
+        err.code = 500;
+        err.msg = "DB_QUERY_ERROR";
         reject(err);
       }
     });

@@ -27,6 +27,8 @@ export default (sequelize, DataTypes) => {
           });
         resolve(absenceTypes);
       } catch (err) {
+        err.code = 500;
+        err.msg = "DB_QUERY_ERROR";
         reject(err);
       }
     });

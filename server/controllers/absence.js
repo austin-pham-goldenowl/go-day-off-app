@@ -16,9 +16,10 @@ Router.get("/", async (req, res) => {
     const absenceTypes = await absenceTypeModel.loadAll();
     handleSuccess(res, { absenceTypes });
   } catch (err) {
-    console.log("Controller > absence > getAll > err: ", err);
-    const { code, msg } = err;
-    handleFailure(res, { code, msg });
+    handleFailure(res, {
+      err,
+      route: req.originalUrl
+    });
   }
 });
 
@@ -30,9 +31,10 @@ Router.get("/details", async (req, res) => {
     if (!absence || absence.length !== 1) throw { msg: "TYPE_NOT_FOUND" };
     handleSuccess(res, { absence: absence[0] });
   } catch (err) {
-    console.log("Controller > absence > getDetails > err: ", err);
-    const { code, msg } = err;
-    handleFailure(res, { code, msg });
+    handleFailure(res, {
+      err,
+      route: req.originalUrl
+    });
   }
 });
 

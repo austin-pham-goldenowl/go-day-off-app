@@ -16,9 +16,7 @@ Router.get("/", async (req, res) => {
     const positions = await positionModel.loadAll();
     handleSuccess(res, { positions });
   } catch (err) {
-    console.log("Controller > position > getAll > err: ", err);
-    const { code, msg } = err;
-    handleFailure(res, { code, msg });
+    handleFailure(res, { err, route: req.originalUrl });
   }
 });
 
@@ -30,9 +28,7 @@ Router.get("/details", async (req, res) => {
     if (!position || position.length !== 1) throw { msg: "POSITION_NOT_FOUND" };
     handleSuccess(res, { position: position[0] });
   } catch (err) {
-    console.log("Controller > position > getDetails > err: ", err);
-    const { code, msg } = err;
-    handleFailure(res, { code, msg });
+    handleFailure(res, { err, route: req.originalUrl });
   }
 });
 

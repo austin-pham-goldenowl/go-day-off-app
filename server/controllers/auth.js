@@ -16,12 +16,12 @@ const { USER_ID_LEN } = require("../configs/config");
  * Helpers
  */
 const { handleSuccess, handleFailure } = require("../helpers/handleResponse");
-const { genRefToken } = require("../helpers/jwt");
+const { genRefToken, verifyAccToken } = require("../helpers/jwt");
 
 /**
  * ADD NEW User
  */
-Router.post("/account", async (req, res) => {
+Router.post("/account", verifyAccToken, async (req, res) => {
   try {
     if (Object.keys(req.body).length < 1) throw { msg: "INVALID_VALUES" };
 
@@ -31,9 +31,7 @@ Router.post("/account", async (req, res) => {
     delete user.rawPwd;
     handleSuccess(res, { code: 201, user });
   } catch (err) {
-    console.log("Controller > auth > addUser > err: ", err);
-    const { code, msg } = err;
-    handleFailure(res, { code, msg });
+    handleFailure(res, { err, route: req.originalUrl });
   }
 });
 
@@ -64,9 +62,7 @@ Router.post("/login", async (req, res) => {
       typeId: userEntity.typeId
     });
   } catch (err) {
-    console.log("Controller > auth > login > err: ", err);
-    const { code, msg } = err;
-    handleFailure(res, { code, msg });
+    handleFailure(res, { err, route: req.originalUrl });
   }
 });
 
@@ -83,9 +79,7 @@ Router.get("/token", async (req, res) => {
     const accToken = await refTokenModel.genAccToken(fRefToken);
     handleSuccess(res, { access_token: accToken });
   } catch (err) {
-    console.log("Controller > auth > getToken > err: ", err);
-    const { code, msg } = err;
-    handleFailure(res, { code, msg });
+    handleFailure(res, { err, route: req.originalUrl });
   }
 });
 

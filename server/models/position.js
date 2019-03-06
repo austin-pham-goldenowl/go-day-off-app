@@ -28,6 +28,8 @@ export default (sequelize, DataTypes) => {
           });
         resolve(positions);
       } catch (err) {
+        err.code = 500;
+        err.msg = "DB_QUERY_ERROR";
         reject(err);
       }
     });

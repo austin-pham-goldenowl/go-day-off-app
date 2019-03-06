@@ -80,11 +80,16 @@ export default (sequelize, DataTypes) => {
   LeaveLetter.loadAll = (attributes = [], queryWhere = {}) =>
     new Promise(async (resolve, reject) => {
       try {
-        console.log(queryWhere);
-        const leaveLetters = await LeaveLetter.findAll({
-          attributes,
-          ...queryWhere
-        });
+        let leaveLetters = null;
+        if (attributes.length < 1)
+          leaveLetters = await LeaveLetter.findAll({
+            ...queryWhere
+          });
+        else
+          leaveLetters = await LeaveLetter.findAll({
+            attributes,
+            ...queryWhere
+          });
         resolve(leaveLetters);
       } catch (err) {
         err.code = 500;

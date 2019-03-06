@@ -35,9 +35,7 @@ Router.get("/profile", async (req, res) => {
     if (!user || (user && user.length !== 1)) throw { msg: "USER_NOT_FOUND" };
     handleSuccess(res, { user: user[0] });
   } catch (err) {
-    console.log("Controller > user > getProfile > err:", err);
-    const { code, msg } = err;
-    handleFailure(res, { code, msg });
+    handleFailure(res, { err, route: req.originalUrl });
   }
 });
 
@@ -51,7 +49,10 @@ Router.get("/id", (req, res) => {
     handleSuccess(res, {
       fUserId
     });
-  else handleFailure(res, { msg: "USER_NOT_FOUND" });
+  else {
+    const err = { msg: "USER_NOT_FOUND" };
+    handleFailure(res, { err, route: req.originalUrl });
+  }
 });
 
 // Update user profile
@@ -69,9 +70,7 @@ Router.patch("/profile", async (req, res) => {
 
     handleSuccess(res, { user: userEntity });
   } catch (err) {
-    console.log("Controller > user > updateProfile > err: ", err);
-    const { code, msg } = err;
-    handleFailure(res, { code, msg });
+    handleFailure(res, { err, route: req.originalUrl });
   }
 });
 

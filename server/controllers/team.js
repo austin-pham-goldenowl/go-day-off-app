@@ -16,9 +16,7 @@ Router.get("/", async (req, res) => {
     const teams = await teamModel.loadAll();
     handleSuccess(res, { teams });
   } catch (err) {
-    console.log("Controller > team > getAll > err: ", err);
-    const { code, msg } = err;
-    handleFailure(res, { code, msg });
+    handleFailure(res, { err, route: req.originalUrl });
   }
 });
 
@@ -30,9 +28,7 @@ Router.get("/details", async (req, res) => {
     if (!team || team.length !== 1) throw { msg: "TEAM_NOT_FOUND" };
     handleSuccess(res, { team: team[0] });
   } catch (err) {
-    console.log("Controller > team > getDetails > err: ", err);
-    const { code, msg } = err;
-    handleFailure(res, { code, msg });
+    handleFailure(res, { err, route: req.originalUrl });
   }
 });
 
