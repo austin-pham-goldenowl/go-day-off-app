@@ -61,10 +61,16 @@ server.use("/api/leaveLetter", verifyAccToken, leaveLetterCtrl);
 // ---
 const absenceCtrl = require("./controllers/absence");
 server.use("/api/absenceType", verifyAccToken, absenceCtrl);
+const teamCtrl = require("./controllers/team");
+server.use("/api/team", verifyAccToken, teamCtrl);
 
 /**
  * Start Express server
  */
 server.listen(server.get("port"), () => {
-  console.log(`[GO-LeavingForm] Express server is running at http://localhost:${server.get("port")}`);
+  console.log(
+    `[GO-LeavingForm] Express server is running at http://localhost:${server.get(
+      "port"
+    )}`
+  );
 });
