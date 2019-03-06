@@ -59,18 +59,25 @@ header {
   width: 100%;
   padding: 1.75em 0;
   border-bottom: 1px solid var(--border-color);
-  background: var(--neutral-color);
+  /* background: var(--neutral-color); */
+  background-color: #f1c441;
 }
 
 header #logo {
   font-size: 175%;
   text-align: center;
-  color: var(--main-color);
+  font-weight: 400;
+  /* color: var(--main-color); */
+  color: white;
   line-height: 1;
 }
 
 header #logo .icon {
   padding-right: .25em;
+}
+
+header #logo b {
+  color: black;
 }
 
 main {
