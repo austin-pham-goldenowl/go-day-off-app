@@ -28,7 +28,7 @@ Router.get("/details", async (req, res) => {
     if (!fId) throw { msg: "INVALID_QUERY" };
     const absence = await absenceTypeModel.loadAll([], { where: { fId } });
     if (!absence || absence.length !== 1) throw { msg: "TYPE_NOT_FOUND" };
-    handleSuccess(res, { absence });
+    handleSuccess(res, { absence: absence[0] });
   } catch (err) {
     console.log("Controller > absence > getDetails > err: ", err);
     const { code, msg } = err;
