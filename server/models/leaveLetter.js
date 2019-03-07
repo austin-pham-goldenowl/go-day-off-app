@@ -45,9 +45,12 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.INTEGER
       },
       fStatus: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.ENUM(1, 2, 3),
         allowNull: false
-      }
+      },
+      absenceTypes_fId: { type: DataTypes.STRING(5) },
+      users_fId: { type: DataTypes.STRING(10) },
+      users_fId1: { type: DataTypes.STRING(10) }
     },
     {
       timestamps: false,
@@ -56,19 +59,13 @@ export default (sequelize, DataTypes) => {
       classMethods: {
         associate: models => {
           LeaveLetter.belongsTo(models.absenceTypes, {
-            foreignKey: {
-              name: "absenceTypes_fId",
-              allowNull: false
-            }
+            foreignKey: "absenceTypes_fId"
           });
           LeaveLetter.belongsTo(models.users, {
-            foreignKey: { name: "users_fId", allowNull: false }
+            foreignKey: "users_fId"
           });
           LeaveLetter.belongsTo(models.users, {
-            foreignKey: {
-              name: "users_fId1",
-              allowNull: false
-            }
+            foreignKey: "users_fId1"
           });
         }
       }
@@ -106,23 +103,11 @@ export default (sequelize, DataTypes) => {
       }
     });
 
-  LeaveLetter.delete = (queryWhere = {}) =>
+  LeaveLetter.add = (attributes = {}) =>
     new Promise(async (resolve, reject) => {
       try {
-        const result = await LeaveLetter.destroy(queryWhere);
-        resolve(result);
-      } catch (err) {
-        err.code = 500;
-        err.msg = "DB_QUERY_ERROR";
-        reject(err);
-      }
-    });
-
-  LeaveLetter.add = (params = {}) =>
-    new Promise(async (resolve, reject) => {
-      try {
-        params.fRdt = moment().format(DATETIME_FORMAT_TYPE1);
-        const leaveLetter = await LeaveLetter.create(params);
+        attributes.fRdt = moment().format(DATETIME_FORMAT_TYPE1);
+        const leaveLetter = await LeaveLetter.create(attributes);
 
         resolve({ leaveLetter: leaveLetter.get({ plain: true }) });
       } catch (err) {

@@ -20,6 +20,9 @@ export default (sequelize, DataTypes) => {
       fRdt: {
         type: DataTypes.DATE,
         allowNull: false
+      },
+      users_fId: {
+        type: DataTypes.STRING(10)
       }
     },
     {
@@ -29,10 +32,7 @@ export default (sequelize, DataTypes) => {
       classMethods: {
         associate: models => {
           RefToken.belongsTo(models.User, {
-            foreignKey: {
-              name: "users_fId",
-              allowNull: false
-            }
+            foreignKey: "users_fId"
           });
         }
       }

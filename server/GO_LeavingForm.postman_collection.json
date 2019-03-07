@@ -44,13 +44,13 @@
 							},
 							{
 								"key": "x-access-token",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxODQwNzQwLCJleHAiOjE1NTE5MDA3NDB9.E6A9njzlqNWOm6SdHca6Tl_jhTkTyvkkj3r7VPdFFoo",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6Im9mWnpQc3BQVmIifSwiaWF0IjoxNTUxOTI1NDk2LCJleHAiOjE1NTE5ODU0OTZ9.L2bdSNjnHLDmWZD_qyV0RBeK__7luXnI1Ohu_V_X5QA",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"firstName\": \"Quoc Cuong\",\n    \"lastName\": \"Nguyen\",\n    \"bday\": \"1999-10-20 12:12:12\",\n    \"position\": \"B4QIq\",\n    \"posId\": \"hGKx5\",\n    \"address\": \"40E Ngo Duc Ke street, Ben Nghe ward, Dist. 1, HCMC\",\n    \"phone\": \"0123456789\",\n    \"teamId\": \"1LwZq\",\n    \"typeId\": \"3sVfP\",\n    \"email\": \"abc@go.com\",\n    \"rawPwd\": \"sayohyeah\",\n    \"username\": \"abc2\"\n}"
+							"raw": "{\n    \"firstName\": \"Hoang Duy\",\n    \"lastName\": \"Truong\",\n    \"bday\": \"1999-10-20 12:12:12\",\n    \"position\": \"B4QIq\",\n    \"posId\": \"hGKx5\",\n    \"address\": \"40E Ngo Duc Ke street, Ben Nghe ward, Dist. 1, HCMC\",\n    \"phone\": \"0123456789\",\n    \"teamId\": \"1LwZq\",\n    \"typeId\": \"3sVfP\",\n    \"email\": \"abc@go.com\",\n    \"gender\": 2,\n    \"rawPwd\": \"sayohyeah\",\n    \"username\": \"abc2\"\n}"
 						},
 						"url": {
 							"raw": "localhost:3001/api/v1.0.0/auth/account",
@@ -357,7 +357,7 @@
 						"header": [
 							{
 								"key": "x-access-token",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxODQwNzQwLCJleHAiOjE1NTE5MDA3NDB9.E6A9njzlqNWOm6SdHca6Tl_jhTkTyvkkj3r7VPdFFoo",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6Im9mWnpQc3BQVmIifSwiaWF0IjoxNTUxOTI1NDk2LCJleHAiOjE1NTE5ODU0OTZ9.L2bdSNjnHLDmWZD_qyV0RBeK__7luXnI1Ohu_V_X5QA",
 								"type": "text"
 							},
 							{
@@ -368,7 +368,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"absenceType\": \"2\",\n\t\"fromDT\": \"2019-02-19T16:29:56.000Z\",\n\t\"status\": \"2\",\n\t\"substituteId\": \"i53FItHeMK\",\n\t\"toDT\": \"2019-02-17T16:29:56.000Z\",\n\t\"userId\": \"ofZzPspPVb\"\n}"
+							"raw": "{\n\t\"absenceType\": \"2\",\n\t\"fromDT\": \"2019-02-19T16:29:56.000Z\",\n\t\"status\": 2,\n\t\"substituteId\": \"i53FItHeMK\",\n\t\"toDT\": \"2019-02-17T16:29:56.000Z\",\n\t\"userId\": \"ofZzPspPVb\"\n}"
 						},
 						"url": {
 							"raw": "localhost:3001/api/v1.0.0/leaveletter/",
@@ -633,7 +633,7 @@
 						"header": [
 							{
 								"key": "x-access-token",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6IjNEc0RraWdrdTIifSwiaWF0IjoxNTUxODQwNzQwLCJleHAiOjE1NTE5MDA3NDB9.E6A9njzlqNWOm6SdHca6Tl_jhTkTyvkkj3r7VPdFFoo",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6Im9mWnpQc3BQVmIifSwiaWF0IjoxNTUxOTI1NDk2LCJleHAiOjE1NTE5ODU0OTZ9.L2bdSNjnHLDmWZD_qyV0RBeK__7luXnI1Ohu_V_X5QA",
 								"type": "text"
 							},
 							{

@@ -14,14 +14,30 @@ const {
   handleFailure
 } = require("../../helpers/handleResponse");
 const { standardizeObj } = require("../../helpers/standardize");
+const {
+  getIdFromToken,
+  getPermissionByUserId
+} = require("../../helpers/getUserInfo");
 
 // Get user profile
 Router.get("/profile", async (req, res) => {
   try {
-    const fId =
-      req.token_payload &&
-      req.token_payload.userId &&
-      req.token_payload.userId.fUserId;
+    const ownUserId = getIdFromToken(req.token_payload);
+    if (!ownUserId) throw { msg: "USER_NOT_FOUND" };
+    const demandUserId = req.params.id;
+    if (!demandUserId) throw { msg: "USER_NOT_FOUND" };
+
+    // Admin and HR can view profile of everyone
+    // Others can view oneself's
+    const fUserType = await getPermissionByUserId(userId);
+    if (
+      !fUserType ||
+      (fUserType !== "Administration" &&
+        fUserType !== "HR" &&
+        ownUserId !== demandUserId)
+    )
+      throw { code: 401, msg: "NO_PERMISSION" };
+
     const attributes = [
       "fAddress",
       "fBday",
@@ -32,7 +48,8 @@ Router.get("/profile", async (req, res) => {
       "fPosition",
       "fTeamId",
       "fTypeId",
-      "fUsername"
+      "fUsername",
+      "fGender"
     ];
     const user = await userModel.loadAll(attributes, { where: { fId } });
     if (!user || (user && user.length !== 1)) throw { msg: "USER_NOT_FOUND" };
@@ -44,13 +61,10 @@ Router.get("/profile", async (req, res) => {
 
 // Get user id
 Router.get("/id", (req, res) => {
-  const fUserId =
-    req.token_payload &&
-    req.token_payload.userId &&
-    req.token_payload.userId.fUserId;
-  if (fUserId)
+  const userId = getIdFromToken(req.token_payload);
+  if (userId)
     handleSuccess(res, {
-      fUserId
+      userId
     });
   else {
     const err = { msg: "USER_NOT_FOUND" };
@@ -61,23 +75,47 @@ Router.get("/id", (req, res) => {
 // Update user profile
 Router.patch("/profile", async (req, res) => {
   try {
-    const userEntity = req.body.info && standardizeObj(req.body.info);
-    const userId = req.body.id;
-    if (!userEntity || Object.keys(userEntity).length < 1 || !userId)
+    const userId = getIdFromToken(req.token_payload);
+    if (!userId) throw { msg: "USER_NOT_FOUND" };
+
+    const keys = Object.keys(req.body);
+    if (
+      keys.length < 2 ||
+      !keys.includes("info") ||
+      (keys.includes("info") && Object.keys(req.body.info) < 1)
+    )
+      throw { msg: "INVALID_VALUES" };
+    const entity = req.body.info && standardizeObj(req.body.info);
+
+    // validate whether userPermission is permitted
+    // only Admin can edit profile
+    const fUserType = await getPermissionByUserId(userId);
+    if (fUserType !== "Administration")
+      throw { cod: 401, msg: "NO_PERMISSION" };
+
+    // validate gender value
+    const { fGender, fBDay } = entity;
+    if (
+      (fGender || 3) &&
+      !userModel.rawAttributes.fGender.values.includes(fGender)
+    )
       throw { msg: "INVALID_VALUES" };
 
-    // update foreign keys
-    const { fTeamId, fPositionId, fTypeId } = userEntity;
-    if (fTeamId) userEntity.teams_fId = fTeamId;
-    if (fPositionId) userEntity.positions_fId = fPositionId;
-    if (fTypeId) userEntity.userPermission_fId = fTypeId;
+    // validate birthday value
+    if (fBDay && new Date(fBDay) >= new Date()) throw { msg: "INVALID_VALUES" };
 
-    const affected = await userModel.modify(userEntity, {
+    // update foreign keys
+    const { fTeamId, fPositionId, fTypeId } = entity;
+    if (fTeamId) entity.teams_fId = fTeamId;
+    if (fPositionId) entity.positions_fId = fPositionId;
+    if (fTypeId) entity.userPermission_fId = fTypeId;
+
+    const affected = await userModel.modify(entity, {
       where: { fId: userId }
     });
-    if (affected[0] < 1) throw { msg: "USER_NOT_FOUND" };
+    if (affected[0] !== 1) throw { msg: "USER_NOT_FOUND" };
 
-    handleSuccess(res, { user: userEntity });
+    handleSuccess(res, { user: entity });
   } catch (err) {
     handleFailure(res, { err, route: req.originalUrl });
   }

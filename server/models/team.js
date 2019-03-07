@@ -12,6 +12,9 @@ export default (sequelize, DataTypes) => {
       fTeamLead: {
         type: DataTypes.STRING(10),
         allowNull: false
+      },
+      users_fId: {
+        type: DataTypes.STRING(10)
       }
     },
     {

@@ -12,14 +12,19 @@ export default (sequelize, DataTypes) => {
     },
     { timestamps: false, freezeTableName: true, tableName: "userPermission" });
 
-  Permission.loadAll = (params = [], queryWhere = {}) =>
+  Permission.loadAll = (attributes = [], queryWhere = {}) =>
     new Promise(async (resolve, reject) => {
       try {
-        const query = {
-          attributes: params,
-          where: queryWhere
-        };
-        const permissions = await Permission.findAll(query);
+        let permissions = null;
+        if (attributes.length < 1)
+          permissions = await Permission.findAll({
+            ...queryWhere
+          });
+        else
+          permissions = await Permission.findAll({
+            attributes,
+            ...queryWhere
+          });
         resolve(permissions);
       } catch (err) {
         reject(err);

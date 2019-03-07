@@ -1,7 +1,11 @@
+/**
+ * Enable ES6 syntax
+ */
 require("@babel/register")({
   presets: ["@babel/preset-env"]
 });
 require("@babel/polyfill");
+
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const dotenv = require("dotenv");

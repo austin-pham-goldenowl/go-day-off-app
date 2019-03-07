@@ -42,23 +42,25 @@ Router.get("/", async (req, res) => {
 
 Router.post("/", async (req, res) => {
   try {
-    const rejectEntity = req.body;
-    if (Object.keys(rejectEntity) < 1) throw { msg: "INVALID_VALUES" };
+    const entity = standardizeObj(req.body);
+    if (Object.keys(entity) < 1) throw { msg: "INVALID_VALUES" };
 
-    // check if leave letter corresponding with rejection exists
-    const letters = await leaveLetterModel.loadAll([], {
-      where: { fId: rejectEntity.letterId }
-    });
-    if (!letters || letters.length !== 1) throw { msg: "LETTER_NOT_FOUND" };
+    // validate rejectType value
+    if (
+      (entity.fRejectType || 1) &&
+      !rejectModel.rawAttributes.fRejectType.values.includes(entity.fRejectType)
+    )
+      throw { msg: "INVALID_VALUES" };
 
+    entity.leaveLetters_fId = entity.fLetterId;
     await rejectModel.add({
-      ...standardizeObj(rejectEntity),
-      leaveLetters_fId: rejectEntity.letterId
+      ...entity
     });
+
     // update leave letter status
-    await leaveLetterModel.modify({ fStatus: 2 },
-      { where: { fId: rejectEntity.letterId } });
-    handleSuccess(res, { rejection: rejectEntity });
+    await leaveLetterModel.modify({ fStatus: 3 },
+      { where: { fId: entity.fLetterId } });
+    handleSuccess(res, { rejection: entity });
   } catch (err) {
     handleFailure(res, { err, route: req.originalUrl });
   }

@@ -24,14 +24,38 @@ const {
 } = require("../../helpers/handleResponse");
 const { genRefToken, verifyAccToken } = require("../../helpers/jwt");
 const { standardizeObj } = require("../../helpers/standardize");
+const {
+  getIdFromToken,
+  getPermissionByUserId
+} = require("../../helpers/getUserInfo");
 
 /**
  * ADD NEW User
  */
 Router.post("/account", verifyAccToken, async (req, res) => {
   try {
+    const userId = getIdFromToken(req.token_payload);
+    if (!userId) throw { msg: "USER_NOT_FOUND" };
+
+    const fUserType = await getPermissionByUserId(userId);
+    console.log("TCL: fUserType", fUserType);
+    if (fUserType !== "Administration")
+      throw { code: 401, msg: "NO_PERMISSION" };
+
+    if (Object.keys(req.body).length < 1) throw { msg: "INVALID_VALUES" };
     const entity = standardizeObj(req.body);
-    if (Object.keys(entity).length < 1) throw { msg: "INVALID_VALUES" };
+
+    // validate gender value
+    const { fGender, fBDay } = entity;
+    if (
+      (fGender || 3) &&
+      !userModel.rawAttributes.fGender.values.includes(fGender)
+    )
+      throw { msg: "INVALID_VALUES" };
+
+    // validate birthday value
+    if (fBDay && new Date(fBDay) >= new Date()) throw { msg: "INVALID_VALUES" };
+
     entity.fId = uid(USER_ID_LEN);
     // add foreign keys
     const { fPosition, fTeamId, fTypeId } = entity;
@@ -40,7 +64,6 @@ Router.post("/account", verifyAccToken, async (req, res) => {
     if (fTypeId) entity.userPermission_fId = fTypeId;
 
     const user = await userModel.add(entity);
-    delete user.fRawPdw;
     handleSuccess(res, { code: 201, user });
   } catch (err) {
     handleFailure(res, { err, route: req.originalUrl });
@@ -56,7 +79,7 @@ Router.post("/login", async (req, res) => {
     if (!username || !rawPwd) throw { msg: "MISSING_REQUIRED_FIELDS" };
 
     const user = await userModel.login({
-      fUsername: username,
+      fUsername: username.toLowerCase(),
       rawPwd
     });
     if (!user) throw { msg: "INVALID_USERNAME_PASSWORD" };

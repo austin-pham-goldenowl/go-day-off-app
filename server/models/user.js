@@ -33,7 +33,7 @@ export default (sequelize, DataTypes) => {
       },
       fTeamId: {
         type: DataTypes.STRING(5),
-        allowNull: false
+        allowNull: true
       },
       fTypeId: {
         type: DataTypes.STRING(5),
@@ -50,6 +50,21 @@ export default (sequelize, DataTypes) => {
       fUsername: {
         type: DataTypes.STRING(45),
         allowNull: false
+      },
+      fGender: {
+        type: DataTypes.ENUM,
+        values: [1, 2, 3], // 1: female, 2: male, 3: others
+        allowNull: false,
+        defaultValue: 3
+      },
+      userPermission_fId: {
+        type: DataTypes.STRING(5)
+      },
+      teams_fId: {
+        type: DataTypes.STRING(5)
+      },
+      positions_fId: {
+        type: DataTypes.STRING(5)
       }
     },
     {
@@ -59,22 +74,13 @@ export default (sequelize, DataTypes) => {
       classMethods: {
         associate: models => {
           User.belongsTo(models.userPermission, {
-            foreignKey: {
-              name: "userPermission_fId",
-              allowNull: false
-            }
+            foreignKey: "userPermission_fId"
           });
           User.belongsTo(models.teams, {
-            foreignKey: {
-              name: "teams_fId",
-              allowNull: false
-            }
+            foreignKey: "teams_fId"
           });
           User.belongsTo(models.positions, {
-            foreignKey: {
-              name: "positions_fId",
-              allowNull: false
-            }
+            foreignKey: "positions_fId"
           });
         }
       }
@@ -91,7 +97,8 @@ export default (sequelize, DataTypes) => {
     "fPosition",
     "fTeamId",
     "fTypeId",
-    "fUsername"
+    "fUsername",
+    "fGender"
   ];
   const publicFields = permittedFields.filter(field => field === "fPassword");
 
@@ -101,8 +108,8 @@ export default (sequelize, DataTypes) => {
         const users = await User.findAll({ attributes, ...queryWhere });
         resolve(users);
       } catch (err) {
-        err.code = 500;
-        err.msg = "DB_QUERY_ERROR";
+        if (!err.code) err.code = 500;
+        if (!err.msg) err.msg = "DB_QUERY_ERROR";
         reject(err);
       }
     });
@@ -113,8 +120,8 @@ export default (sequelize, DataTypes) => {
         const affected = await User.update(attributes, queryWhere);
         resolve(affected);
       } catch (err) {
-        err.code = 500;
-        err.msg = "DB_QUERY_ERROR";
+        if (!err.code) err.code = 500;
+        if (!err.msg) err.msg = "DB_QUERY_ERROR";
         reject(err);
       }
     });
@@ -126,12 +133,12 @@ export default (sequelize, DataTypes) => {
           fPassword: sha256(fRawPwd),
           ...others
         };
-
         const user = await User.create(entity);
+        delete user.fPassword;
         resolve(user);
       } catch (err) {
-        err.code = 500;
-        err.msg = "DB_QUERY_ERROR";
+        if (!err.code) err.code = 500;
+        if (!err.msg) err.msg = "DB_QUERY_ERROR";
         reject(err);
       }
     });

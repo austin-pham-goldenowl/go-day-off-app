@@ -10,8 +10,11 @@ export default (sequelize, DataTypes) => {
         allowNull: false
       },
       fRejectType: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.ENUM(1, 2),
         allowNull: false
+      },
+      leaveLetters_fId: {
+        type: DataTypes.STRING(10)
       }
     },
     {
@@ -22,7 +25,7 @@ export default (sequelize, DataTypes) => {
 
   RejectedLetter.associate = models => {
     RejectedLetter.belongsTo(models.leaveLetters, {
-      foreignKey: { name: "leaveLetters_fId", allowNull: false }
+      foreignKey: "leaveLetters_fId"
     });
   };
 
