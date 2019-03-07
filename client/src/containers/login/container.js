@@ -22,7 +22,7 @@ import {
 
 import SnackbarNotifContent from '../../components/SnackbarNotification';
 
-import { userLogin } from '../../apiCalls/loginAPI';
+import { userLogin } from '../../apiCalls/authAPIs';
 
 const styles = theme => ({
     main: {

@@ -199,6 +199,7 @@ class AbsenceLetterWithFormik extends React.Component{
                               {/* From startDate - to endDate*/}
                               <Field 
                                 fullWidth
+                                label="From"
                                 name="startDate" 
                                 component={DatePickerField}
                               />
@@ -206,6 +207,7 @@ class AbsenceLetterWithFormik extends React.Component{
                             <Grid item xs={6}>
                             <Field 
                               fullWidth 
+                              label="To"
                               name="endDate" 
                               component={DatePickerField}
                             />
