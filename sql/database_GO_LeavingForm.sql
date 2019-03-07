@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS `leavingForm`.`positions` (
   `fId` VARCHAR(5) NOT NULL,
   `fPosName` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`fId`),
-  UNIQUE INDEX `fId_UNIQUE` (`fId` ASC) VISIBLE)
+  UNIQUE INDEX `fId_UNIQUE` (`fId` ASC))
 ENGINE = InnoDB;
 
 
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS `leavingForm`.`userPermission` (
   `fId` VARCHAR(5) NOT NULL,
   `fUserType` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`fId`),
-  UNIQUE INDEX `fId_UNIQUE` (`fId` ASC) VISIBLE)
+  UNIQUE INDEX `fId_UNIQUE` (`fId` ASC))
 ENGINE = InnoDB;
 
 
@@ -55,8 +55,8 @@ CREATE TABLE IF NOT EXISTS `leavingForm`.`teams` (
   `fTeamLead` VARCHAR(10) NOT NULL,
   `users_fId` VARCHAR(10) NULL DEFAULT NULL,
   PRIMARY KEY (`fId`),
-  UNIQUE INDEX `fId_UNIQUE` (`fId` ASC) VISIBLE,
-  INDEX `fk_teams_users1_idx` (`users_fId` ASC) VISIBLE,
+  UNIQUE INDEX `fId_UNIQUE` (`fId` ASC),
+  INDEX `fk_teams_users1_idx` (`users_fId` ASC),
   CONSTRAINT `fk_teams_users1`
     FOREIGN KEY (`users_fId`)
     REFERENCES `leavingForm`.`users` (`fId`)
@@ -80,18 +80,18 @@ CREATE TABLE IF NOT EXISTS `leavingForm`.`users` (
   `fPhone` VARCHAR(10) NOT NULL,
   `fTeamId` VARCHAR(5) NULL,
   `fTypeId` VARCHAR(5) NOT NULL,
-  `fEmail` VARCHAR(45) NOT NULL,
-  `fGender` INT NOT NULL,
+  `fEmail` VARCHAR(45) UNIQUE NOT NULL,
+  `fGender` INT NOT NULL DEFAULT 3,
   `fPassword` VARCHAR(64) NOT NULL,
-  `fUsername` VARCHAR(45) NOT NULL,
+  `fUsername` VARCHAR(45) UNIQUE NOT NULL,
   `positions_fId` VARCHAR(5) NULL DEFAULT NULL,
   `userPermission_fId` VARCHAR(5) NULL DEFAULT NULL,
   `teams_fId` VARCHAR(5) NULL DEFAULT NULL,
   PRIMARY KEY (`fId`),
-  UNIQUE INDEX `fId_UNIQUE` (`fId` ASC) VISIBLE,
-  INDEX `fk_users_positions1_idx` (`positions_fId` ASC) VISIBLE,
-  INDEX `fk_users_userPermission1_idx` (`userPermission_fId` ASC) VISIBLE,
-  INDEX `fk_users_teams1_idx` (`teams_fId` ASC) VISIBLE,
+  UNIQUE INDEX `fId_UNIQUE` (`fId` ASC),
+  INDEX `fk_users_positions1_idx` (`positions_fId` ASC),
+  INDEX `fk_users_userPermission1_idx` (`userPermission_fId` ASC),
+  INDEX `fk_users_teams1_idx` (`teams_fId` ASC),
   CONSTRAINT `fk_users_positions1`
     FOREIGN KEY (`positions_fId`)
     REFERENCES `leavingForm`.`positions` (`fId`)
@@ -140,10 +140,10 @@ CREATE TABLE IF NOT EXISTS `leavingForm`.`leaveLetters` (
   `absenceTypes_fId` INT NULL,
   `fStatus` INT NOT NULL,
   PRIMARY KEY (`fId`),
-  UNIQUE INDEX `fId_UNIQUE` (`fId` ASC) VISIBLE,
-  INDEX `fk_leaveLetters_users_idx` (`users_fId` ASC) VISIBLE,
-  INDEX `fk_leaveLetters_users1_idx` (`users_fId1` ASC) VISIBLE,
-  INDEX `fk_leaveLetters_absenceTypes1_idx` (`absenceTypes_fId` ASC) VISIBLE,
+  UNIQUE INDEX `fId_UNIQUE` (`fId` ASC),
+  INDEX `fk_leaveLetters_users_idx` (`users_fId` ASC),
+  INDEX `fk_leaveLetters_users1_idx` (`users_fId1` ASC),
+  INDEX `fk_leaveLetters_absenceTypes1_idx` (`absenceTypes_fId` ASC),
   CONSTRAINT `fk_leaveLetters_users`
     FOREIGN KEY (`users_fId`)
     REFERENCES `leavingForm`.`users` (`fId`)
@@ -173,8 +173,8 @@ CREATE TABLE IF NOT EXISTS `leavingForm`.`userRefToken` (
   `fRdt` DATETIME NOT NULL,
   `users_fId` VARCHAR(10) NULL,
   PRIMARY KEY (`fUserId`),
-  UNIQUE INDEX `fUserId_UNIQUE` (`fUserId` ASC) VISIBLE,
-  INDEX `fk_userRefToken_users1_idx` (`users_fId` ASC) VISIBLE,
+  UNIQUE INDEX `fUserId_UNIQUE` (`fUserId` ASC),
+  INDEX `fk_userRefToken_users1_idx` (`users_fId` ASC),
   CONSTRAINT `fk_userRefToken_users1`
     FOREIGN KEY (`users_fId`)
     REFERENCES `leavingForm`.`users` (`fId`)
@@ -194,7 +194,7 @@ CREATE TABLE IF NOT EXISTS `leavingForm`.`rejectedLetterDetail` (
   `fRejectType` INT NOT NULL,
   `leaveLetters_fId` VARCHAR(10) NULL,
   PRIMARY KEY (`fLetterId`),
-  INDEX `fk_rejectedLetterDetail_leaveLetters1_idx` (`leaveLetters_fId` ASC) VISIBLE,
+  INDEX `fk_rejectedLetterDetail_leaveLetters1_idx` (`leaveLetters_fId` ASC),
   CONSTRAINT `fk_rejectedLetterDetail_leaveLetters1`
     FOREIGN KEY (`leaveLetters_fId`)
     REFERENCES `leavingForm`.`leaveLetters` (`fId`)
@@ -213,10 +213,10 @@ INSERT INTO `absenceTypes` (`fId`,`fAbsenceTypeName`) VALUES ("1","Việc riêng
 
 
 -- Insert data for users: 4TCgb, FfI2V, 1LwZq
-INSERT INTO `users` (`fId`,`fFirstName`,`fLastName`,`fBday`,`fPosition`,`fAddress`,`fPhone`,`fTeamId`,`fTypeId`,`fUsername`,`fPassword`,`fEmail`) 
-VALUES ("i53FItHeMK","Daphne","Zachery","1982-03-05 04:26:11","U4d4k","P.O. Box 489, 2016 Risus. Av.","0157694180",null,"gbAiv","user","5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8","augue.Sed.molestie@congueInscelerisque.org"),
-				("MytsQhUPQG","Amanda","Amos","1993-11-22 10:18:26","wHK7p","5253 Nulla Road","0986209274",null,"NH6Bs","admin","5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8","habitant.morbi.tristique@estvitaesodales.net"),
-                ("H8UIAdsy7T","Adena","Justin","1972-07-04 01:45:20","mXLNt","Ap #157-9686 Quisque Avenue","0778329121",null,"3sVfP","hr","5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8","nulla.Integer@Aliquam.net");
+INSERT INTO `users` (`fId`,`fFirstName`,`fLastName`,`fBday`,`fPosition`,`fAddress`,`fPhone`,`fTeamId`,`fTypeId`,`fUsername`,`fPassword`,`fEmail`, `fGender`) 
+VALUES ("i53FItHeMK","Daphne","Zachery","1982-03-05 04:26:11","U4d4k","P.O. Box 489, 2016 Risus. Av.","0157694180",null,"gbAiv","user","5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8","augue.Sed.molestie@congueInscelerisque.org", 1),
+				("MytsQhUPQG","Amanda","Amos","1993-11-22 10:18:26","wHK7p","5253 Nulla Road","0986209274",null,"NH6Bs","admin","5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8","habitant.morbi.tristique@estvitaesodales.net", 2),
+                ("H8UIAdsy7T","Adena","Justin","1972-07-04 01:45:20","mXLNt","Ap #157-9686 Quisque Avenue","0778329121",null,"3sVfP","hr","5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8","nulla.Integer@Aliquam.net", 3);
 
 
 -- Insert data for teams
