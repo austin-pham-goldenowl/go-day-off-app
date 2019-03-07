@@ -76,6 +76,7 @@ Router.post("/account", verifyAccToken, async (req, res) => {
 Router.post("/login", async (req, res) => {
   try {
     const { username, rawPwd } = req.body;
+    console.log(`login -> Req Body: `, req.body)
     if (!username || !rawPwd) throw { msg: "MISSING_REQUIRED_FIELDS" };
 
     const user = await userModel.login({
