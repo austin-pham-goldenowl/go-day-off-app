@@ -28,17 +28,6 @@ const styles = theme => ({
   },
 });
 
-
-//   handleDeleteBound = value => event => {
-//     console.log(value);
-//     const {selected} = this.state;
-//     let deleteItem = selected.indexOf(value);
-//     selected.splice(deleteItem, 1);
-//     this.setState({
-//       selected: selected
-//     });
-//   }
-
 const SelectWithChips = ({ field, form, classes, label, multiple, options, ...otherProps}) => {
 
   return (
@@ -59,14 +48,11 @@ const SelectWithChips = ({ field, form, classes, label, multiple, options, ...ot
                 label={item.label} 
                 className={classes.chip} 
                 onDelete={() => {
-                  console.log('ChipSeelect -> onDelete -> item: ', item);
-                  // form.setFieldValue(field.name, value);
                   const selected = form.values.informTo;
                   let deleteItem = selected.indexOf(item);
                   selected.splice(deleteItem, 1);
                   const payload = {...form.values, informTo: selected};
                   form.setValues(payload);
-                  console.log(`Form values: `, selected);
                 }}
               />
             ))}
@@ -74,7 +60,6 @@ const SelectWithChips = ({ field, form, classes, label, multiple, options, ...ot
         )}
       >
         {options.map(item => {
-          console.log(`item: `, item);
           return (
             <MenuItem 
               value={item}
@@ -89,69 +74,6 @@ const SelectWithChips = ({ field, form, classes, label, multiple, options, ...ot
     </FormControl>
   )
 }
-
-// class SelectWithChips extends React.Component {
-//     state = {
-//       selected: [],
-//     }
-
-//   handleChange = (event)=>{
-//     console.log('Chosen value: ', event.target.value);
-//     this.setState({
-//       selected: event.target.value
-//     });
-//     this.props.onChange && this.props.onChange(event.target.value);
-//   };
-
-//   handleDeleteBound = value => event => {
-//     console.log(value);
-//     const {selected} = this.state;
-//     let deleteItem = selected.indexOf(value);
-//     selected.splice(deleteItem, 1);
-//     this.setState({
-//       selected: selected
-//     });
-//   }
-
-//   render () {
-//     const { classes, label, data } = this.props;
-//     const { selected } = this.state;
-//     return (
-//       <FormControl className={classes.formControl}>
-//         <InputLabel htmlFor="select-multiple-chip">{label}</InputLabel>
-//         <Select
-//           multiple
-//           value={selected}
-//           onChange={this.handleChange}
-//           input={<Input id="select-multiple-chip" />}
-//           renderValue={selected => (
-//             <div className={classes.chips}>
-//               {selected.map(item => (
-//                 <Chip 
-//                   key={item.value} 
-//                   label={item.label} 
-//                   className={classes.chip} 
-//                   onDelete={this.handleDeleteBound(item)}
-//                 />
-//               ))}
-//             </div>
-//           )}
-//         >
-//           {data.map(item => (
-//               <MenuItem 
-//                 key={shortid.generate()} 
-//                 value={item}
-//               >
-//               { `${item.label} (${item.value})`}
-//               {selected.indexOf(item) !== -1 ? (<Icon>check</Icon>) : null}
-//               </MenuItem>
-//             ))}
-//         </Select>
-//       </FormControl>
-//     );
-//   }
-// }
-
 SelectWithChips.propTypes = {
   classes: PropTypes.object.isRequired,
   label: PropTypes.string.isRequired,

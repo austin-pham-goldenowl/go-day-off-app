@@ -10,8 +10,7 @@ import {
 import Icon from '@material-ui/core/Icon';
 import { withStyles } from '@material-ui/core/styles';
 
-import { connect } from 'react-redux';
-
+// Using components
 import SelectCustom from '../../components/customSelect';
 import TextFieldReadOnly from '../../components/readOnlyTextField';
 import DatePickerField from '../../components/datePicker';
@@ -107,6 +106,7 @@ class AbsenceLetterWithFormik extends React.Component{
           <Paper className={classes.paper}>
             <Formik
               initialValues={initialValues}
+              validationSchema={ValidationSchema}
               onSubmit={(values, actions) => {
                 console.log('[AbsenceLetterWithFormik] - onSubmit - values: ',values);
                 console.log('[AbsenceLetterWithFormik] - onSubmit - actions: ',actions);
@@ -324,9 +324,8 @@ AbsenceLetterWithFormik.defaultProps = {
   },
 }
 
-export default connect(null, null)(
-  withStyles(styles)(AbsenceLetterWithFormik)
-);
+export default withStyles(styles)(AbsenceLetterWithFormik);
+
 // Mockup data
 let mockup_LeaveType = [
   {
