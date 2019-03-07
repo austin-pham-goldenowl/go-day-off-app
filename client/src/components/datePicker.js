@@ -15,7 +15,7 @@ import {
 
 moment.locale(DATETIME_LOCALE_VI);
 
-const DatePickerField = ({ field, form, ...otherProps }) => {
+const DatePickerField = ({ field, form, label, keyboard, ...otherProps }) => {
   const currentError = form.errors[field.name];
 
   return (
@@ -24,8 +24,9 @@ const DatePickerField = ({ field, form, ...otherProps }) => {
       moment={moment} 
     >
       <DatePicker
-        keyboard
+        keyboard={keyboard && keyboard}
         disablePast
+        label={label}
         name={field.name}
         value={field.value} 
         helperText={currentError}
