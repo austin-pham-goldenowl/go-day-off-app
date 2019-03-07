@@ -4,6 +4,7 @@ import {BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 import Login from '../../containers/login/container';
+import AccountInfo from '../../containers/accountInfo/container';
 const AbsenceLetter = lazy(() => import('../../containers/absenceLetter/container'));
 const Calendar = lazy(() => import('../../components/calendar'));
 const DemoUI = lazy(() => import('../../components/demoUI'));
@@ -35,6 +36,8 @@ const MainRouter = () => (
         )
       }/>
       <Route path="/login" component={LoginForm}/>
+      <Route path="/account/edit" component={AccountInfo}/>
+
     </Switch>
   </Router>
 );
@@ -47,6 +50,7 @@ const Home = () => {
       <li><Link to="/leaveForm">Leaving Form</Link></li>
       <li><Link to="/demoUI">Demo UI</Link></li>
       <li><Link to="/login">Login Form</Link></li>
+      <li><Link to="/account/edit">Edit account info</Link></li>
     </ol>
   );
 };
