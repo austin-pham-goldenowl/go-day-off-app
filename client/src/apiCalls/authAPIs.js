@@ -7,9 +7,10 @@ axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 //
 export const login = (payload) => {
-  return axios.post(`${SERVER_HOST_DEV}/api/login`, 
+  console.log('authAPIs -> login -> payload: ', payload);
+  return axios.post(`${SERVER_HOST_DEV}/login`, 
     {
-      'username': payload.username,
+      'username': payload.email,
       'rawPwd': payload.rawPwd,
     },
   )
@@ -21,7 +22,7 @@ export const signUp = (payload) => {
 
 export const getNewToken = (refToken) => {
   if(refToken) {
-    return axios.get(`${SERVER_HOST_DEV}/api/token`,
+    return axios.get(`${SERVER_HOST_DEV}/token`,
       {},
       {
         header: {

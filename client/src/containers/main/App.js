@@ -3,11 +3,15 @@ import './App.css';
 import {BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
+// Using containers, components
+import NotificationZone from '../../components/SnackbarNotificationWrapper';
 import Login from '../../containers/login/container';
 import AccountInfo from '../../containers/accountInfo/container';
+// -- just demo lazy load
 const AbsenceLetter = lazy(() => import('../../containers/absenceLetter/container'));
 const Calendar = lazy(() => import('../../components/calendar'));
 const DemoUI = lazy(() => import('../../components/demoUI'));
+
 
 
 const MainRouter = () => (
@@ -94,6 +98,7 @@ class App extends Component {
       <main>
         <MainRouter />
       </main>
+      <NotificationZone />
     </div>
   );
   }
