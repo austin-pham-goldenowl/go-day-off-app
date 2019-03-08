@@ -1,28 +1,37 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { Formik, Field, Form } from 'formik';
 import { Link } from 'react-router-dom';
 import {
   Paper,
   Button,
   Input,
-  Snackbar,
   InputLabel,
   Typography,
   CssBaseline,
   FormControl,
 } from '@material-ui/core';
-
 import { withStyles } from '@material-ui/core/styles';
-import { 
-  NOTIF_SUCCESS,
-  NOTIF_WARNING,
+
+// Validation Schema
+import LoginValidationSchema from './validationSchema';
+
+// Using api calls
+import { login } from '../../apiCalls/authAPIs';
+
+// Notification redux 
+import { showNotification } from '../../redux/actions/notificationActions';
+import {
   NOTIF_ERROR,
-  NOTIF_INFO,
-} from '../../constants/form';
+  NOTIF_SUCCESS
+} from '../../constants/notification';
+const mapDispatchToProps = (dispatch) => {
+  return {
+    handleShowNotif: (type, message) => dispatch(showNotification(type, message))
+  }
+}
+// End - Notification redux
 
-import SnackbarNotifContent from '../../components/SnackbarNotification';
-
-import { userLogin } from '../../apiCalls/authAPIs';
 
 const styles = theme => ({
     main: {
@@ -61,54 +70,10 @@ const styles = theme => ({
   });
 
 class LoginWithFormik extends React.Component {
-  state = {
-    announce: {
-      show: false,
-      type: NOTIF_INFO,
-      message: 'This is an announcement!'
-    }
-  }
-  handleShowAnnouncement = (message = '', type = 'warning') => {
-    this.setState({
-      announce: {
-        show: true,
-        type: type,
-        message: message,
-      }
-    });
-  }
-  handleHideAnnouncement = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    this.setState(prevState => ({
-      announce: {
-        ...prevState.announce,
-        show: false,
-      }
-    }));
-  }
   render() {
-    const { classes, initialValues } = this.props;
+    const { classes, initialValues, handleShowNotif } = this.props;
       return (
         <main className={classes.main}>
-          {/** Announcement */}
-          <Snackbar
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'left',
-            }}
-            open={this.state.announce.show}
-            autoHideDuration={5000}
-            onClose={this.handleHideAnnouncement}
-          >
-            <SnackbarNotifContent
-              onClose={this.handleHideAnnouncement}
-              variant={this.state.announce.type}
-              message={this.state.announce.message}
-            />
-          </Snackbar>
-          {/** End - Announcement */}
           <CssBaseline />
           <Paper className={classes.paper}>
             <Typography component="h1" variant="h4">
@@ -116,16 +81,19 @@ class LoginWithFormik extends React.Component {
             </Typography>
             <Formik
               initialValues={initialValues}
+              validateOnBlur={true}
+              validationSchema={LoginValidationSchema}
               onSubmit={(values, actions) => {
-                console.log(`values: `, values);
-                userLogin(values)
+                console.log(`Submitted values: `, values);
+                login(values)
                   .then(res => {
                     console.log('RESPONSE -> Login -> ', res);
+                    handleShowNotif(NOTIF_SUCCESS, 'Login successfully!');
                   })
                   .catch(err => {
                     console.log('ERROR -> Login -> Error.name: ', err.name);
                     console.log('ERROR -> Login -> Error.message: ', err.message);
-                    this.handleShowAnnouncement(err.message, NOTIF_ERROR);
+                    handleShowNotif(NOTIF_ERROR, `Login fail`);
                   });
               }}
             >
@@ -139,20 +107,17 @@ class LoginWithFormik extends React.Component {
               ...formikProps  
             }) => (
                 <Form className={classes.form}>
-                  <Field name="email" render={({field, form, ...otherProps}) => {
-                    console.log('Email field: ',field);
-                    console.log('Email form: ',form);
-                    console.log('otherProps: ', otherProps);
+                  <Field name="username" render={({field, form, ...otherProps}) => {
                     return (
                       <FormControl margin="normal" required fullWidth>
-                        <InputLabel htmlFor="email">Email</InputLabel>
+                        <InputLabel htmlFor="username">Username</InputLabel>
                         <Input 
                           autoFocus
-                          id="email" 
-                          name="email" 
-                          type="email" 
+                          id="username" 
+                          name="username" 
+                          type="text" 
                           value={field.value} 
-                          autoComplete="email" 
+                          autoComplete="username" 
                           onChange={({target: { value}}) => 
                             setFieldValue(field.name, value)
                           }
@@ -202,8 +167,8 @@ class LoginWithFormik extends React.Component {
 
 LoginWithFormik.defaultProps = {
   initialValues: {
-    email: 'awfawf@haah.com', 
-    rawPwd: ''
+    username: 'hr', 
+    rawPwd: 'password'
   }
 }
-export default withStyles(styles)(LoginWithFormik);
+export default withStyles(styles)(connect(null, mapDispatchToProps)(LoginWithFormik));

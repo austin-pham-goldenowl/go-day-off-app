@@ -10,6 +10,7 @@ module.exports = {
     username: process.env.DB_USER,
     password: process.env.DB_PWD,
     database: process.env.DB_NAME,
+    port: process.env.DB_PORT ? process.env.DB_PORT : '',
     host: process.env.SERVER_HOST_ADDRESS || "127.0.0.1",
     dialect: process.env.DIALECT || "mysql",
     operatorsAliases: Sequelize.Op,

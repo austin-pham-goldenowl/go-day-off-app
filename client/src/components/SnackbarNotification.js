@@ -1,7 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
 import {
-  Snackbar,
   SnackbarContent,
   IconButton,
 } from '@material-ui/core';
@@ -26,7 +25,7 @@ import {
   NOTIF_WARNING,
   NOTIF_ERROR,
   NOTIF_INFO,
-} from '../constants/form';
+} from '../constants/notification';
 
 const styles1 = theme => ({
   success: {
