@@ -17,8 +17,8 @@ import {
 import { withStyles } from '@material-ui/core/styles';
 import Icon from '@material-ui/core/Icon';
 
-import SelectCustom from '../../components/customSelect';
-import DatePickerField from '../../components/datePicker';
+import SelectCustom from '../../components/CustomSelect';
+import DatePickerField from '../../components/DatePicker';
 
 
 const styles = theme => ({
@@ -136,9 +136,7 @@ class AccountInfo extends React.Component {
                         variant="outlined"
                         onClick={handleReset}
                       >
-                      <Icon fontSize="small" className={classes.leftIcon}>
-                        delete_sweep
-                      </Icon>
+                      <Icon fontSize="small" className={classes.leftIcon}>delete_sweep</Icon>
                         Discard
                       </Button>
                     )}/>

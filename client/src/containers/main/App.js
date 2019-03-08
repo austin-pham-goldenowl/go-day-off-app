@@ -5,12 +5,12 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 // Using containers, components
 import NotificationZone from '../../components/SnackbarNotificationWrapper';
-import Login from '../../containers/login/container';
-import AccountInfo from '../../containers/accountInfo/container';
+import Login from '../../containers/Login/container';
+import AccountInfo from '../../containers/AccountInfo/container';
 // -- just demo lazy load
-const AbsenceLetter = lazy(() => import('../../containers/absenceLetter/container'));
-const Calendar = lazy(() => import('../../components/calendar'));
-const DemoUI = lazy(() => import('../../components/demoUI'));
+const AbsenceLetter = lazy(() => import('../../containers/AbsenceLetter/container'));
+const Calendar = lazy(() => import('../../components/Calendar'));
+const DemoUI = lazy(() => import('../../components/DemoUI'));
 
 
 
