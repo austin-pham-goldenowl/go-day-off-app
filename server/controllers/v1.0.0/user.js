@@ -24,12 +24,12 @@ Router.get("/profile", async (req, res) => {
   try {
     const ownUserId = getIdFromToken(req.token_payload);
     if (!ownUserId) throw { msg: "USER_NOT_FOUND" };
-    const demandUserId = req.params.id;
+    const demandUserId = req.query.id;
     if (!demandUserId) throw { msg: "USER_NOT_FOUND" };
 
     // Admin and HR can view profile of everyone
     // Others can view oneself's
-    const fUserType = await getPermissionByUserId(userId);
+    const fUserType = await getPermissionByUserId(ownUserId);
     if (
       !fUserType ||
       (fUserType !== "Administration" &&
@@ -51,7 +51,9 @@ Router.get("/profile", async (req, res) => {
       "fUsername",
       "fGender"
     ];
-    const user = await userModel.loadAll(attributes, { where: { fId } });
+    const user = await userModel.loadAll(attributes, {
+      where: { fId: demandUserId }
+    });
     if (!user || (user && user.length !== 1)) throw { msg: "USER_NOT_FOUND" };
     handleSuccess(res, { user: user[0] });
   } catch (err) {
