@@ -11,10 +11,10 @@ import Icon from '@material-ui/core/Icon';
 import { withStyles } from '@material-ui/core/styles';
 
 // Using components
-import SelectCustom from '../../components/customSelect';
-import TextFieldReadOnly from '../../components/readOnlyTextField';
-import DatePickerField from '../../components/datePicker';
-import SelectWithChips from '../../components/selectWithChips';
+import SelectCustom from '../../components/CustomSelect';
+import TextFieldReadOnly from '../../components/ReadOnlyTextField';
+import DatePickerField from '../../components/DatePicker';
+import SelectWithChips from '../../components/SelectWithChips';
 
 import ValidationSchema from './validationSchema';
 

@@ -5,13 +5,14 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 // Using containers, components
 import NotificationZone from '../../components/SnackbarNotificationWrapper';
-import Login from '../../containers/login/container';
-import AccountInfo from '../../containers/accountInfo/container';
-// -- just demo lazy load
-const AbsenceLetter = lazy(() => import('../../containers/absenceLetter/container'));
-const Calendar = lazy(() => import('../../components/calendar'));
-const DemoUI = lazy(() => import('../../components/demoUI'));
+import Login from '../../containers/Login/container';
+import AccountInfo from '../../containers/AccountInfo/container';
 
+import LeaveRequestDetail from '../../components/LeaveRequestDetail';
+// -- just demo lazy load
+const AbsenceLetter = lazy(() => import('../../containers/AbsenceLetter/container'));
+const Calendar = lazy(() => import('../../components/Calendar'));
+const DemoUI = lazy(() => import('../../components/DemoUI'));
 
 
 const MainRouter = () => (
@@ -41,7 +42,7 @@ const MainRouter = () => (
       }/>
       <Route path="/login" component={LoginForm}/>
       <Route path="/account/edit" component={AccountInfo}/>
-
+      <Route path="/leave-letter/detail" component={LeaveRequestDetail}/>
     </Switch>
   </Router>
 );
@@ -55,6 +56,8 @@ const Home = () => {
       <li><Link to="/demoUI">Demo UI</Link></li>
       <li><Link to="/login">Login Form</Link></li>
       <li><Link to="/account/edit">Edit account info</Link></li>
+      <li><Link to="/leave-letter/detail">Leave request detail</Link></li>
+
     </ol>
   );
 };

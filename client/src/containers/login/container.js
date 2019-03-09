@@ -1,7 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Formik, Field, Form } from 'formik';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
+
 import {
   Paper,
   Button,
@@ -19,12 +20,18 @@ import LoginValidationSchema from './validationSchema';
 // Using api calls
 import { login } from '../../apiCalls/authAPIs';
 
+// auth Helpers
+import * as authHelper from '../../helpers/authHelpers';
+
 // Notification redux 
 import { showNotification } from '../../redux/actions/notificationActions';
 import {
   NOTIF_ERROR,
-  NOTIF_SUCCESS
+  NOTIF_SUCCESS,
+  NOTIF_WARNING,
+  NOTIF_INFO
 } from '../../constants/notification';
+import CircularUnderLoad from '../../components/animation/CircularUnderLoad';
 const mapDispatchToProps = (dispatch) => {
   return {
     handleShowNotif: (type, message) => dispatch(showNotification(type, message))
@@ -62,6 +69,9 @@ const styles = theme => ({
       marginBottom: theme.spacing.unit
     },
     submit: {
+      marginTop: theme.spacing.unit * 6,
+    },
+    preload: {
       marginTop: theme.spacing.unit * 3,
     },
     forgotPwdHint: {
@@ -71,7 +81,7 @@ const styles = theme => ({
 
 class LoginWithFormik extends React.Component {
   render() {
-    const { classes, initialValues, handleShowNotif } = this.props;
+    const { classes, initialValues, handleShowNotif, history } = this.props;
       return (
         <main className={classes.main}>
           <CssBaseline />
@@ -85,25 +95,42 @@ class LoginWithFormik extends React.Component {
               validationSchema={LoginValidationSchema}
               onSubmit={(values, actions) => {
                 console.log(`Submitted values: `, values);
+                // showPreloading
                 login(values)
                   .then(res => {
                     console.log('RESPONSE -> Login -> ', res);
-                    handleShowNotif(NOTIF_SUCCESS, 'Login successfully!');
+                    let {success, access_token, refresh_token} = res.data;
+                    if(success) {
+                      authHelper.signIn(access_token, refresh_token);
+                      if (authHelper.checkAuth()) {
+                        handleShowNotif(NOTIF_SUCCESS, 'Login successfully!');
+                        setTimeout(() => history.push('/'), 500); //Timeout will make it smoothier
+                      } else {
+                        handleShowNotif(NOTIF_INFO, 'Something went wrong! Please try again!');
+                        actions.setSubmitting(false);
+                      }
+                    } else {
+                      handleShowNotif(NOTIF_INFO, 'Something went wrong! Please try again!');
+                      actions.setSubmitting(false);
+                    }
                   })
                   .catch(err => {
                     console.log('ERROR -> Login -> Error.name: ', err.name);
                     console.log('ERROR -> Login -> Error.message: ', err.message);
                     handleShowNotif(NOTIF_ERROR, `Login fail`);
+                    actions.setSubmitting(false);
                   });
               }}
             >
             {({ 
               errors, 
-              values, 
+              values,
+              isSubmitting, 
               handleReset, 
               handleSubmit,
+              handleChange,
+              setSubmitting,
               setFieldValue, 
-              handleChange, 
               ...formikProps  
             }) => (
                 <Form className={classes.form}>
@@ -147,12 +174,15 @@ class LoginWithFormik extends React.Component {
                     type="submit"
                     color="primary"
                     variant="contained"
+                    disabled={isSubmitting}
                     className={classes.submit}
                     onClick={handleSubmit}
                   >
                     Let's GO
                   </Button>
-
+                  {/** Progress Animation */}
+                  {isSubmitting ? <CircularUnderLoad className={classes.preload} size={20}/> : null}
+                  {/** End - Progress Animation */}
                   <div className={classes.forgotPwdHint}>
                     Forgot password? Click <Link to="/forgot-password">here</Link>
                   </div>
@@ -171,4 +201,8 @@ LoginWithFormik.defaultProps = {
     rawPwd: 'password'
   }
 }
-export default withStyles(styles)(connect(null, mapDispatchToProps)(LoginWithFormik));
+export default withStyles(styles)(
+  withRouter(
+    connect(null, mapDispatchToProps)(LoginWithFormik)
+  )
+);
