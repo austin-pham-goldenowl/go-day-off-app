@@ -2,6 +2,8 @@ import React from 'react';
 import moment from 'moment';
 import shortid from 'shortid';
 
+import './Calendar.css';
+
 class Calendar extends React.Component {
   state = {
     currentDate: new moment(),
