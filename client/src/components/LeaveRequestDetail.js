@@ -155,7 +155,7 @@ const LeaveRequestDetail = (props) => {
               </Grid>
               {/* Form title */}
               <Typography component="h1" variant="h4">
-                Request detail
+                Leave Request Detail
               </Typography>
               {/* End - Form title */}
               {/* Request Id */}
