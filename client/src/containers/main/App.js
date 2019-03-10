@@ -1,3 +1,4 @@
+
 import React, { Component, Suspense, lazy } from "react";
 import "./App.css";
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
@@ -90,15 +91,18 @@ const Home = () => {
     </ol>
   );
 };
+// =======
+// import React, { Component, Suspense, lazy } from 'react';
+// import './App.css';
+// import {BrowserRouter, Route, Link, Switch } from 'react-router-dom';
+// import routes from '../../routes/index';
 
-const LeaveForm = () => {
-  return (
-    <div>
-      <h1>Leaving Form</h1>
-      <AbsenceLetter />
-    </div>
-  );
-};
+// import PrivateRoute from '../../components/PrivateRoute';
+// import NotificationZone from '../../components/SnackbarNotificationWrapper';
+// >>>>>>> [FE] - Integrating `react-router`, Add `routes`, Handle `privateRoute`
+
+// import CssBaseline from '@material-ui/core/CssBaseline';
+
 
 const LoginForm = () => {
   return (
@@ -115,8 +119,18 @@ const DemoUIWrapper = () => {
     </div>
   );
 };
-
+// demo lazy load
+// const DemoUI = lazy(() => import('../../components/DemoUI'));
+      // <Route path="/demoUI" component={
+      //   () => (
+      //     <Suspense fallback={<div><CircularProgress /></div>}>
+      //       <DemoUIWrapper/>
+      //     </Suspense>
+      //   )
+      // }/>
+////////////////////////////////////////////////
 class App extends Component {
+
   render() {
     return (
       <div className="App">
@@ -132,6 +146,26 @@ class App extends Component {
         </main>
         <NotificationZone />
       </div>
+// =======
+//     const screens = routes.map(({ path, isPrivate, exact, comp }, index) => 
+//       isPrivate === true ? (
+//         <PrivateRoute key={index} path={path} exact={exact} component={comp}/>
+//       ) : (
+//         <Route key={index} path={path} exact={exact} component={comp}/>
+//       )
+//     );
+//     console.log(`App.js -> screens: `, screens);
+//     return (
+//       <BrowserRouter>
+//         <div className="App">
+//           <CssBaseline />
+//           <main>
+//             <Switch>{screens}</Switch>
+//           </main>
+//           <NotificationZone />
+//         </div>
+//       </BrowserRouter>
+// >>>>>>> [FE] - Integrating `react-router`, Add `routes`, Handle `privateRoute`
     );
   }
 }
