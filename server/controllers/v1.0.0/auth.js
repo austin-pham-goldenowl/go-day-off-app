@@ -98,9 +98,11 @@ Router.post("/login", async (req, res) => {
     handleSuccess(res, {
       access_token: accToken,
       refresh_token: fRefToken,
-      fname: entity.fFirstName,
-      lname: entity.fLastName,
-      typeId: entity.fTypeId,
+      user: {
+        fname: entity.fFirstName,
+        lname: entity.fLastName,
+        typeId: entity.fTypeId,
+      }
     });
   } catch (err) {
     handleFailure(res, { err, route: req.originalUrl });
