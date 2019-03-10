@@ -21,18 +21,17 @@ import {
   RemoveCircleOutline as RemoveCircleIcon,
 } from '@material-ui/icons';
 // Helper
-import { getLeaveType } from '../helpers/leaveLetterHelper';
+import { 
+  getLeaveType,
+} from '../helpers/leaveLetterHelper';
+import { LEAVE_REQUEST_PENDING } from '../constants/requestStatusType';
+
 
 const styles = theme => ({
   layout: {
     width: 'auto',
     marginLeft: theme.spacing.unit * 2,
     marginRight: theme.spacing.unit * 2,
-    [theme.breakpoints.up(600 + theme.spacing.unit * 2 * 2)] : {
-      minWidth: 800,
-      marginLeft: 'auto',
-      marginRight: 'auto',
-    },
   },
   paper: {
     marginTop: theme.spacing.unit * 3,
@@ -237,34 +236,36 @@ const LeaveRequestDetail = (props) => {
                 </Grid>
               </React.Fragment>
               {/* Bottom buttons */}
-              <React.Fragment>
-              <Grid item container xs={12} className={classes.buttonGroupBottom} spacing={8}>
-                <Field render={({ field, form }) => (
-                  <Button
-                    className={classNames(classes.button, classes.btnApprove)}
-                    size="small"
-                    variant="contained"
-                    color="primary"
-                    onClick={handleSubmit}
-                  >
-                    <DoneIcon/>
-                    Approve
-                  </Button>
-                )} />
-                <Field render={({ field, form }) => (
-                  <Button
-                    className={classes.button}
-                    size="small"
-                    variant="contained"
-                    color="secondary"
-                    onClick={handleReset}
-                  >
-                    <RemoveCircleIcon className={classes.leftIcon}/>
-                    Reject
-                  </Button>
-                )}/>
-              </Grid>
-            </React.Fragment>
+              {leaveLetter.status === LEAVE_REQUEST_PENDING ? (
+                <React.Fragment>
+                <Grid item container xs={12} className={classes.buttonGroupBottom} spacing={8}>
+                  <Field render={({ field, form }) => (
+                    <Button
+                      className={classNames(classes.button, classes.btnApprove)}
+                      size="small"
+                      variant="contained"
+                      color="primary"
+                      onClick={handleSubmit}
+                    >
+                      <DoneIcon/>
+                      Approve
+                    </Button>
+                  )} />
+                  <Field render={({ field, form }) => (
+                    <Button
+                      className={classes.button}
+                      size="small"
+                      variant="contained"
+                      color="secondary"
+                      onClick={handleReset}
+                    >
+                      <RemoveCircleIcon className={classes.leftIcon}/>
+                      Reject
+                    </Button>
+                  )}/>
+                </Grid>
+              </React.Fragment>) : null
+            }
             {/* End - Top buttons */}
             </Form>
           )

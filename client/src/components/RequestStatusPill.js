@@ -2,6 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import {
   Chip,
+  Avatar
 } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
@@ -9,9 +10,13 @@ import {
   AccessTime as PendingIcon,
   DoneAll as ApprovedIcon,
   HighlightOffOutlined as RejectIcon,
-  Sync as OtherTypeIcon,
+  ErrorOutline as ErrorIcon,
 } from '@material-ui/icons';
 import * as ReqStatusType from '../constants/requestStatusType';
+
+import { 
+  getLeaveReqStatus,
+} from '../helpers/leaveLetterHelper';
 
 const styles = theme => ({
   pendingColor: {
@@ -35,7 +40,7 @@ const styles = theme => ({
     fontWeight: 'bold',
     backgroundColor: '#FFD2D2'
   },
-  otherType:{
+  error:{
     backgroundColor: '#C1C1C1'
   }
 });
@@ -53,7 +58,7 @@ const RequestStatus = (props) => {
     case ReqStatusType.LEAVE_REQUEST_PENDING:
       return (
         <Chip 
-          label='Pending' 
+          label={getLeaveReqStatus(statusType)}
           className={classNames(classes.pending, classes.pendingColor)} 
           avatar={<PendingIcon className={classes.pendingColor}/>} 
         />
@@ -76,12 +81,8 @@ const RequestStatus = (props) => {
       )
     default:
       return (
-        <Chip 
-          label='...' 
-          className={classes.otherType} 
-          avatar={<OtherTypeIcon />}
-        />
-      )
+        <Avatar><ErrorIcon /></Avatar>
+        )
   }
 }
 
