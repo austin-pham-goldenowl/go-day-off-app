@@ -51,7 +51,7 @@ export default (sequelize, DataTypes) => {
         allowNull: false
       },
       fReason: {
-        type: STRING
+        type: DataTypes.STRING
       },
       absenceTypes_fId: { type: DataTypes.STRING(5) },
       users_fId: { type: DataTypes.STRING(10) },
