@@ -1,48 +1,64 @@
-import React, { Component, Suspense, lazy } from 'react';
-import './App.css';
-import {BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import React, { Component, Suspense, lazy } from "react";
+import "./App.css";
+import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 // Using containers, components
-import NotificationZone from '../../components/SnackbarNotificationWrapper';
-import Login from '../../containers/Login/container';
-import AccountInfo from '../../containers/AccountInfo/container';
+import NotificationZone from "../../components/SnackbarNotificationWrapper";
+import Login from "../../containers/login/container";
+import AccountInfo from "../../containers/accountInfo/container";
 
-import LeaveRequestDetail from '../../components/LeaveRequestDetail';
+import LeaveRequestDetail from "../../components/LeaveRequestDetail";
 // -- just demo lazy load
-const AbsenceLetter = lazy(() => import('../../containers/AbsenceLetter/container'));
-const Calendar = lazy(() => import('../../components/Calendar'));
-const DemoUI = lazy(() => import('../../components/DemoUI'));
-
+const AbsenceLetter = lazy(() =>
+  import("../../containers/absenceLetter/container")
+);
+const Calendar = lazy(() => import("../../components/Calendar"));
+const DemoUI = lazy(() => import("../../components/demoUI"));
 
 const MainRouter = () => (
   <Router>
     <Switch>
-      <Route exact path="/" component={Home}/>
-      <Route path="/calendar" component={
-        () => (
+      <Route exact path="/" component={Home} />
+      <Route
+        path="/calendar"
+        component={() => (
           <Suspense fallback={<div>Loading...</div>}>
-            <Calendar/>
+            <Calendar />
           </Suspense>
-        )
-      }/>
-      <Route path="/leaveForm" component={
-        () => (
-          <Suspense fallback={<div><CircularProgress /></div>}>
-            <AbsenceLetter/>
+        )}
+      />
+      <Route
+        path="/leaveForm"
+        component={() => (
+          <Suspense
+            fallback={
+              <div>
+                <CircularProgress />
+              </div>
+            }
+          >
+            <AbsenceLetter />
           </Suspense>
-        )
-      }/>
-      <Route path="/demoUI" component={
-        () => (
-          <Suspense fallback={<div><CircularProgress /></div>}>
-            <DemoUIWrapper/>
+        )}
+      />
+      <Route
+        path="/demoUI"
+        component={() => (
+          <Suspense
+            fallback={
+              <div>
+                <CircularProgress />
+              </div>
+            }
+          >
+            <DemoUIWrapper />
           </Suspense>
-        )
-      }/>
-      <Route path="/login" component={LoginForm}/>
-      <Route path="/account/edit" component={AccountInfo}/>
-      <Route path="/leave-letter/detail" component={LeaveRequestDetail}/>
+        )}
+      />
+      <Route path="/login" component={LoginForm} />
+      <Route path="/account/edit" component={AccountInfo} />
+      <Route path="/leave-letter/detail" component={LeaveRequestDetail} />
     </Switch>
   </Router>
 );
@@ -50,14 +66,27 @@ const MainRouter = () => (
 const Home = () => {
   return (
     <ol>
-      <li><Link to="/">Home</Link></li>
-      <li><Link to="/calendar">Calendar</Link></li>
-      <li><Link to="/leaveForm">Leaving Form</Link></li>
-      <li><Link to="/demoUI">Demo UI</Link></li>
-      <li><Link to="/login">Login Form</Link></li>
-      <li><Link to="/account/edit">Edit account info</Link></li>
-      <li><Link to="/leave-letter/detail">Leave request detail</Link></li>
-
+      <li>
+        <Link to="/">Home</Link>
+      </li>
+      <li>
+        <Link to="/calendar">Calendar</Link>
+      </li>
+      <li>
+        <Link to="/leaveForm">Leaving Form</Link>
+      </li>
+      <li>
+        <Link to="/demoUI">Demo UI</Link>
+      </li>
+      <li>
+        <Link to="/login">Login Form</Link>
+      </li>
+      <li>
+        <Link to="/account/edit">Edit account info</Link>
+      </li>
+      <li>
+        <Link to="/leave-letter/detail">Leave request detail</Link>
+      </li>
     </ol>
   );
 };
@@ -76,34 +105,34 @@ const LoginForm = () => {
     <div>
       <Login />
     </div>
-  )
-}
+  );
+};
 
 const DemoUIWrapper = () => {
   return (
     <div>
-      <DemoUI/>
+      <DemoUI />
     </div>
-  )
-}
+  );
+};
 
 class App extends Component {
   render() {
-  return (
-    <div className="App">
-      <header>
-        <div id="logo">
-          <span>
-            Golden Owl<b> Leaves</b>
-          </span>
-        </div>
-      </header>
-      <main>
-        <MainRouter />
-      </main>
-      <NotificationZone />
-    </div>
-  );
+    return (
+      <div className="App">
+        <header>
+          <div id="logo">
+            <span>
+              Golden Owl<b> Leaves</b>
+            </span>
+          </div>
+        </header>
+        <main>
+          <MainRouter />
+        </main>
+        <NotificationZone />
+      </div>
+    );
   }
 }
 
