@@ -139,6 +139,7 @@ CREATE TABLE IF NOT EXISTS `leavingForm`.`leaveLetters` (
   `users_fId1` VARCHAR(10) NULL,
   `absenceTypes_fId` INT NULL,
   `fStatus` INT NOT NULL,
+  `fReason` VARCHAR(255) NULL,
   PRIMARY KEY (`fId`),
   UNIQUE INDEX `fId_UNIQUE` (`fId` ASC),
   INDEX `fk_leaveLetters_users_idx` (`users_fId` ASC),
