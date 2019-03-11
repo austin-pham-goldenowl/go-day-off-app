@@ -1,4 +1,5 @@
 import sha256 from "sha256";
+import { USER_GENDER_VALUES } from "../configs/constants";
 
 export default (sequelize, DataTypes) => {
   const User = sequelize.define("users",
@@ -53,7 +54,7 @@ export default (sequelize, DataTypes) => {
       },
       fGender: {
         type: DataTypes.ENUM,
-        values: [1, 2, 3], // 1: female, 2: male, 3: others
+        values: USER_GENDER_VALUES,
         allowNull: false,
         defaultValue: 3
       },

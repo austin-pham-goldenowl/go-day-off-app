@@ -1,3 +1,5 @@
+import { REJECT_TYPE_VALUES } from "../configs/constants";
+
 export default (sequelize, DataTypes) => {
   const RejectedLetter = sequelize.define("rejectedLetterDetail",
     {
@@ -10,7 +12,8 @@ export default (sequelize, DataTypes) => {
         allowNull: false
       },
       fRejectType: {
-        type: DataTypes.ENUM(1, 2),
+        type: DataTypes.ENUM,
+        values: REJECT_TYPE_VALUES,
         allowNull: false
       },
       leaveLetters_fId: {

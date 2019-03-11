@@ -54,26 +54,57 @@ const { verifyAccToken } = require("./helpers/jwt");
 /**
  * Controllers
  */
-const authCtrl = require("./controllers/v1.0.0/auth");
-server.use("/api/v1.0.0/auth", authCtrl);
+const { API_VERSIONS, DEFAULT_API_VERSION } = require("./configs/constants");
+API_VERSIONS.forEach(version => {
+  const authCtrl = require(`./controllers/${version}/auth`);
+  server.use(`/api/${version}/auth`, authCtrl);
+  // ---
+  const userCtrl = require(`./controllers/${version}/user`);
+  server.use(`/api/${version}/user`, verifyAccToken, userCtrl);
+  // ---
+  const leaveLetterCtrl = require(`./controllers/${version}/leaveLetter`);
+  server.use(`/api/${version}/leaveLetter`, verifyAccToken, leaveLetterCtrl);
+  // ---
+  const absenceCtrl = require(`./controllers/${version}/absence`);
+  server.use(`/api/${version}/absenceType`, verifyAccToken, absenceCtrl);
+  // --
+  const teamCtrl = require(`./controllers/${version}/team`);
+  server.use(`/api/${version}/team`, verifyAccToken, teamCtrl);
+  // --
+  const positionCtrl = require(`./controllers/${version}/position`);
+  server.use(`/api/${version}/position`, verifyAccToken, positionCtrl);
+  // --
+  const rejectCtrl = require(`./controllers/${version}/reject`);
+  server.use(`/api/${version}/reject`, verifyAccToken, rejectCtrl);
+});
+
+// If no api version specified, rollback to the default one
+const authCtrl = require(`./controllers/${DEFAULT_API_VERSION}/auth`);
+server.use(`/api/auth`, authCtrl);
 // ---
-const userCtrl = require("./controllers/v1.0.0/user");
-server.use("/api/v1.0.0/user", verifyAccToken, userCtrl);
+const userCtrl = require(`./controllers/${DEFAULT_API_VERSION}/user`);
+server.use(`/api/user`, verifyAccToken, userCtrl);
 // ---
-const leaveLetterCtrl = require("./controllers/v1.0.0/leaveLetter");
-server.use("/api/v1.0.0/leaveLetter", verifyAccToken, leaveLetterCtrl);
+const leaveLetterCtrl = require(`./controllers/${DEFAULT_API_VERSION}/leaveLetter`);
+server.use(`/api/leaveLetter`, verifyAccToken, leaveLetterCtrl);
 // ---
-const absenceCtrl = require("./controllers/v1.0.0/absence");
-server.use("/api/v1.0.0/absenceType", verifyAccToken, absenceCtrl);
+const absenceCtrl = require(`./controllers/${DEFAULT_API_VERSION}/absence`);
+server.use(`/api/absenceType`, verifyAccToken, absenceCtrl);
 // --
-const teamCtrl = require("./controllers/v1.0.0/team");
-server.use("/api/v1.0.0/team", verifyAccToken, teamCtrl);
+const teamCtrl = require(`./controllers/${DEFAULT_API_VERSION}/team`);
+server.use(`/api/team`, verifyAccToken, teamCtrl);
 // --
-const positionCtrl = require("./controllers/v1.0.0/position");
-server.use("/api/v1.0.0/position", verifyAccToken, positionCtrl);
+const positionCtrl = require(`./controllers/${DEFAULT_API_VERSION}/position`);
+server.use(`/api/position`, verifyAccToken, positionCtrl);
 // --
-const rejectCtrl = require("./controllers/v1.0.0/reject");
-server.use("/api/v1.0.0/reject", verifyAccToken, rejectCtrl);
+const rejectCtrl = require(`./controllers/${DEFAULT_API_VERSION}/reject`);
+server.use(`/api/reject`, verifyAccToken, rejectCtrl);
+
+// Handle invalid routes
+server.all("*", (req, res) => {
+  const err = { code: 404, msg: "INVALID_ROUTE" };
+  require("./helpers/handleResponse")(res, { err, route: req.originalUrl });
+});
 
 /**
  * Start Express server

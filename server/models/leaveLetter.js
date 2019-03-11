@@ -1,4 +1,5 @@
 import moment from "moment";
+import { LEAVING_LETTER_STATUS_VALUES } from "../configs/constants";
 
 /**
  * Configs
@@ -45,7 +46,8 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.INTEGER
       },
       fStatus: {
-        type: DataTypes.ENUM(1, 2, 3),
+        type: DataTypes.ENUM,
+        values: LEAVING_LETTER_STATUS_VALUES,
         allowNull: false
       },
       absenceTypes_fId: { type: DataTypes.STRING(5) },
