@@ -103,7 +103,7 @@ server.use(`/api/reject`, verifyAccToken, rejectCtrl);
 // Handle invalid routes
 server.all("*", (req, res) => {
   const err = { code: 404, msg: "INVALID_ROUTE" };
-  require("./helpers/handleResponse")(res, { err, route: req.originalUrl });
+  require("./helpers/handleResponse").handleFailure(res, { err, route: req.originalUrl });
 });
 
 /**

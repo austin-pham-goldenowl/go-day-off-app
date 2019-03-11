@@ -104,7 +104,7 @@ class LoginWithFormik extends React.Component {
                       authHelper.signIn(access_token, refresh_token);
                       if (authHelper.checkAuth()) {
                         handleShowNotif(NOTIF_SUCCESS, 'Login successfully!');
-                        setTimeout(() => history.push('/'), 500); //Timeout will make it smoothier
+                        setTimeout(() => history.push('/dashboard'), 500); //Timeout will make it smoothier
                       } else {
                         handleShowNotif(NOTIF_INFO, 'Something went wrong! Please try again!');
                         actions.setSubmitting(false);

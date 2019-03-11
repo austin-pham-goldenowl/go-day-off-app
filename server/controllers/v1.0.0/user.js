@@ -4,7 +4,11 @@ const Router = express.Router();
 /**
  * Models
  */
-const { users: userModel } = require("../../models");
+const {
+  users: userModel,
+  positions: positionModel,
+  teams: teamModel
+} = require("../../models");
 
 /**
  * Helpers
@@ -23,8 +27,10 @@ const {
 Router.get("/profile", async (req, res) => {
   try {
     const ownUserId = getIdFromToken(req.token_payload);
+    console.log(ownUserId); //DEBUG_ONLY
     if (!ownUserId) throw { msg: "USER_NOT_FOUND" };
-    const demandUserId = req.query.id;
+    const demandUserId = ownUserId;
+    console.log(demandUserId); //DEBUG_ONLY
     if (!demandUserId) throw { msg: "USER_NOT_FOUND" };
 
     // Admin and HR can view profile of everyone
@@ -51,11 +57,27 @@ Router.get("/profile", async (req, res) => {
       "fUsername",
       "fGender"
     ];
-    const user = await userModel.loadAll(attributes, {
+    const users = await userModel.loadAll(attributes, {
       where: { fId: demandUserId }
     });
-    if (!user || (user && user.length !== 1)) throw { msg: "USER_NOT_FOUND" };
-    handleSuccess(res, { user: user[0] });
+    if (!users || users.length !== 1) throw { msg: "USER_NOT_FOUND" };
+    //extract info
+    const user = users[0].get({ plain: true });
+    const { fPosition, fTeamId } = user;
+    // get position name
+    const positions = await positionModel.loadAll(["fPosName"], {
+      where: { fId: fPosition }
+    });
+    if (!positions || positions.length !== 1) throw { msg: "USER_NOT_FOUND" };
+    user.fPositionName = positions[0].get({ plain: true }).fPosName;
+    // get team name
+    const teams = await teamModel.loadAll(["fTeamName"], {
+      where: { fId: fTeamId }
+    });
+    if (!teams || teams.length !== 1) throw { msg: "USER_NOT_FOUND" };
+    user.fTeamName = teams[0].get({ plain: true }).fTeamName;
+
+    handleSuccess(res, { user });
   } catch (err) {
     handleFailure(res, { err, route: req.originalUrl });
   }

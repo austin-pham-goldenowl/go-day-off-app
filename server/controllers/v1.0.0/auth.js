@@ -86,6 +86,7 @@ Router.post("/login", async (req, res) => {
     if (!user) throw { msg: "INVALID_USERNAME_PASSWORD" };
 
     const entity = user.get({ plain: true });
+    console.log('Login -> Entity: ', entity);
     const fRefToken = genRefToken();
     await refTokenModel.refresh({
       fUserId: entity.fId,
@@ -97,9 +98,11 @@ Router.post("/login", async (req, res) => {
     handleSuccess(res, {
       access_token: accToken,
       refresh_token: fRefToken,
-      fname: entity.firstName,
-      lname: entity.lastName,
-      typeId: entity.typeId
+      user: {
+        fname: entity.fFirstName,
+        lname: entity.fLastName,
+        typeId: entity.fTypeId,
+      }
     });
   } catch (err) {
     handleFailure(res, { err, route: req.originalUrl });

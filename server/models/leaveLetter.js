@@ -50,6 +50,9 @@ export default (sequelize, DataTypes) => {
         values: LEAVING_LETTER_STATUS_VALUES,
         allowNull: false
       },
+      fReason: {
+        type: STRING
+      },
       absenceTypes_fId: { type: DataTypes.STRING(5) },
       users_fId: { type: DataTypes.STRING(10) },
       users_fId1: { type: DataTypes.STRING(10) }
