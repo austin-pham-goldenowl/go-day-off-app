@@ -7,7 +7,8 @@ const uid = require("rand-token").uid;
  */
 const {
   userRefToken: refTokenModel,
-  users: userModel
+  users: userModel,
+  userPermission: permissionModel
 } = require("../../models");
 
 /**
@@ -76,7 +77,6 @@ Router.post("/account", verifyAccToken, async (req, res) => {
 Router.post("/login", async (req, res) => {
   try {
     const { username, rawPwd } = req.body;
-    console.log(`login -> Req Body: `, req.body)
     if (!username || !rawPwd) throw { msg: "MISSING_REQUIRED_FIELDS" };
 
     const user = await userModel.login({
@@ -86,14 +86,22 @@ Router.post("/login", async (req, res) => {
     if (!user) throw { msg: "INVALID_USERNAME_PASSWORD" };
 
     const entity = user.get({ plain: true });
-    console.log('Login -> Entity: ', entity);
     const fRefToken = genRefToken();
     await refTokenModel.refresh({
       fUserId: entity.fId,
       fRefToken,
       users_fId: entity.fId // foreign key
     });
-    const accToken = await refTokenModel.genAccToken(fRefToken);
+
+    const { fId: fUserId, fTypeId } = user;
+    const permissions = await permissionModel.loadAll([], {
+      where: { fId: fTypeId }
+    });
+    if (!permissions || permissions.length !== 1)
+      throw { msg: "NO_PERMISSION" };
+
+    const { fUserType } = permissions[0].get({ plain: true });
+    const accToken = await refTokenModel.genAccToken(fUserId, fUserType);
 
     handleSuccess(res, {
       access_token: accToken,
@@ -101,7 +109,7 @@ Router.post("/login", async (req, res) => {
       user: {
         fname: entity.fFirstName,
         lname: entity.fLastName,
-        typeId: entity.fTypeId,
+        typeId: entity.fTypeId
       }
     });
   } catch (err) {
@@ -119,7 +127,23 @@ Router.get("/token", async (req, res) => {
     if (!fRefToken) throw { code: 401, msg: "NO_REFRESH_TOKEN" };
     await refTokenModel.validateRefToken(fRefToken);
     // refToken is valid, gen & return new accToken
-    const accToken = await refTokenModel.genAccToken(fRefToken);
+    const fUserId = await refTokenModel.findUserByRefToken(fRefToken);
+    if (!fUserId) throw { msg: "USER_NOT_FOUND" };
+
+    const users = await userModel.loadAll(["fTypeId"], {
+      where: { fId: fUserId }
+    });
+    if (!users || users.length !== 1) throw { msg: "USER_NOT_FOUND" };
+
+    const { fTypeId } = users[0].get({ plain: true });
+    const permissions = await permissionModel.loadAll(["fUserType"], {
+      where: { fId: fTypeId }
+    });
+    if (!permissions || permissions.length !== 1)
+      throw { msg: "NO_PERMISSION" };
+
+    const { fUserType } = permissions[0].get({ plain: true });
+    const accToken = await refTokenModel.genAccToken(fUserId, fUserType);
     handleSuccess(res, { access_token: accToken });
   } catch (err) {
     handleFailure(res, { err, route: req.originalUrl });

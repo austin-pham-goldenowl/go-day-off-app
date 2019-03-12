@@ -2,6 +2,11 @@ import jwt from "jsonwebtoken";
 import moment from "moment";
 
 /**
+ * Models
+ */
+import { permission as permissionModel, users as userModel } from "./index";
+
+/**
  * Configs
  */
 import { AUTH_CONFIG, DATETIME_FORMAT_TYPE1 } from "../configs/config";
@@ -38,6 +43,20 @@ export default (sequelize, DataTypes) => {
       }
     });
 
+  RefToken.findUserByRefToken = fRefToken =>
+    new Promise(async (resolve, reject) => {
+      try {
+        if (!fRefToken) throw { code: 403, msg: "NO_TOKEN" };
+        const user = await RefToken.findOne({ where: { fRefToken } });
+        if (!result) throw { code: 401, msg: "INVALID_REFRESH_TOKEN" };
+        resolve({ fUserId: user.fUserId });
+      } catch (err) {
+        if (!err.code) err.code = 500;
+        if (!err.msg) err.msg = "DB_QUERY_ERROR";
+        reject(err);
+      }
+    });
+
   RefToken.refresh = ({ fUserId, fRefToken }) =>
     new Promise(async (resolve, reject) => {
       try {
@@ -62,18 +81,15 @@ export default (sequelize, DataTypes) => {
       }
     });
 
-  RefToken.genAccToken = fRefToken =>
+  RefToken.genAccToken = (fUserId, fUserType) =>
     new Promise(async (resolve, reject) => {
       try {
-        const userId = await RefToken.findOne({
-          attributes: ["fUserId"],
-          where: { fRefToken }
-        });
-        if (!userId) throw { code: 401, msg: "NO_REFRESH_TOKEN" };
+        const access_token = jwt.sign({ userId: fUserId, userType: fUserType.toLowerCase() },
+          AUTH_CONFIG.SECRET,
+          {
+            expiresIn: AUTH_CONFIG.AC_LIFETIME
+          });
 
-        const access_token = jwt.sign({ userId }, AUTH_CONFIG.SECRET, {
-          expiresIn: AUTH_CONFIG.AC_LIFETIME
-        });
         resolve(access_token);
       } catch (err) {
         if (!err.code) err.code = 500;

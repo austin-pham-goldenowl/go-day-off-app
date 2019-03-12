@@ -105,12 +105,23 @@ export default (sequelize, DataTypes) => {
 
   User.loadAll = (attributes = [], queryWhere = {}) =>
     new Promise(async (resolve, reject) => {
+      console.log("TCL: attributes", attributes);
       try {
-        const users = await User.findAll({ attributes, ...queryWhere });
+        let users = null;
+        if (attributes.length < 1)
+          users = await User.findAll({
+            ...queryWhere
+          });
+        else
+          users = await User.findAll({
+            attributes,
+            ...queryWhere
+          });
         resolve(users);
       } catch (err) {
-        if (!err.code) err.code = 500;
-        if (!err.msg) err.msg = "DB_QUERY_ERROR";
+        console.log("TCL: }catch -> err", err);
+        err.code = 500;
+        err.msg = "DB_QUERY_ERROR";
         reject(err);
       }
     });
