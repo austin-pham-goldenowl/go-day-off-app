@@ -1,3 +1,7 @@
-export const MODE_PERSONNEL = '3sVfP';
-export const MODE_ADMIN = 'gbAiv';
-export const MODE_HR = 'NH6Bs';
+const userTypes = {
+  MODE_PERSONNEL: "personnel",
+  MODE_ADMIN: "administrator",
+  MODE_HR: "hr"
+};
+
+export default userTypes;

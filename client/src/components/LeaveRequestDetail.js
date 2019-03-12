@@ -27,7 +27,7 @@ import { getLeaveType } from "../helpers/leaveLetterHelper";
 
 // API
 import { getLeaveLetterDetails } from "../apiCalls/leaveLetterAPI";
-import { getProfile } from "../apiCalls/accountAPI";
+import { getProfile } from "../apiCalls/userAPIs";
 
 const styles = theme => ({
   layout: {
