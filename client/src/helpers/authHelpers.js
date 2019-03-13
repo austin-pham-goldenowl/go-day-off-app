@@ -16,7 +16,7 @@ export const checkAuth = async () => {
   if(Date.now() <= exp * 1000) return true;
   await removeCookie(ACCESS_TOKEN_KEY);
   await removeCookie(REFRESH_TOKEN_KEY);
-  // removeCookie('user');
+  await removeCookie(USER_INFO_KEY);
 
   return false;
 }
@@ -56,3 +56,9 @@ export const getUserInfo = info => {
     (checkAuth() && getUserEntity() !== '' && getUserEntity()[info]) || null
   );
 };
+
+export const getUserId = () => {
+  return (
+    jwt_decode(getCookie(ACCESS_TOKEN_KEY)).userId
+  );
+}

@@ -132,22 +132,36 @@ class AbsenceLetterWithFormik extends React.Component {
 
   componentDidMount() {
     const allLeaveTypes = getAllLeaveTypes();
-    let allApprover = [];
-    let allInformTo = [];
     
     // Call api request:
     Axios.all([getAllInformTo(), getAllApprover()])
-      .then(Axios.spread((acct, perms) => {
-        console.log('axios.spread -> acct: ', acct);
-        console.log('axios.spread -> perms: ', perms);
-      //   this.setState(prevState => ({
-      //     ...prevState,
-      //     leaveTypesList: allLeaveTypes,
-      //     informToList: allInformTo,
-      //     approverList: allApprover
-      //   })
-      // );
-      }))
+      .then(Axios.spread((first, second) => {
+        console.log(`first: `, first);
+        console.log(`second: `,second);
+        let allApprover = second.data.approvers.map((item) => ({
+            value: item.fId,
+            label: `${item.fFirstName} ${item.fLastName}`
+        }));
+        let allInformTo = [{
+          value: first.data.teamLeader.fId,
+          label: `${first.data.teamLeader.fFirstName} ${first.data.teamLeader.fLastName}`
+        }];
+
+        
+      console.log(`leavetypes: `,allLeaveTypes);
+      console.log(`approvers: `, allApprover);
+      console.log(`informTo: `, allInformTo);
+        this.setState(prevState => ({
+          ...prevState,
+          templateList: {
+            leaveTypesList: allLeaveTypes,
+            informToList: allInformTo,
+            approverList: allApprover,
+          }
+        })
+      );
+      }
+      ))
       .catch(err => {
         console.log(`axios.all -> err:`, err);
       });
@@ -435,7 +449,8 @@ AbsenceLetterWithFormik.defaultProps = {
     approver: {},
     informTo: [],
     reason: "",
-    otherReason: ""
+    otherReason: "",
+    // substitute: {}
   }
 };
 

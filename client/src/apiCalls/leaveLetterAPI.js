@@ -3,9 +3,13 @@ import { getCookie } from "tiny-cookie";
 import { SERVER_HOST_DEV } from "../constants/api";
 import { ACCESS_TOKEN_KEY } from "../constants/token";
 
+import { getUserId } from '../helpers/authHelpers';
+
 //General header params for some methods
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 axios.defaults.headers.patch['Content-Type'] = 'application/json';
+
+
 
 export const getLeaveLetterDetails = id =>
   axios.get(`${SERVER_HOST_DEV}/leaveLetter/details?id=${id}`,{}, {
@@ -31,12 +35,14 @@ export const createLeaveLetter = (letterEntity) => {
   console.log(`leaveLetterAPI -> createLeaveLEtter -> letterEntity: `,letterEntity);
   return axios.post(`${SERVER_HOST_DEV}/leaveletter`, 
     {
-      "absenceType": letterEntity.absenceType,
-      "fromDT": letterEntity.fromDT,
+      "absenceType": letterEntity.leaveType,
+      "fromDT": letterEntity.startDate,
+      "toDT": letterEntity.endDate,
       "status": 1,
-      "substituteId": "i53FItHeMK",
-      "toDT": "2019-02-17T16:29:56.000Z",
-      "userId": "MytsQhUPQG"
+      "substituteId": 'i53FItHeMK',
+      "userId": getUserId(),
+      "approver": letterEntity.approver,
+      "reason": letterEntity.otherReason !== "" ? letterEntity.otherReason : letterEntity.reason
     },
     {
       headers: {

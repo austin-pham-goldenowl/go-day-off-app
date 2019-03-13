@@ -6,8 +6,7 @@ import { ACCESS_TOKEN_KEY } from "../../constants/token";
 
 //
 export const getAllApprover = () => {
-  return axios.get(`${SERVER_HOST_DEV}/approvers`, 
-    {},
+  return axios.get(`${SERVER_HOST_DEV}/user/approver`,
     {
       headers: {
         'x-access-token': getCookie(ACCESS_TOKEN_KEY)
@@ -17,8 +16,7 @@ export const getAllApprover = () => {
 }
 
 export const getAllInformTo = () => {
-  return axios.get(`${SERVER_HOST_DEV}/informTo`,
-    {},
+  return axios.get(`${SERVER_HOST_DEV}/user/team-leader`,
     {
       headers: {
         'x-access-token': getCookie(ACCESS_TOKEN_KEY)

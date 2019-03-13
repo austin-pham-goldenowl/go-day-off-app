@@ -4,7 +4,11 @@ import { Typography, Button } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import MUIDataTable from "mui-datatables";
 import moment from "moment";
-
+import  {
+  LEAVE_REQUEST_PENDING,
+  LEAVE_REQUEST_APPROVED,
+  LEAVE_REQUEST_REJECTED
+} from '../constants/requestStatusType';
 const styles = theme => ({
   paper: {
     padding: theme.spacing.unit * 5
@@ -67,16 +71,16 @@ class LetterManagement extends Component {
                 <span
                   style={{
                     color:
-                      fStatus === 0
+                      fStatus === LEAVE_REQUEST_PENDING
                         ? "#ffe43a"
-                        : fStatus === 1
+                        : fStatus === LEAVE_REQUEST_APPROVED
                         ? "#0eba25"
                         : "gray"
                   }}
                 >
-                  {fStatus === 0
+                  {fStatus === LEAVE_REQUEST_PENDING
                     ? "PENDING"
-                    : fStatus === 1
+                    : fStatus === LEAVE_REQUEST_APPROVED
                     ? "APPROVED"
                     : "REJECTED"}
                 </span>,
@@ -103,16 +107,16 @@ class LetterManagement extends Component {
                 <span
                   style={{
                     color:
-                      fStatus === 0
+                      fStatus === LEAVE_REQUEST_PENDING
                         ? "#ffe43a"
-                        : fStatus === 1
+                        : fStatus === LEAVE_REQUEST_APPROVED
                         ? "#0eba25"
                         : "gray"
                   }}
                 >
-                  {fStatus === 0
+                  {fStatus === LEAVE_REQUEST_PENDING
                     ? "PENDING"
-                    : fStatus === 1
+                    : fStatus === LEAVE_REQUEST_APPROVED
                     ? "APPROVED"
                     : "REJECTED"}
                 </span>,
