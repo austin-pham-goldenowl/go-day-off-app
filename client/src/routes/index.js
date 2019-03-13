@@ -1,9 +1,9 @@
 import React from "react";
 
 import NotFound from "../components/NotFound";
-import Home from "../containers/Home/container";
-import SignIn from "../containers/login/container";
-import SignOut from "../containers/SignOut/container";
+import Home from "../containers/Home";
+import SignIn from "../containers/Login";
+import SignOut from "../containers/SignOut";
 
 import AbsenceLetterCreate from "../containers/CreateLeaveLetter";
 import AccountInfo from "../containers/AccountInfo";
