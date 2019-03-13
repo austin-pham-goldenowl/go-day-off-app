@@ -108,11 +108,27 @@ const styles = theme => ({
 
 class AbsenceLetterWithFormik extends React.Component {
   state = {
-    leaveTypesList: [],
-    informToList: [],
-    approverList: [],
+    templateList: {
+      leaveTypesList: [],
+      informToList: [],
+      approverList: [],
+    },
+    otherReasonSelected: false,
   }
-
+  handleChangeReason = value => {
+    if (value === "Lý do khác") {
+      this.setState(prevState => ({
+        ...prevState,
+        otherReasonSelected: true,
+      }));
+    }
+    else {
+      this.setState(prevState => ({
+        ...prevState,
+        otherReasonSelected: false,
+      }));
+    }
+  }
 
   componentDidMount() {
     const allLeaveTypes = getAllLeaveTypes();
@@ -138,8 +154,8 @@ class AbsenceLetterWithFormik extends React.Component {
   }
 
   render() {
-    const { classes, initialValues, handleShowNotif, handleHideNotif } = this.props;
-    const { leaveTypesList, informToList, approverList } = this.state;
+    const { classes, initialValues, handleShowNotif } = this.props;
+    const {templateList: { leaveTypesList, informToList, approverList }, otherReasonSelected } = this.state;
     console.log("initialValues", initialValues);
     return (
       <DashContainer>
@@ -209,11 +225,10 @@ class AbsenceLetterWithFormik extends React.Component {
                               color="secondary"
                               onClick={handleReset}
                             >
-
-                            Discard
-                            <Icon fontSize="small" className={classes.rightIcon}>
-                              delete_sweep
-                            </Icon>
+                              Discard
+                              <Icon fontSize="small" className={classes.rightIcon}>
+                                delete_sweep
+                              </Icon>
                             </Button>
                           )}
                         />
@@ -240,8 +255,6 @@ class AbsenceLetterWithFormik extends React.Component {
                             {/* Select Leave type */}
                             <Field
                               render={({ field, form, ...otherProps }) => {
-                                console.log(values);
-                                console.log("otherProps", otherProps);
                                 return (
                                   <SelectCustom
                                     name="leaveType"
@@ -334,8 +347,10 @@ class AbsenceLetterWithFormik extends React.Component {
                                   label="Reason"
                                   value={values.reason}
                                   options={mockup_Reason}
-                                  onChange={({ target: { name, value } }) =>
-                                    setFieldValue(name, value)
+                                  onChange={({ target: { name, value } }) =>{
+                                      setFieldValue(name, value)
+                                      this.handleChangeReason(value)
+                                    }
                                   }
                                 />
                               )}
@@ -343,22 +358,24 @@ class AbsenceLetterWithFormik extends React.Component {
                           </Grid>
                           {/* Reason in detail */}
                           <Grid item xs={12}>
-                            <Field
-                              name="otherReason"
-                              render={({ field, form }) => (
-                                <TextField
-                                  required
-                                  multiline
-                                  fullWidth
-                                  id="otherReason"
-                                  name="otherReason"
-                                  label="Reason detail"
-                                  onChange={({ target: { name, value } }) =>
-                                    setFieldValue(name, value)
-                                  }
-                                />
-                              )}
-                            />
+                            {otherReasonSelected ? (
+                              <Field
+                                name="otherReason"
+                                render={({ field, form }) => (
+                                  <TextField
+                                    required
+                                    multiline
+                                    fullWidth
+                                    id="otherReason"
+                                    name="otherReason"
+                                    label="Reason detail"
+                                    onChange={({ target: { name, value } }) => 
+                                      setFieldValue(name, value)
+                                    }
+                                  />
+                                )}
+                              />
+                            ): null}
                           </Grid>
                           {/* End - Reason in detail */}
                         </Grid>
