@@ -12,7 +12,7 @@ axios.defaults.headers.patch['Content-Type'] = 'application/json';
 
 
 export const getLeaveLetterDetails = id =>
-  axios.get(`${SERVER_HOST_DEV}/leaveLetter/details?id=${id}`,{}, {
+  axios.get(`${SERVER_HOST_DEV}/leaveLetter/details?id=${id}`, {
     headers: {
       "x-access-token": getCookie(ACCESS_TOKEN_KEY)
     }
@@ -52,13 +52,16 @@ export const createLeaveLetter = (letterEntity) => {
   )
 }
 
-export const updateLetterStatus = (letterId, statusKey) => {
+export const updateLetterStatus = (letterId, userId, statusKey) => {
   console.log(`LeaveLetterAPI -> updateLetterStatus -> status: `, statusKey);
+  console.log(`letterId: `, letterId);
+  console.log('statusKey: ', statusKey);
   return axios.patch(`${SERVER_HOST_DEV}/leaveletter`, 
   {
     "id": letterId,
     "info": {
       "status": statusKey,
+      "userId": userId,
     },
   },
   {

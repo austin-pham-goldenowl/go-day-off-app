@@ -24,12 +24,18 @@ import {
   RemoveCircleOutline as RemoveCircleIcon
 } from "@material-ui/icons";
 // Helper
-// import { getLeaveType } from "../../helpers/leaveLetterHelper";
+
+import { getLeaveType } from '../../helpers/leaveLetterHelper';
 
 // API
 import { getLeaveLetterDetails } from "../../apiCalls/leaveLetterAPI";
 import { getProfile } from "../../apiCalls/userAPIs";
+import  { updateLetterStatus } from '../../apiCalls/leaveLetterAPI';
 
+import {
+  LEAVE_REQUEST_REJECTED,
+  LEAVE_REQUEST_APPROVED
+} from '../../constants/requestStatusType';
 const styles = theme => ({
   layout: {
     width: "auto",
@@ -130,6 +136,7 @@ class LeaveRequestDetail extends React.Component {
     let response = await getLeaveLetterDetails(
       queryString.parse(this.props.location.search).id
     );
+    console.log(`LeaveRequestDetail -> response: `, response);
     let {
       status: statusLetter,
       data: { success: successLetter, leaveLetter }
@@ -160,6 +167,13 @@ class LeaveRequestDetail extends React.Component {
             onSubmit={({ values, actions }) => {
               console.log(`Submitted values: `, values);
               //call api
+              updateLetterStatus(queryString.parse(history.location.search).id, leaveLetter.fUserId , LEAVE_REQUEST_APPROVED)
+                .then(res => {
+                  console.log(res);
+                })
+                .catch(err => {
+                  console.log(err);
+                })
             }}
           >
             {({
@@ -273,9 +287,7 @@ class LeaveRequestDetail extends React.Component {
                         <Grid item xs={12} className={classes.fieldWrapper}>
                           <div className={classes.fieldTitle}>
                             Leave Type:
-                            <span className={classes.fieldValue}>{` ${
-                              leaveLetter.fAbsenceType
-                            }`}</span>
+                            <span className={classes.fieldValue}>{` ${getLeaveType(leaveLetter.fAbsenceType)}`}</span>
                           </div>
                         </Grid>
                         {/** FromDT */}
