@@ -214,7 +214,7 @@ ENGINE = InnoDB;
 INSERT INTO `positions` (`fId`,`fPosName`) VALUES ("U4d4k","Software Engineer (SE)"),("wHK7p","Project Manager (PM)"),("mXLNt","Project Assistant (PA)"),("ir0gE","Team Leader"),("cpvd7","Intern/Fresher"),("s8l4h","Designer"),("B4QIq","Tech Lead"),("MYPyH","Software Tester"),("psS14","Human Resouces (HR)"),("1qRly","Accountant"),("JVh4R","Business Analyst (BA)"),("Kebva","Digital Marketer"),("Sz0d1","CEO"),("hGKx5","COO"),("8mCqq","CTO");
 
 -- Insert data for userPermission
-INSERT INTO `userPermission` (`fId`,`fUserType`) VALUES ("gbAiv","Administration"),("NH6Bs","HR"),("3sVfP","Personnel");
+INSERT INTO `userPermission` (`fId`,`fUserType`) VALUES ("gbAiv","Personnel"),("NH6Bs","Administration"),("3sVfP","HR");
 
 -- Insert data for absenceTypes
 INSERT INTO `absenceTypes` (`fId`,`fAbsenceTypeName`) VALUES ("1","Việc riêng"),("2","Nghỉ phép năm"),("3","Nghỉ ốm"),("4","Nghỉ chế độ");

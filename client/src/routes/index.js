@@ -5,8 +5,8 @@ import Home from "../containers/Home/container";
 import SignIn from "../containers/login/container";
 import SignOut from "../containers/SignOut/container";
 
-import AbsenceLetterCreate from "../containers/absenceLetter/container";
-import AccountInfo from "../containers/accountInfo/container";
+import AbsenceLetterCreate from "../containers/CreateLeaveLetter";
+import AccountInfo from "../containers/AccountInfo";
 import Dashboard from "../containers/Dashboard";
 import AllLettersManagement from "../containers/AllLettersManagement";
 
