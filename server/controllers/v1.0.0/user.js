@@ -7,7 +7,8 @@ const Router = express.Router();
 const {
   users: userModel,
   positions: positionModel,
-  teams: teamModel
+  teams: teamModel,
+  userPermission: permissionModel
 } = require("../../models");
 
 /**
@@ -140,6 +141,28 @@ Router.patch("/profile", async (req, res) => {
     if (affected[0] !== 1) throw { msg: "USER_NOT_FOUND" };
 
     handleSuccess(res, { user: entity });
+  } catch (err) {
+    handleFailure(res, { err, route: req.originalUrl });
+  }
+});
+
+Router.get("/approver", async (req, res) => {
+  try {
+    // get hr user type id
+    const userTypeIds = await permissionModel.loadAll(["fId"], {
+      where: { fUserType: "HR" }
+    });
+    if (!userTypeIds || userTypeIds.length !== 1)
+      throw { msg: "USER_NOT_FOUND" };
+
+    // get users who are hr
+    const hrId = userTypeIds[0].get({ plain: true }).fId;
+    const users = await userModel.loadAll(["fId", "fFirstName", "fLastName"], {
+      where: { fTypeId: hrId }
+    });
+    let approvers = users.map(user => user.get({ plain: true }));
+
+    handleSuccess(res, { approvers });
   } catch (err) {
     handleFailure(res, { err, route: req.originalUrl });
   }

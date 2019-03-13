@@ -351,7 +351,7 @@
 						"header": [
 							{
 								"key": "x-access-token",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6Ik15dHNRaFVQUUcifSwiaWF0IjoxNTUyMjgzMzQzLCJleHAiOjE1NTIzNDMzNDN9.1-c0fCM8bXGdq1Ss_Vo4KEkPcjtKHxkLiJgZnJOpNcM",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJIOFVJQWRzeTdUIiwidXNlclR5cGUiOiJociIsImlhdCI6MTU1MjQ1MTMwOSwiZXhwIjoxNTUyNTExMzA5fQ.MlZQnA-0M2y2Df2z0dZRYsHBYdrvQ8m6NVLYQioq6K8",
 								"type": "text"
 							},
 							{
@@ -683,6 +683,37 @@
 								"v1.0.0",
 								"leaveletter",
 								"my-letters"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get approver",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJIOFVJQWRzeTdUIiwidXNlclR5cGUiOiJociIsImlhdCI6MTU1MjQ1MTMwOSwiZXhwIjoxNTUyNTExMzA5fQ.MlZQnA-0M2y2Df2z0dZRYsHBYdrvQ8m6NVLYQioq6K8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "localhost:3001/api/v1.0.0/user/approver",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"api",
+								"v1.0.0",
+								"user",
+								"approver"
 							]
 						}
 					},

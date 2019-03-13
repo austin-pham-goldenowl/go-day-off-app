@@ -134,12 +134,13 @@ CREATE TABLE IF NOT EXISTS `leavingForm`.`leaveLetters` (
   `fToDT` DATETIME NOT NULL,
   `fAbsenceType` INT NOT NULL,
   `fSubstituteId` VARCHAR(10) NULL,
-  `fUserId` VARCHAR(45) NOT NULL,
+  `fUserId` VARCHAR(10) NOT NULL,
   `users_fId` VARCHAR(10) NULL,
   `users_fId1` VARCHAR(10) NULL,
   `absenceTypes_fId` INT NULL,
   `fStatus` INT NOT NULL,
   `fReason` VARCHAR(255) NULL,
+  `fApprover` VARCHAR(10) NOT NULL,
   PRIMARY KEY (`fId`),
   UNIQUE INDEX `fId_UNIQUE` (`fId` ASC),
   INDEX `fk_leaveLetters_users_idx` (`users_fId` ASC),
@@ -158,6 +159,11 @@ CREATE TABLE IF NOT EXISTS `leavingForm`.`leaveLetters` (
   CONSTRAINT `fk_leaveLetters_absenceTypes1`
     FOREIGN KEY (`absenceTypes_fId`)
     REFERENCES `leavingForm`.`absenceTypes` (`fId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_leaveLetters_users2`
+    FOREIGN KEY (`approver_fId`)
+    REFERENCES `leavingForm`.`users` (`fId`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;

@@ -33,17 +33,12 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.STRING(10)
       },
       fUserId: {
-        type: DataTypes.STRING(45),
+        type: DataTypes.STRING(10),
         allowNull: false
       },
-      users_fId: {
-        type: DataTypes.STRING(10)
-      },
-      users_fId1: {
-        type: DataTypes.STRING(10)
-      },
-      absenceTypes_fId: {
-        type: DataTypes.INTEGER
+      fApprover: {
+        type: DataTypes.STRING(10),
+        allowNull: false
       },
       fStatus: {
         type: DataTypes.ENUM,
@@ -55,7 +50,8 @@ export default (sequelize, DataTypes) => {
       },
       absenceTypes_fId: { type: DataTypes.STRING(5) },
       users_fId: { type: DataTypes.STRING(10) },
-      users_fId1: { type: DataTypes.STRING(10) }
+      users_fId1: { type: DataTypes.STRING(10) },
+      approver_fId: { type: DataTypes.STRING(10) }
     },
     {
       timestamps: false,
@@ -71,6 +67,9 @@ export default (sequelize, DataTypes) => {
           });
           LeaveLetter.belongsTo(models.users, {
             foreignKey: "users_fId1"
+          });
+          LeaveLetter.belongsTo(models.users, {
+            foreignKey: "approver_fId"
           });
         }
       }
