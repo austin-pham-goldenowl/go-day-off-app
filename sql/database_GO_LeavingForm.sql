@@ -138,6 +138,7 @@ CREATE TABLE IF NOT EXISTS `leavingForm`.`leaveLetters` (
   `users_fId` VARCHAR(10) NULL,
   `users_fId1` VARCHAR(10) NULL,
   `absenceTypes_fId` INT NULL,
+  `approver_fId` VARCHAR(10) NULL,
   `fStatus` INT NOT NULL,
   `fReason` VARCHAR(255) NULL,
   `fApprover` VARCHAR(10) NOT NULL,
@@ -236,9 +237,9 @@ UPDATE`users` SET `fTeamId` = "FfI2V" WHERE `fId` =  "MytsQhUPQG";
 UPDATE`users` SET `fTeamId` = "1LwZq" WHERE `fId` =  "H8UIAdsy7T";
 
 -- Insert data for leaveLetters
-insert into leavingForm.leaveLetters(fId, fRdt, fFromDT, fToDT, fAbsenceType, fSubstituteId, fUserId, fStatus, fReason)
-values ("LTddvId9Yq", "2019-02-17 16:29:56", "2019-02-19 16:29:56", "2019-02-18 16:29:56", 1, "i53FItHeMK", "2U35tyjDmh", 1, ""),
-			("mLLrBQpcwZ", "2019-01-17 16:29:56", "2019-01-19 16:29:56", "2019-01-18 16:29:56", 1, "i53FItHeMK", "2U35tyjDmh", 2, "");
+insert into leavingForm.leaveLetters(fId, fRdt, fFromDT, fToDT, fAbsenceType, fSubstituteId, fUserId, fStatus, fReason, fApprover)
+values ("LTddvId9Yq", "2019-02-17 16:29:56", "2019-02-19 16:29:56", "2019-02-18 16:29:56", 1, "i53FItHeMK", "2U35tyjDmh", 1, "", "H8UIAdsy7T"),
+			("mLLrBQpcwZ", "2019-01-17 16:29:56", "2019-01-19 16:29:56", "2019-01-18 16:29:56", 1, "i53FItHeMK", "2U35tyjDmh", 2, "","H8UIAdsy7T");
 
 
 -- Insert data for rejectedLetterDetail
