@@ -215,9 +215,9 @@ INSERT INTO `absenceTypes` (`fId`,`fAbsenceTypeName`) VALUES ("1","Việc riêng
 
 -- Insert data for users: 4TCgb, FfI2V, 1LwZq
 INSERT INTO `users` (`fId`,`fFirstName`,`fLastName`,`fBday`,`fPosition`,`fAddress`,`fPhone`,`fTeamId`,`fTypeId`,`fUsername`,`fPassword`,`fEmail`, `fGender`) 
-VALUES ("i53FItHeMK","Daphne","Zachery","1982-03-05 04:26:11","U4d4k","P.O. Box 489, 2016 Risus. Av.","0157694180",null,"gbAiv","user","5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8","augue.Sed.molestie@congueInscelerisque.org", 1),
-				("MytsQhUPQG","Amanda","Amos","1993-11-22 10:18:26","wHK7p","5253 Nulla Road","0986209274",null,"NH6Bs","admin","5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8","habitant.morbi.tristique@estvitaesodales.net", 2),
-                ("H8UIAdsy7T","Adena","Justin","1972-07-04 01:45:20","mXLNt","Ap #157-9686 Quisque Avenue","0778329121",null,"3sVfP","hr","5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8","nulla.Integer@Aliquam.net", 3);
+VALUES ("i53FItHeMK","Daphne","Zachery","1982-03-05 04:26:11","U4d4k","P.O. Box 489, 2016 Risus. Av.","0157694180",null,"3sVfP","user","5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8","augue.Sed.molestie@congueInscelerisque.org", 1),
+				("MytsQhUPQG","Amanda","Amos","1993-11-22 10:18:26","wHK7p","5253 Nulla Road","0986209274",null,"gbAiv","admin","5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8","habitant.morbi.tristique@estvitaesodales.net", 2),
+                ("H8UIAdsy7T","Adena","Justin","1972-07-04 01:45:20","mXLNt","Ap #157-9686 Quisque Avenue","0778329121",null,"NH6Bs","hr","5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8","nulla.Integer@Aliquam.net", 3);
 
 
 -- Insert data for teams

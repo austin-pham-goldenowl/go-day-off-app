@@ -5,7 +5,10 @@ const uid = require("rand-token").uid;
 /**
  * Models
  */
-const { leaveLetters: leaveLetterModel } = require("../../models");
+const {
+  leaveLetters: leaveLetterModel,
+  users: userModel
+} = require("../../models");
 
 /**
  * Configs
@@ -52,7 +55,18 @@ Router.get("/details", async (req, res) => {
     if (!leaveLetters || leaveLetters.length !== 1)
       throw { msg: "LETTER_NOT_FOUND" };
 
-    handleSuccess(res, { leaveLetter: leaveLetters[0] });
+    // load substitute fullName
+    const letter = leaveLetters[0].get({ plain: true });
+    const { fSubstituteId } = letter;
+    const users = await userModel.loadAll(["fFirstName", "fLastName"], {
+      where: { fId: fSubstituteId }
+    });
+    if (users.length) {
+      const { fFirstName, fLastName } = users[0].get({ plain: true });
+      letter.fFullName = fFirstName + " " + fLastName;
+    }
+
+    handleSuccess(res, { leaveLetter: letter });
   } catch (err) {
     handleFailure(res, { err, route: req.originalUrl });
   }
@@ -62,7 +76,25 @@ Router.get("/", async (req, res) => {
   try {
     const userType = await getPermissionByToken(req.token_payload);
     if (userType !== "HR") throw { code: 401, msg: "NO_PERMISSION" };
-    const leaveLetters = await leaveLetterModel.loadAll();
+
+    const rawLeaveLetters = await leaveLetterModel.loadAll();
+    // load user fullName
+    let leaveLetters = [];
+    await (async () => {
+      for (let i = 0; i < rawLeaveLetters.length; i++) {
+        const letter = rawLeaveLetters[i].get({ plain: true });
+        const { fUserId } = letter;
+        const users = await userModel.loadAll(["fFirstName", "fLastName"], {
+          where: { fId: fUserId }
+        });
+        if (users.length) {
+          const { fFirstName, fLastName } = users[0].get({ plain: true });
+          letter.fFullName = fFirstName + " " + fLastName;
+        }
+        leaveLetters.push(letter);
+      }
+    })();
+
     handleSuccess(res, { leaveLetters });
   } catch (err) {
     handleFailure(res, { err, route: req.originalUrl });
