@@ -121,10 +121,11 @@ Router.post("/", async (req, res) => {
       throw { msg: "INVALID_VALUES" };
 
     // add foreign keys
-    const { fUserId, fAbsenceType } = entity;
+    const { fUserId, fAbsenceType, fApprover } = entity;
     entity.absenceTypes_fId = fAbsenceType;
     entity.users_fId = fUserId;
     entity.users_fId1 = fUserId;
+    entity.approver_fId = fApprover;
     const leaveLetter = await leaveLetterModel.add(entity);
 
     handleSuccess(res, { code: 201, leaveLetter });
@@ -161,14 +162,6 @@ Router.patch("/", async (req, res) => {
     // validate whether fromDT <= toDT
     if (fFromDT && fToDT && new Date(fFromDT) > new Date(fToDT))
       throw { msg: "INVALID_VALUES" };
-
-    // update foreign keys
-    const { fAbsenceType } = entity;
-    if (fAbsenceType) entity.absenceTypes_fId = fAbsenceType;
-    if (fUserId) {
-      entity.users_fId = fUserId;
-      entity.users_fId1 = fUserId;
-    }
 
     const affected = await leaveLetterModel.modify(entity, {
       where: { fId, fUserId }
