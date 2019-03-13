@@ -40,10 +40,10 @@ const PersonnelListItems = props => {
           <ListItemText primary="Dashboard" />
         </ListItem>
       </Link>
-      <Link to="/leaveForm" className={classes.undecoratedLink}>
+      <Link to="/leave-request/create" className={classes.undecoratedLink}>
         <ListItem
           button
-          className={isSelectedLink(history, "/leaveForm", classes)}
+          className={isSelectedLink(history, "/leave-request/create", classes)}
         >
           <ListItemIcon>
             <SendIcon />
