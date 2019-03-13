@@ -9,3 +9,17 @@ export const getLeaveLetterDetails = id =>
       "x-access-token": getCookie(ACCESS_TOKEN_KEY)
     }
   });
+
+export const getAllLeaveLetters = () =>
+  axios.get(`${SERVER_HOST_DEV}/leaveLetter/`, {
+    headers: {
+      "x-access-token": getCookie(ACCESS_TOKEN_KEY)
+    }
+  });
+
+export const getMyLeaveLetters = () =>
+  axios.get(`${SERVER_HOST_DEV}/leaveLetter/my-letters`, {
+    headers: {
+      "x-access-token": getCookie(ACCESS_TOKEN_KEY)
+    }
+  });

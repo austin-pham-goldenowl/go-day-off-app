@@ -1,9 +1,11 @@
 import React from "react";
 import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import SimpleTable from "./SimpleTable";
 import Calendar from "../../components/Calendar";
+import LettersManagement from "../../components/LettersManagement";
 import DashContainer from "../DashContainer";
+
+import { getMyLeaveLetters } from "../../apiCalls/leaveLetterAPI";
 
 const styles = theme => ({
   calendarContainer: { marginBottom: "2em" },
@@ -27,7 +29,7 @@ const Dashboard = props => {
         My letters
       </Typography>
       <div className={classes.tableContainer}>
-        <SimpleTable />
+        <LettersManagement api={getMyLeaveLetters} />
       </div>
     </DashContainer>
   );

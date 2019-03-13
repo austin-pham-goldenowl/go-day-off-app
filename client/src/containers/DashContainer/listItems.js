@@ -73,10 +73,10 @@ const HRListItems = props => {
     <>
       <Divider />
       <br />
-      <Link to="/letters-management" className={classes.undecoratedLink}>
+      <Link to="/leave-request/all" className={classes.undecoratedLink}>
         <ListItem
           button
-          className={isSelectedLink(history, "/letters-management", classes)}
+          className={isSelectedLink(history, "/leave-request/all", classes)}
         >
           <ListItemIcon>
             <EmailIcon />
