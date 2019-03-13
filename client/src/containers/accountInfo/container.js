@@ -15,6 +15,7 @@ import Icon from "@material-ui/core/Icon";
 
 import SelectCustom from "../../components/customSelect";
 import DatePickerField from "../../components/datePicker";
+import DashContainer from "../DashContainer";
 
 const styles = theme => ({
   layout: {
@@ -81,7 +82,7 @@ class AccountInfo extends React.Component {
     const { classes, initialValues } = this.props;
 
     return (
-      <main className={classes.layout}>
+      <DashContainer className={classes.layout}>
         <Paper className={classes.paper}>
           <CssBaseline />
           <Formik
@@ -339,7 +340,7 @@ class AccountInfo extends React.Component {
             }}
           </Formik>
         </Paper>
-      </main>
+      </DashContainer>
     );
   }
 }

@@ -1,13 +1,12 @@
 import React from "react";
 import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import SimpleLineChart from "./SimpleLineChart";
 import SimpleTable from "./SimpleTable";
+import Calendar from "../../components/Calendar";
+import DashContainer from "../DashContainer";
 
 const styles = theme => ({
-  chartContainer: {
-    marginLeft: -22
-  },
+  calendarContainer: { marginBottom: "2em" },
   tableContainer: {
     height: 320
   }
@@ -17,20 +16,20 @@ const Dashboard = props => {
   const { classes } = props;
 
   return (
-    <div>
+    <DashContainer>
       <Typography variant="h4" gutterBottom component="h2">
-        Orders
+        Calendar
       </Typography>
-      <Typography component="div" className={classes.chartContainer}>
-        <SimpleLineChart />
+      <Typography component="div" className={classes.calendarContainer}>
+        <Calendar />
       </Typography>
       <Typography variant="h4" gutterBottom component="h2">
-        Products
+        My letters
       </Typography>
       <div className={classes.tableContainer}>
         <SimpleTable />
       </div>
-    </div>
+    </DashContainer>
   );
 };
 

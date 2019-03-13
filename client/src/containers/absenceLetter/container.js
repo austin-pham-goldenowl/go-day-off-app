@@ -9,6 +9,7 @@ import SelectCustom from "../../components/customSelect";
 import TextFieldReadOnly from "../../components/readOnlyTextField";
 import DatePickerField from "../../components/datePicker";
 import SelectWithChips from "../../components/selectWithChips";
+import DashContainer from "../DashContainer";
 
 import ValidationSchema from "./validationSchema";
 
@@ -91,7 +92,7 @@ class AbsenceLetterWithFormik extends React.Component {
     const { classes, initialValues } = this.props;
     console.log("initialValues", initialValues);
     return (
-      <div>
+      <DashContainer>
         <main className={classes.layout}>
           <Paper className={classes.paper}>
             <Formik
@@ -330,7 +331,7 @@ class AbsenceLetterWithFormik extends React.Component {
             />
           </Paper>
         </main>
-      </div>
+      </DashContainer>
     );
   }
 }

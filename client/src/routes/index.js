@@ -1,64 +1,52 @@
-import React from 'react';
+import React from "react";
 
-import NotFound from '../components/NotFound';
-import Home from '../containers/Home/container';
-import SignIn from '../containers/Login/container';
-import SignOut from '../containers/SignOut/container';
+import NotFound from "../components/NotFound";
+import Home from "../containers/Home/container";
+import SignIn from "../containers/login/container";
+import SignOut from "../containers/SignOut/container";
 
-import DashboardWrapper from '../containers/DashboardWrapper/container';
-import AbsenceLetterCreate from '../containers/AbsenceLetter/container';
-import AccountInfo from '../containers/AccountInfo/container';
+import AbsenceLetterCreate from "../containers/absenceLetter/container";
+import AccountInfo from "../containers/accountInfo/container";
+import Dashboard from "../containers/Dashboard";
 
 // import EditAccountInfo from '../containers/EditAccountInfo/container';
 
 const routes = [
   {
-    path: '/',
+    path: "/",
     isPrivate: true,
     exact: true,
-    comp: props => (<Home {...props}/>)
+    comp: props => <Home {...props} />
   },
   {
-    path: '/login',
+    path: "/login",
     isPrivate: false,
     exact: false,
-    comp: props => (<SignIn {...props}/>)
+    comp: props => <SignIn {...props} />
   },
   {
-    path: '/logout',
+    path: "/logout",
     isPrivate: false,
     exact: false,
-    comp: props => (<SignOut {...props}/>)
+    comp: props => <SignOut {...props} />
   },
   {
-    path: '/dashboard',
+    path: "/dashboard",
     isPrivate: true,
     exact: true,
-    comp: props => (<DashboardWrapper {...props}/>)
+    comp: props => <Dashboard {...props} />
   },
   {
-    path: '/leave-request/create',
+    path: "/leave-request/create",
     isPrivate: true,
     exact: true,
-    comp: props => (<AbsenceLetterCreate {...props}/>)
+    comp: props => <AbsenceLetterCreate {...props} />
   },
-  // {
-  //   path: '/leave-request/detail',
-  //   isPrivate: true,
-  //   exact: true,
-  //   comp: props => (<ListAbsenceDefault {...props}/>)
-  // },
-    // {
-  //   path: '/leave-request/all',
-  //   isPrivate: true,
-  //   exact: true,
-  //   comp: props => (<ListAbsenceAll {...props}/>)
-  // },
   {
-    path: '/account/info',
+    path: "/account/info",
     isPrivate: true,
     exact: true,
-    comp: props => (<AccountInfo {...props}/>)
+    comp: props => <AccountInfo {...props} />
   },
   // {
   //   path: '/account/edit',
@@ -66,18 +54,24 @@ const routes = [
   //   exact: true,
   //   comp: props => (<EditAccountInfo {...props}/>)
   // },
+  // {
+  //   path: '/leave-request/detail',
+  //   isPrivate: true,
+  //   exact: true,
+  //   comp: props => (<ListAbsenceDefault {...props}/>)
+  // },
+  // {
+  //   path: '/leave-request/all',
+  //   isPrivate: true,
+  //   exact: true,
+  //   comp: props => (<ListAbsenceAll {...props}/>)
+  // },
   {
-    path: '/',
+    path: "",
     isPrivate: false,
     exact: false,
-    comp: props => (<NotFound {...props}/>)
-  },
-  {
-    path: '',
-    isPrivate: false,
-    exact: false,
-    comp: props => (<NotFound />)
-  },
+    comp: props => <NotFound {...props} />
+  }
 ];
 
 export default routes;
