@@ -145,4 +145,40 @@ Router.patch("/profile", async (req, res) => {
   }
 });
 
+Router.get("/team-leader", async (req, res) => {
+  try {
+    const { userId } = req.token_payload;
+    // find which team the user belongs to
+    const users = await userModel.loadAll(["fTeamId"], {
+      where: { fId: userId }
+    });
+    if (!users || users.length !== 1) throw { msg: "USER_NOT_FOUND" };
+
+    // find which user is the team leader
+    const { fTeamId } = users[0].get({ plain: true });
+    const teams = await teamModel.loadAll(["fTeamLead"], {
+      where: { fId: fTeamId }
+    });
+    if (!teams || teams.length !== 1) throw { msg: "USER_NOT_FOUND" };
+
+    // find the team leader name
+    const { fTeamLead } = teams[0].get({ plain: true });
+    const leaders = await userModel.loadAll(["fFirstName", "fLastName"], {
+      where: { fId: fTeamLead }
+    });
+    if (!leaders || leaders.length !== 1) throw { msg: "USER_NOT_FOUND" };
+
+    const { fFirstName, fLastName } = leaders[0].get({ plain: true });
+    const teamLeader = {
+      fId: fTeamLead,
+      fFirstName,
+      fLastName
+    };
+
+    handleSuccess(res, { teamLeader });
+  } catch (err) {
+    handleFailure(res, { err, route: req.originalUrl });
+  }
+});
+
 module.exports = Router;
