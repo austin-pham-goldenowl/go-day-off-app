@@ -9,6 +9,7 @@ import AbsenceLetterCreate from "../containers/absenceLetter/container";
 import AccountInfo from "../containers/accountInfo/container";
 import Dashboard from "../containers/Dashboard";
 import AllLettersManagement from "../containers/AllLettersManagement";
+import LeaveRequestDetail from '../containers/LeaveRequestDetail'
 
 // import EditAccountInfo from '../containers/EditAccountInfo/container';
 
@@ -55,12 +56,12 @@ const routes = [
   //   exact: true,
   //   comp: props => (<EditAccountInfo {...props}/>)
   // },
-  // {
-  //   path: '/leave-request/detail',
-  //   isPrivate: true,
-  //   exact: true,
-  //   comp: props => (<ListAbsenceDefault {...props}/>)
-  // },
+  {
+    path: '/leave-request/details',
+    isPrivate: true,
+    exact: true,
+    comp: props => (<LeaveRequestDetail {...props}/>)
+  },
   {
     path: "/leave-request/all",
     isPrivate: true,

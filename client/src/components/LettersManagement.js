@@ -81,7 +81,7 @@ class LetterManagement extends Component {
                     : "REJECTED"}
                 </span>,
                 <Link
-                  to={`/leaveLetter/details?id=${fId}`}
+                  to={`/leave-request/details?id=${fId}`}
                   className={classes.btnLink}
                 >
                   <Button variant="contained" color="primary">
