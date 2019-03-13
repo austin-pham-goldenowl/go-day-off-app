@@ -1,6 +1,6 @@
 export const getIdFromToken = token => {
   if (!token) return null;
-  return (token.userId && token.userId.fUserId) || null;
+  return token.userId || null;
 };
 
 import {

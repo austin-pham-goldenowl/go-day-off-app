@@ -149,4 +149,22 @@ Router.patch("/", async (req, res) => {
   }
 });
 
+Router.get("/my-letters", async (req, res) => {
+  try {
+    const userId = getIdFromToken(req.token_payload);
+    if (!userId) throw { msg: "USER_NOT_FOUND" };
+
+    const leaveLetters = await leaveLetterModel.loadAll([], {
+      where: { fUserId: userId }
+    });
+
+    handleSuccess(res, {
+      success: true,
+      leaveLetters: leaveLetters.map(lt => lt.get({ plain: true }))
+    });
+  } catch (err) {
+    handleFailure(res, { err, route: req.originalUrl });
+  }
+});
+
 module.exports = Router;
