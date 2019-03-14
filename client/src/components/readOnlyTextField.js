@@ -14,8 +14,9 @@ const TextFieldReadOnly = (props) => {
   return (
       <TextField
       id="standard-read-only-input"
+      
       label={label}
-      defaultValue={`${defaultValue} day(s)`}
+      value={`${defaultValue}`}
       className={classes.textField}
       fullWidth
       InputProps={{

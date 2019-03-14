@@ -1,5 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
+import moment from 'moment';
 import { Formik, Field, Form } from "formik";
 import { Paper, Grid, Typography, TextField, Button } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
@@ -7,10 +8,10 @@ import { withStyles } from "@material-ui/core/styles";
 import Icon from "@material-ui/core/Icon";
 
 // Using components
-import SelectCustom from "../../components/customSelect";
-import TextFieldReadOnly from "../../components/readOnlyTextField";
-import DatePickerField from "../../components/datePicker";
-import SelectWithChips from "../../components/selectWithChips";
+import SelectCustom from "../../components/CustomSelect";
+import TextFieldReadOnly from "../../components/ReadOnlyTextField";
+import DatePickerField from "../../components/DatePicker";
+import SelectWithChips from "../../components/SelectWithChips";
 import DashContainer from "../DashContainer";
 
 // Validation
@@ -271,9 +272,9 @@ class AbsenceLetterWithFormik extends React.Component {
                     {/* Form's content*/}
                     <React.Fragment>
                       {/* Form */}
-                      <Grid container spacing={24}>
+                      <Grid container spacing={16}>
                         {/* Left side */}
-                        <Grid item xs={12} sm={6}>
+                        <Grid item xs={12} sm={6} container spacing={8}>
                           <Grid item xs={12}>
                             {/* Select Leave type */}
                             <Field
@@ -297,13 +298,13 @@ class AbsenceLetterWithFormik extends React.Component {
                             <Field
                               name="duration"
                               render={({ field, form }) => {
+                                const dayOff = moment(moment(form.values.endDate) - moment(form.values.startDate)).dayOfYear();
+                                console.log(`dayOff: `, dayOff);
                                 //do something
                                 return (
                                   <TextFieldReadOnly
                                     label="Duration"
-                                    defaultValue={`${initialValues.endDate -
-                                      initialValues.startDate +
-                                      1}`}
+                                    defaultValue={`${dayOff} day(s)`}
                                   />
                                 );
                               }}
@@ -334,7 +335,7 @@ class AbsenceLetterWithFormik extends React.Component {
                         </Grid>
                         {/* End - Left side */}
                         {/* Right side */}
-                        <Grid item xs={12} sm={6}>
+                        <Grid item xs={12} sm={6} container spacing={8}>
                           <Grid item xs={12}>
                             {/* Supervisor */}
                             <Field
@@ -469,39 +470,6 @@ export default withStyles(styles)(
 );
 
 // Mockup data
-let mockup_LeaveType = [
-  {
-    value: 10,
-    label: "Viec ca nhan"
-  },
-  {
-    value: 20,
-    label: "Nghi om"
-  },
-  {
-    value: 30,
-    label: "Phep nam"
-  },
-  {
-    value: 99999,
-    label: "Nghi che do"
-  }
-];
-let mockup_Approver = [
-  {
-    value: "tamdh@mail.com",
-    label: "Đặng Hà Tâm"
-  },
-  {
-    value: "phuocot@mail.com",
-    label: "Ôn Thanh Phước"
-  }
-];
-let mockup_InformTo = [
-  { label: "Timon", value: "timon@email.com" },
-  { label: "Jayce", value: "jayce@email.com" }
-];
-
 let mockup_Reason = [
   {
     value: "Bị ốm",
