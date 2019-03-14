@@ -40,9 +40,12 @@ import { getProfile } from "../../apiCalls/userAPIs";
 import { updateLetterStatus } from "../../apiCalls/leaveLetterAPI";
 
 import {
-  LEAVE_REQUEST_REJECTED,
-  LEAVE_REQUEST_APPROVED
+  // LEAVE_REQUEST_REJECTED,
+  LEAVE_REQUEST_APPROVED,
+  LEAVE_REQUEST_PENDING
 } from "../../constants/requestStatusType";
+
+import { responseUserPermission } from "../../constants/permission";
 
 const styles = theme => ({
   layout: {
@@ -58,7 +61,8 @@ const styles = theme => ({
   paper: {
     marginTop: theme.spacing.unit * 3,
     marginBottom: theme.spacing.unit * 3,
-    padding: theme.spacing.unit * 2,
+    paddingTop: theme.spacing.unit * 2,
+    paddingBottom: theme.spacing.unit * 2,
     [theme.breakpoints.up(600 + theme.spacing.unit * 3 * 2)]: {
       marginTop: theme.spacing.unit * 6,
       marginBottom: theme.spacing.unit * 6,
@@ -84,10 +88,17 @@ const styles = theme => ({
   buttonGroupBottom: {
     display: "flex",
     justifyContent: "flex-end",
+    flexDirection: "row",
+    alignItems: "center",
+    [theme.breakpoints.down(360)]: {
+      justifyContent: "space-between"
+    },
     marginTop: theme.spacing.unit * 6
   },
   button: {
-    marginLeft: theme.spacing.unit
+    [theme.breakpoints.up(360)]: {
+      marginLeft: theme.spacing.unit
+    }
   },
   btnApprove: {
     color: "white",
@@ -109,7 +120,9 @@ const styles = theme => ({
     color: "black",
     fontWeight: 600,
     minWidth: 50,
-    overflow: "auto"
+    [theme.breakpoints.down("xs")]: {
+      overflow: "scroll"
+    }
   },
   fieldValue: {
     color: "black",
@@ -141,11 +154,10 @@ class LeaveRequestDetail extends React.Component {
     };
   }
 
-  componentDidMount = async () => {
+  loadData = async () => {
     let response = await getLeaveLetterDetails(
       queryString.parse(this.props.location.search).id
     );
-    console.log(`LeaveRequestDetail -> response: `, response);
     let {
       status: statusLetter,
       data: { success: successLetter, leaveLetter }
@@ -162,10 +174,17 @@ class LeaveRequestDetail extends React.Component {
     this.setState({ leaveLetter, userInfo });
   };
 
+  componentDidMount = async () => {
+    //First request
+    this.loadData();
+  };
+
   render() {
     const { history, classes, initialValues, handleShowNotif } = this.props;
     const { userInfo, leaveLetter } = this.state;
 
+    console.log(`userInfo: `, userInfo);
+    console.log(`leaveLetter: `, leaveLetter);
     return (
       <DashContainer>
         <Paper className={classes.paper}>
@@ -173,8 +192,7 @@ class LeaveRequestDetail extends React.Component {
           <Formik
             initialValues={initialValues}
             validateOnBlur={true}
-            onSubmit={({ values, actions }) => {
-              console.log(`Submitted values: `, values);
+            onSubmit={(values, actions) => {
               //call api
               updateLetterStatus(
                 queryString.parse(history.location.search).id,
@@ -186,15 +204,23 @@ class LeaveRequestDetail extends React.Component {
                     NOTIF_SUCCESS,
                     `Leave request updated successfully!`
                   );
+                  //Re call get
+                  this.loadData();
                 })
-                .catch(err => {
-                  handleShowNotif(NOTIF_ERROR, `Can't update Leave request!`);
+                .catch((err, ...aaa) => {
+                  console.log(aaa);
+                  handleShowNotif(
+                    NOTIF_ERROR,
+                    `Action failed (${err.message})`
+                  );
+                  actions.setSubmitting(false);
                 });
             }}
           >
             {({
               errors,
               values,
+              isSubmitting,
               handleReset,
               handleSubmit,
               handleChange,
@@ -342,47 +368,52 @@ class LeaveRequestDetail extends React.Component {
                     </Grid>
                   </React.Fragment>
                   {/* Bottom buttons */}
-                  <React.Fragment>
-                    <Grid
-                      item
-                      container
-                      xs={12}
-                      className={classes.buttonGroupBottom}
-                      spacing={8}
-                    >
-                      <Field
-                        render={({ field, form }) => (
-                          <Button
-                            className={classNames(
-                              classes.button,
-                              classes.btnApprove
-                            )}
-                            size="small"
-                            variant="contained"
-                            color="primary"
-                            onClick={handleSubmit}
-                          >
-                            <DoneIcon />
-                            Approve
-                          </Button>
-                        )}
-                      />
-                      <Field
-                        render={({ field, form }) => (
-                          <Button
-                            className={classes.button}
-                            size="small"
-                            variant="contained"
-                            color="secondary"
-                            onClick={handleReset}
-                          >
-                            <RemoveCircleIcon className={classes.leftIcon} />
-                            Reject
-                          </Button>
-                        )}
-                      />
-                    </Grid>
-                  </React.Fragment>
+                  {leaveLetter.fStatus === LEAVE_REQUEST_PENDING &&
+                  userInfo.fTypeId === responseUserPermission["HR"] ? (
+                    <React.Fragment>
+                      <Grid
+                        item
+                        container
+                        xs={12}
+                        className={classes.buttonGroupBottom}
+                        spacing={8}
+                      >
+                        <Field
+                          render={({ field, form }) => (
+                            <Button
+                              className={classNames(
+                                classes.button,
+                                classes.btnApprove
+                              )}
+                              size="small"
+                              variant="contained"
+                              color="primary"
+                              onClick={handleSubmit}
+                              disabled={isSubmitting}
+                            >
+                              <DoneIcon />
+                              Approve
+                            </Button>
+                          )}
+                        />
+                        <Field
+                          render={({ field, form }) => (
+                            <Button
+                              className={classes.button}
+                              size="small"
+                              variant="contained"
+                              color="secondary"
+                              onClick={handleReset}
+                              disabled={isSubmitting}
+                            >
+                              <RemoveCircleIcon className={classes.leftIcon} />
+                              Reject
+                            </Button>
+                          )}
+                        />
+                      </Grid>
+                    </React.Fragment>
+                  ) : null}
                   {/* End - Top buttons */}
                 </Form>
               );
@@ -397,24 +428,6 @@ class LeaveRequestDetail extends React.Component {
 LeaveRequestDetail.defaultProps = {
   initialValues: {
     reason: ""
-  },
-  leaveLetter: {
-    id: "L2K3423B4F",
-    leaveType: "Việc cá nhân",
-    fromDT: "11/03/2019",
-    toDT: "11/03/2019",
-    reason: "Đi hỏi vợ",
-    createDate: "11/02/2019",
-    status: 2
-  },
-  userInfo: {
-    id: "A23RNLK3F",
-    email: "abc@gmail.com",
-    phoneNum: "0123456789",
-    firstName: "Quoc Cuong",
-    lastName: "Nguyen",
-    position: "Intern/Fresher",
-    team: "Javascript"
   }
 };
 
