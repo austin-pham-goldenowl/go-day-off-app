@@ -25,7 +25,7 @@ import {
   RemoveCircleOutline as RemoveCircleIcon
 } from "@material-ui/icons";
 // Helper
-import { getLeaveType } from '../../helpers/leaveLetterHelper';
+import { getLeaveType } from "../../helpers/leaveLetterHelper";
 
 // Notification redux
 import {
@@ -37,12 +37,12 @@ import { NOTIF_ERROR, NOTIF_SUCCESS } from "../../constants/notification";
 // API
 import { getLeaveLetterDetails } from "../../apiCalls/leaveLetterAPI";
 import { getProfile } from "../../apiCalls/userAPIs";
-import  { updateLetterStatus } from '../../apiCalls/leaveLetterAPI';
+import { updateLetterStatus } from "../../apiCalls/leaveLetterAPI";
 
 import {
   LEAVE_REQUEST_REJECTED,
   LEAVE_REQUEST_APPROVED
-} from '../../constants/requestStatusType';
+} from "../../constants/requestStatusType";
 
 const styles = theme => ({
   layout: {
@@ -108,7 +108,8 @@ const styles = theme => ({
   fieldTitle: {
     color: "black",
     fontWeight: 600,
-    minWidth: 50
+    minWidth: 50,
+    overflow: "auto"
   },
   fieldValue: {
     color: "black",
@@ -175,7 +176,11 @@ class LeaveRequestDetail extends React.Component {
             onSubmit={({ values, actions }) => {
               console.log(`Submitted values: `, values);
               //call api
-              updateLetterStatus(queryString.parse(history.location.search).id, leaveLetter.fUserId , LEAVE_REQUEST_APPROVED)
+              updateLetterStatus(
+                queryString.parse(history.location.search).id,
+                leaveLetter.fUserId,
+                LEAVE_REQUEST_APPROVED
+              )
                 .then(res => {
                   handleShowNotif(
                     NOTIF_SUCCESS,
@@ -184,7 +189,7 @@ class LeaveRequestDetail extends React.Component {
                 })
                 .catch(err => {
                   handleShowNotif(NOTIF_ERROR, `Can't update Leave request!`);
-                })
+                });
             }}
           >
             {({
@@ -298,7 +303,11 @@ class LeaveRequestDetail extends React.Component {
                         <Grid item xs={12} className={classes.fieldWrapper}>
                           <div className={classes.fieldTitle}>
                             Leave Type:
-                            <span className={classes.fieldValue}>{` ${getLeaveType(leaveLetter.fAbsenceType)}`}</span>
+                            <span
+                              className={classes.fieldValue}
+                            >{` ${getLeaveType(
+                              leaveLetter.fAbsenceType
+                            )}`}</span>
                           </div>
                         </Grid>
                         {/** FromDT */}
@@ -417,4 +426,7 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(null, mapDispatchToProps)(withStyles(styles)(withRouter(LeaveRequestDetail)));
+export default connect(
+  null,
+  mapDispatchToProps
+)(withStyles(styles)(withRouter(LeaveRequestDetail)));
