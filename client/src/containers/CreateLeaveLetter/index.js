@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import moment from 'moment';
+import moment from "moment";
 import { Formik, Field, Form } from "formik";
 import { Paper, Grid, Typography, TextField, Button } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
@@ -21,9 +21,9 @@ import ValidationSchema from "./validationSchema";
 //helpers
 import { getAllLeaveTypes } from "../../helpers/leaveLetterHelper";
 // API calls
+import Axios from "axios";
 import { getAllApprover, getAllInformTo } from "../../apiCalls/supportingAPIs";
 import { createLeaveLetter } from "../../apiCalls/leaveLetterAPI";
-import Axios from "axios";
 
 // Notification redux
 import {
@@ -37,7 +37,9 @@ const mapDispatchToProps = dispatch => {
   return {
     handleShowNotif: (type, message) =>
       dispatch(showNotification(type, message)),
-    handleHideNotif: () => dispatch(hideNotification())
+    handleHideNotif: () => dispatch(hideNotification()),
+    handleShowNotifNoHide: (type, message, autoHide = false) =>
+      dispatch(showNotification(type, message, autoHide))
   };
 };
 
@@ -113,8 +115,17 @@ class AbsenceLetterWithFormik extends React.Component {
       informToList: [],
       approverList: []
     },
-    otherReasonSelected: false
+    otherReasonSelected: false,
+    buttonClickable: false
   };
+
+  switchButtonCtrl = enable => {
+    this.setState(prevState => ({
+      ...prevState,
+      buttonClickable: enable
+    }));
+  };
+
   handleChangeReason = value => {
     if (value === "Lý do khác") {
       this.setState(prevState => ({
@@ -131,7 +142,7 @@ class AbsenceLetterWithFormik extends React.Component {
 
   componentDidMount() {
     const allLeaveTypes = getAllLeaveTypes();
-
+    const { handleShowNotifNoHide } = this.props;
     // Call api request:
     Axios.all([getAllInformTo(), getAllApprover()])
       .then(
@@ -150,22 +161,21 @@ class AbsenceLetterWithFormik extends React.Component {
               }`
             }
           ];
-
-          console.log(`leavetypes: `, allLeaveTypes);
-          console.log(`approvers: `, allApprover);
-          console.log(`informTo: `, allInformTo);
           this.setState(prevState => ({
             ...prevState,
             templateList: {
               leaveTypesList: allLeaveTypes,
               informToList: allInformTo,
               approverList: allApprover
-            }
+            },
+            buttonClickable: true
           }));
         })
       )
       .catch(err => {
         console.log(`axios.all -> err:`, err);
+        handleShowNotifNoHide(NOTIF_ERROR, `${err.message}`);
+        this.switchButtonCtrl(false);
       });
   }
 
@@ -208,6 +218,7 @@ class AbsenceLetterWithFormik extends React.Component {
                 handleChange,
                 ...formikProps
               }) => {
+                const { buttonClickable } = this.state;
                 return (
                   <Form>
                     {/* Top buttons */}
@@ -226,6 +237,7 @@ class AbsenceLetterWithFormik extends React.Component {
                               variant="contained"
                               color="primary"
                               onClick={handleSubmit}
+                              disabled={isSubmitting || !buttonClickable}
                             >
                               Send
                               <Icon
@@ -245,6 +257,7 @@ class AbsenceLetterWithFormik extends React.Component {
                               variant="outlined"
                               color="secondary"
                               onClick={handleReset}
+                              disabled={isSubmitting || !buttonClickable}
                             >
                               Discard
                               <Icon
@@ -298,8 +311,10 @@ class AbsenceLetterWithFormik extends React.Component {
                             <Field
                               name="duration"
                               render={({ field, form }) => {
-                                const dayOff = moment(moment(form.values.endDate) - moment(form.values.startDate)).dayOfYear();
-                                console.log(`dayOff: `, dayOff);
+                                const dayOff = moment(
+                                  moment(form.values.endDate) -
+                                    moment(form.values.startDate)
+                                ).dayOfYear();
                                 //do something
                                 return (
                                   <TextFieldReadOnly
@@ -312,7 +327,7 @@ class AbsenceLetterWithFormik extends React.Component {
                           </Grid>
 
                           {/* Date picker */}
-                          <Grid item container spacing={24}>
+                          <Grid item container spacing={16}>
                             <Grid item xs={6}>
                               {/* From startDate - to endDate*/}
                               <Field
@@ -418,6 +433,7 @@ class AbsenceLetterWithFormik extends React.Component {
                           variant="contained"
                           onClick={handleSubmit}
                           className={classes.button}
+                          disabled={isSubmitting || !buttonClickable}
                         >
                           Send
                           <Icon fontSize="small" className={classes.rightIcon}>
@@ -430,6 +446,7 @@ class AbsenceLetterWithFormik extends React.Component {
                           variant="outlined"
                           onClick={handleReset}
                           className={classes.button}
+                          disabled={isSubmitting || !buttonClickable}
                         >
                           Discard
                           <Icon fontSize="small" className={classes.rightIcon}>
