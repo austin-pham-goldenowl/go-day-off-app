@@ -1,16 +1,16 @@
 import {
   NOTIF_SHOW,
   NOTIF_HIDE,
-  NOTIF_LASTEST,
-} from '../contants/notificationContants';
+  NOTIF_LASTEST
+} from "../contants/notificationContants";
 
-import {  } from '../../constants/form';
+import {} from "../../constants/form";
 
 const initialState = {
   show: false,
-  type: '',
-  message: ''
-}
+  type: "",
+  message: ""
+};
 
 const notificationReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -20,27 +20,28 @@ const notificationReducer = (state = initialState, action) => {
         ...state,
         show: true,
         type: action.payload.type,
-        message: action.payload.message
-      }
+        message: action.payload.message,
+        autoHide: action.payload.autoHide
+      };
     }
     case NOTIF_HIDE: {
       return {
         ...state,
         show: false
-      }
+      };
     }
     case NOTIF_LASTEST: {
       return {
         ...state,
         show: false
-      }
+      };
     }
-    default: 
+    default:
       return {
         ...state,
         show: false
-      }
+      };
   }
-}
+};
 
 export default notificationReducer;
