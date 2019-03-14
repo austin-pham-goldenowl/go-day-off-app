@@ -8,8 +8,6 @@ axios.defaults.headers.post['Content-Type'] = 'application/json';
 //
 export const login = (payload) => {
   let link = `${SERVER_HOST_DEV}/auth/login`;
-  console.log('authAPIs -> login -> fullPath: ', link);
-  console.log('authAPIs -> login -> payload: ', payload);
   return axios.post(`${SERVER_HOST_DEV}/auth/login`, 
     {
       'username': payload.username,

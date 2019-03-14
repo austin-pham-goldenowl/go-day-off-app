@@ -39,7 +39,6 @@ Router.post("/account", verifyAccToken, async (req, res) => {
     if (!userId) throw { msg: "USER_NOT_FOUND" };
 
     const fUserType = await getPermissionByUserId(userId);
-    console.log("TCL: fUserType", fUserType);
     if (fUserType !== "HR") throw { code: 401, msg: "NO_PERMISSION" };
 
     if (Object.keys(req.body).length < 1) throw { msg: "INVALID_VALUES" };

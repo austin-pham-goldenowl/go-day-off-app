@@ -28,10 +28,8 @@ const {
 Router.get("/profile", async (req, res) => {
   try {
     const ownUserId = getIdFromToken(req.token_payload);
-    console.log(ownUserId); //DEBUG_ONLY
     if (!ownUserId) throw { msg: "USER_NOT_FOUND" };
     const demandUserId = ownUserId;
-    console.log(demandUserId); //DEBUG_ONLY
     if (!demandUserId) throw { msg: "USER_NOT_FOUND" };
 
     // HR can view profile of everyone

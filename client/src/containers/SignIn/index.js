@@ -106,11 +106,9 @@ class LoginWithFormik extends React.Component {
             validateOnBlur={true}
             validationSchema={LoginValidationSchema}
             onSubmit={(values, actions) => {
-              console.log(`Submitted values: `, values);
               // showPreloading
               login(values)
                 .then(res => {
-                  console.log("RESPONSE -> Login -> ", res);
                   let { success, access_token, refresh_token } = res.data;
                   if (success) {
                     authHelper.signIn(access_token, refresh_token);
@@ -133,8 +131,6 @@ class LoginWithFormik extends React.Component {
                   }
                 })
                 .catch(err => {
-                  console.log("ERROR -> Login -> Error.name: ", err.name);
-                  console.log("ERROR -> Login -> Error.message: ", err.message);
                   handleShowNotif(NOTIF_ERROR, `Login fail (${err.message})`);
                   actions.setSubmitting(false);
                 });

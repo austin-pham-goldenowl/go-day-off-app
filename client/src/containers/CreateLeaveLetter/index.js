@@ -147,8 +147,6 @@ class AbsenceLetterWithFormik extends React.Component {
     Axios.all([getAllInformTo(), getAllApprover()])
       .then(
         Axios.spread((first, second) => {
-          console.log(`first: `, first);
-          console.log(`second: `, second);
           let allApprover = second.data.approvers.map(item => ({
             value: item.fId,
             label: `${item.fFirstName} ${item.fLastName}`
@@ -173,7 +171,6 @@ class AbsenceLetterWithFormik extends React.Component {
         })
       )
       .catch(err => {
-        console.log(`axios.all -> err:`, err);
         handleShowNotifNoHide(NOTIF_ERROR, `${err.message}`);
         this.switchButtonCtrl(false);
       });

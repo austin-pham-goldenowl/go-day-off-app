@@ -42,7 +42,6 @@ export const getAllLeaveTypes = () => {
       label: leaveTypesDescription[i + 1]
     });
   }
-  console.log("All leave types: ", leaveTypeArr);
   return leaveTypeArr;
 };
 

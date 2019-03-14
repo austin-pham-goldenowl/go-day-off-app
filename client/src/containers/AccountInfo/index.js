@@ -13,7 +13,7 @@ import {
 import { withStyles } from "@material-ui/core/styles";
 import Icon from "@material-ui/core/Icon";
 
-import SelectCustom from "../../components/CustomSelect";
+import SelectCustom from '../../components/CustomSelect';
 import DatePickerField from "../../components/DatePicker";
 import DashContainer from "../DashContainer";
 
@@ -100,7 +100,6 @@ class AccountInfo extends React.Component {
               handleChange,
               ...formikProps
             }) => {
-              console.log(`Form values: `, values);
               return (
                 <Form>
                   {/* Top buttons */}

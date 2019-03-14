@@ -15,7 +15,6 @@ const initialState = {
 const notificationReducer = (state = initialState, action) => {
   switch (action.type) {
     case NOTIF_SHOW: {
-      console.log(`notif REducer -> NOTIF_SHOW -> action: `, action);
       return {
         ...state,
         show: true,

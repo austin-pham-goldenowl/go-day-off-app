@@ -32,7 +32,6 @@ export const getMyLeaveLetters = () =>
     }
   });
 export const createLeaveLetter = (letterEntity) => {
-  console.log(`leaveLetterAPI -> createLeaveLEtter -> letterEntity: `,letterEntity);
   return axios.post(`${SERVER_HOST_DEV}/leaveletter`, 
     {
       "absenceType": letterEntity.leaveType,
@@ -53,9 +52,6 @@ export const createLeaveLetter = (letterEntity) => {
 }
 
 export const updateLetterStatus = (letterId, userId, statusKey) => {
-  console.log(`LeaveLetterAPI -> updateLetterStatus -> status: `, statusKey);
-  console.log(`letterId: `, letterId);
-  console.log('statusKey: ', statusKey);
   return axios.patch(`${SERVER_HOST_DEV}/leaveletter`, 
   {
     "id": letterId,

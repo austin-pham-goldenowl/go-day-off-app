@@ -47,7 +47,6 @@ class LetterManagement extends Component {
 
   render() {
     const { letters } = this.state;
-    console.log(letters);
     const { classes, title, type } = this.props;
 
     const tableInfo = {

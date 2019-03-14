@@ -182,9 +182,6 @@ class LeaveRequestDetail extends React.Component {
   render() {
     const { history, classes, initialValues, handleShowNotif } = this.props;
     const { userInfo, leaveLetter } = this.state;
-
-    console.log(`userInfo: `, userInfo);
-    console.log(`leaveLetter: `, leaveLetter);
     return (
       <DashContainer>
         <Paper className={classes.paper}>
@@ -207,8 +204,7 @@ class LeaveRequestDetail extends React.Component {
                   //Re call get
                   this.loadData();
                 })
-                .catch((err, ...aaa) => {
-                  console.log(aaa);
+                .catch(err => {
                   handleShowNotif(
                     NOTIF_ERROR,
                     `Action failed (${err.message})`

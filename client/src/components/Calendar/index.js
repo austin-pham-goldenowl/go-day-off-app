@@ -48,21 +48,14 @@ class Calendar extends React.Component {
   };
   renderCells() {
     const { currentMonth, selectedDate } = this.state;
-    console.log('Current month: ', currentMonth.toString());
 
     const monthStart = currentMonth.clone().startOf('month');
-    console.log('Month start: ', monthStart.toString());
 
     const monthEnd = monthStart.clone().endOf('month');
-    console.log('Month end: ', monthEnd.toString());
-
-    // console.log('--> ', monthStart);
 
     const startDate = monthStart.clone().startOf('month').startOf('week');
-    console.log('Date start: ', startDate.toString());
 
     const endDate = monthEnd.clone().endOf('week');
-    console.log('Date end: ', endDate.toString());
     //
     const dateFormat = 'D';
     const rows = [];
@@ -97,7 +90,6 @@ class Calendar extends React.Component {
   };
 
   onDateClick = date => {
-    console.log('selected day, ', date);
     this.setState({
       selectedDate: date
     })
