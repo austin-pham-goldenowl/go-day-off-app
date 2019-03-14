@@ -40,8 +40,7 @@ Router.post("/account", verifyAccToken, async (req, res) => {
 
     const fUserType = await getPermissionByUserId(userId);
     console.log("TCL: fUserType", fUserType);
-    if (fUserType !== "Administration")
-      throw { code: 401, msg: "NO_PERMISSION" };
+    if (fUserType !== "HR") throw { code: 401, msg: "NO_PERMISSION" };
 
     if (Object.keys(req.body).length < 1) throw { msg: "INVALID_VALUES" };
     const entity = standardizeObj(req.body);
@@ -107,9 +106,9 @@ Router.post("/login", async (req, res) => {
       access_token: accToken,
       refresh_token: fRefToken,
       user: {
-        fname: entity.fFirstName,
-        lname: entity.fLastName,
-        typeId: entity.fTypeId
+        firstName: entity.fFirstName || "",
+        lastName: entity.fLastName || "",
+        typeName: fUserType || ""
       }
     });
   } catch (err) {

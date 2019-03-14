@@ -34,15 +34,10 @@ Router.get("/profile", async (req, res) => {
     console.log(demandUserId); //DEBUG_ONLY
     if (!demandUserId) throw { msg: "USER_NOT_FOUND" };
 
-    // Admin and HR can view profile of everyone
+    // HR can view profile of everyone
     // Others can view oneself's
     const fUserType = await getPermissionByUserId(ownUserId);
-    if (
-      !fUserType ||
-      (fUserType !== "Administration" &&
-        fUserType !== "HR" &&
-        ownUserId !== demandUserId)
-    )
+    if (!fUserType || (fUserType !== "HR" && ownUserId !== demandUserId))
       throw { code: 401, msg: "NO_PERMISSION" };
 
     const attributes = [
@@ -84,19 +79,6 @@ Router.get("/profile", async (req, res) => {
   }
 });
 
-// Get user id
-Router.get("/id", (req, res) => {
-  const userId = getIdFromToken(req.token_payload);
-  if (userId)
-    handleSuccess(res, {
-      userId
-    });
-  else {
-    const err = { msg: "USER_NOT_FOUND" };
-    handleFailure(res, { err, route: req.originalUrl });
-  }
-});
-
 // Update user profile
 Router.patch("/profile", async (req, res) => {
   try {
@@ -113,10 +95,9 @@ Router.patch("/profile", async (req, res) => {
     const entity = req.body.info && standardizeObj(req.body.info);
 
     // validate whether userPermission is permitted
-    // only Admin can edit profile
+    // only HR can edit profile
     const fUserType = await getPermissionByUserId(userId);
-    if (fUserType !== "Administration")
-      throw { cod: 401, msg: "NO_PERMISSION" };
+    if (fUserType !== "HR") throw { cod: 401, msg: "NO_PERMISSION" };
 
     // validate gender value
     const { fGender, fBDay } = entity;
@@ -160,7 +141,7 @@ Router.get("/approver", async (req, res) => {
     const users = await userModel.loadAll(["fId", "fFirstName", "fLastName"], {
       where: { fTypeId: hrId }
     });
-    let approvers = users.map(user => user.get({ plain: true }));
+    const approvers = users.map(user => user.get({ plain: true }));
 
     handleSuccess(res, { approvers });
   } catch (err) {

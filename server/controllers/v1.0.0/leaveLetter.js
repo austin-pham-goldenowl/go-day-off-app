@@ -57,6 +57,11 @@ Router.get("/details", async (req, res) => {
 
     // load substitute fullName
     const letter = leaveLetters[0].get({ plain: true });
+    const { fApprover } = letter;
+    // only HR marked as approver in letter is able to view and approve it
+    if (fUserType === "HR" && fApprover !== userId)
+      throw { code: 401, msg: "NO_PERMISSION" };
+
     const { fSubstituteId } = letter;
     const users = await userModel.loadAll(["fFirstName", "fLastName"], {
       where: { fId: fSubstituteId }
@@ -77,13 +82,17 @@ Router.get("/", async (req, res) => {
     const userType = await getPermissionByToken(req.token_payload);
     if (userType !== "HR") throw { code: 401, msg: "NO_PERMISSION" };
 
+    const userId = getIdFromToken(req.token_payload);
     const rawLeaveLetters = await leaveLetterModel.loadAll();
     // load user fullName
     let leaveLetters = [];
     await (async () => {
       for (let i = 0; i < rawLeaveLetters.length; i++) {
         const letter = rawLeaveLetters[i].get({ plain: true });
-        const { fUserId } = letter;
+        const { fApprover, fUserId } = letter;
+        // only HR marked as approver in letter is able to view and approve it
+        if (userId !== fUserId && userId !== fApprover) continue;
+
         const users = await userModel.loadAll(["fFirstName", "fLastName"], {
           where: { fId: fUserId }
         });

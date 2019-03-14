@@ -214,7 +214,7 @@ ENGINE = InnoDB;
 INSERT INTO `positions` (`fId`,`fPosName`) VALUES ("U4d4k","Software Engineer (SE)"),("wHK7p","Project Manager (PM)"),("mXLNt","Project Assistant (PA)"),("ir0gE","Team Leader"),("cpvd7","Intern/Fresher"),("s8l4h","Designer"),("B4QIq","Tech Lead"),("MYPyH","Software Tester"),("psS14","Human Resouces (HR)"),("1qRly","Accountant"),("JVh4R","Business Analyst (BA)"),("Kebva","Digital Marketer"),("Sz0d1","CEO"),("hGKx5","COO"),("8mCqq","CTO");
 
 -- Insert data for userPermission
-INSERT INTO `userPermission` (`fId`,`fUserType`) VALUES ("gbAiv","Personnel"),("NH6Bs","Administration"),("3sVfP","HR");
+INSERT INTO `userPermission` (`fId`,`fUserType`) VALUES ("gbAiv","Personnel"),("3sVfP","HR");
 
 -- Insert data for absenceTypes
 INSERT INTO `absenceTypes` (`fId`,`fAbsenceTypeName`) VALUES ("1","Việc riêng"),("2","Nghỉ phép năm"),("3","Nghỉ ốm"),("4","Nghỉ chế độ");
@@ -223,10 +223,8 @@ INSERT INTO `absenceTypes` (`fId`,`fAbsenceTypeName`) VALUES ("1","Việc riêng
 -- Insert data for users: 4TCgb, FfI2V, 1LwZq
 INSERT INTO `users` (`fId`,`fFirstName`,`fLastName`,`fBday`,`fPosition`,`fAddress`,`fPhone`,`fTeamId`,`fTypeId`,`fUsername`,`fPassword`,`fEmail`, `fGender`) 
 VALUES ("i53FItHeMK","Daphne","Zachery","1982-03-05 04:26:11","U4d4k","P.O. Box 489, 2016 Risus. Av.","0157694180",null,"gbAiv","user","5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8","augue.Sed.molestie@congueInscelerisque.org", 1),
-				("MytsQhUPQG","Amanda","Amos","1993-11-22 10:18:26","wHK7p","5253 Nulla Road","0986209274",null,"3sVfP","HR","5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8","habitant.morbi.tristique@estvitaesodales.net", 2),
-                ("H8UIAdsy7T","Adena","Justin","1972-07-04 01:45:20","mXLNt","Ap #157-9686 Quisque Avenue","0778329121",null,"NH6Bs","admin","5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8","nulla.Integer@Aliquam.net", 3);
-
-
+				("MytsQhUPQG","Amanda","Amos","1993-11-22 10:18:26","wHK7p","5253 Nulla Road","0986209274",null,"3sVfP","HR","5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8","habitant.morbi.tristique@estvitaesodales.net", 2);
+                
 -- Insert data for teams
 INSERT INTO `teams` (`fId`,`fTeamName`,`fTeamLead`) VALUES ("4TCgb","Ruby/Ruby on Rails","i53FItHeMK"),("FfI2V","Javascript","i53FItHeMK"),("1LwZq","PHP","i53FItHeMK"),("5eMvD","Design","i53FItHeMK"),("Gg6sG","QA","i53FItHeMK"),("kTW7B","PA","i53FItHeMK"),("G81cf","Leaders","i53FItHeMK"),("A91fa","Khác","i53FItHeMK");
 
