@@ -6,17 +6,17 @@ import {
   USER_INFO_KEY,
 } from '../constants/token';
 
-export const checkAuth = async () => {
-  const accessToken = await getCookie(ACCESS_TOKEN_KEY);
+export const checkAuth = () => {
+  const accessToken = getCookie(ACCESS_TOKEN_KEY);
   if (!accessToken) return false;
   
   const { exp } = jwt_decode(accessToken);
   if(!exp) return false;
 
   if(Date.now() <= exp * 1000) return true;
-  await removeCookie(ACCESS_TOKEN_KEY);
-  await removeCookie(REFRESH_TOKEN_KEY);
-  await removeCookie(USER_INFO_KEY);
+  removeCookie(ACCESS_TOKEN_KEY);
+  removeCookie(REFRESH_TOKEN_KEY);
+  removeCookie(USER_INFO_KEY);
 
   return false;
 }

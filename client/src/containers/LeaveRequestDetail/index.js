@@ -1,4 +1,5 @@
 import React from "react";
+import { connect } from "react-redux";
 import classNames from "classnames";
 import { Formik, Form, Field } from "formik";
 import { withRouter } from "react-router-dom";
@@ -24,8 +25,14 @@ import {
   RemoveCircleOutline as RemoveCircleIcon
 } from "@material-ui/icons";
 // Helper
-
 import { getLeaveType } from '../../helpers/leaveLetterHelper';
+
+// Notification redux
+import {
+  showNotification,
+  hideNotification
+} from "../../redux/actions/notificationActions";
+import { NOTIF_ERROR, NOTIF_SUCCESS } from "../../constants/notification";
 
 // API
 import { getLeaveLetterDetails } from "../../apiCalls/leaveLetterAPI";
@@ -36,6 +43,7 @@ import {
   LEAVE_REQUEST_REJECTED,
   LEAVE_REQUEST_APPROVED
 } from '../../constants/requestStatusType';
+
 const styles = theme => ({
   layout: {
     width: "auto",
@@ -154,7 +162,7 @@ class LeaveRequestDetail extends React.Component {
   };
 
   render() {
-    const { history, classes, initialValues, ...otherProps } = this.props;
+    const { history, classes, initialValues, handleShowNotif } = this.props;
     const { userInfo, leaveLetter } = this.state;
 
     return (
@@ -169,10 +177,13 @@ class LeaveRequestDetail extends React.Component {
               //call api
               updateLetterStatus(queryString.parse(history.location.search).id, leaveLetter.fUserId , LEAVE_REQUEST_APPROVED)
                 .then(res => {
-                  console.log(res);
+                  handleShowNotif(
+                    NOTIF_SUCCESS,
+                    `Leave request updated successfully!`
+                  );
                 })
                 .catch(err => {
-                  console.log(err);
+                  handleShowNotif(NOTIF_ERROR, `Can't update Leave request!`);
                 })
             }}
           >
@@ -398,4 +409,12 @@ LeaveRequestDetail.defaultProps = {
   }
 };
 
-export default withStyles(styles)(withRouter(LeaveRequestDetail));
+const mapDispatchToProps = dispatch => {
+  return {
+    handleShowNotif: (type, message) =>
+      dispatch(showNotification(type, message)),
+    handleHideNotif: () => dispatch(hideNotification())
+  };
+};
+
+export default connect(null, mapDispatchToProps)(withStyles(styles)(withRouter(LeaveRequestDetail)));

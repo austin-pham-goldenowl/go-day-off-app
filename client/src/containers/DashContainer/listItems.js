@@ -51,15 +51,15 @@ const PersonnelListItems = props => {
           <ListItemText primary="Create leave letter" />
         </ListItem>
       </Link>
-      <Link to="/history" className={classes.undecoratedLink}>
+      <Link to="/my-letters" className={classes.undecoratedLink}>
         <ListItem
           button
-          className={isSelectedLink(history, "/history", classes)}
+          className={isSelectedLink(history, "/my-letters", classes)}
         >
           <ListItemIcon>
             <HistoryIcon />
           </ListItemIcon>
-          <ListItemText primary="History" />
+          <ListItemText primary="My letters" />
         </ListItem>
       </Link>
       <br />

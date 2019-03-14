@@ -2,14 +2,15 @@ import React from "react";
 
 import NotFound from "../components/NotFound";
 import Home from "../containers/Home";
-import SignIn from "../containers/Login";
+import SignIn from "../containers/SignIn";
 import SignOut from "../containers/SignOut";
 
 import AbsenceLetterCreate from "../containers/CreateLeaveLetter";
 import AccountInfo from "../containers/AccountInfo";
 import Dashboard from "../containers/Dashboard";
 import AllLettersManagement from "../containers/AllLettersManagement";
-import LeaveRequestDetail from '../containers/LeaveRequestDetail'
+import LeaveRequestDetail from "../containers/LeaveRequestDetail";
+import MyLetters from "../containers/MyLetters";
 
 // import EditAccountInfo from '../containers/EditAccountInfo/container';
 
@@ -57,16 +58,22 @@ const routes = [
   //   comp: props => (<EditAccountInfo {...props}/>)
   // },
   {
-    path: '/leave-request/details',
+    path: "/leave-request/details",
     isPrivate: true,
     exact: true,
-    comp: props => (<LeaveRequestDetail {...props}/>)
+    comp: props => <LeaveRequestDetail {...props} />
   },
   {
     path: "/leave-request/all",
     isPrivate: true,
     exact: true,
     comp: props => <AllLettersManagement {...props} />
+  },
+  {
+    path: "/my-letters",
+    isPrivate: true,
+    exact: true,
+    comp: props => <MyLetters {...props} />
   },
   {
     path: "",

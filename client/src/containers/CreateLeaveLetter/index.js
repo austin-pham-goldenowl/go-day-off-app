@@ -1,10 +1,10 @@
 import React from "react";
-import { connect } from 'react-redux';
+import { connect } from "react-redux";
 import { Formik, Field, Form } from "formik";
 import { Paper, Grid, Typography, TextField, Button } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 
-import Icon from '@material-ui/core/Icon';
+import Icon from "@material-ui/core/Icon";
 
 // Using components
 import SelectCustom from "../../components/customSelect";
@@ -13,33 +13,32 @@ import DatePickerField from "../../components/datePicker";
 import SelectWithChips from "../../components/selectWithChips";
 import DashContainer from "../DashContainer";
 
-// Validation 
+// Validation
 import ValidationSchema from "./validationSchema";
 // const emailRegexPattern = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 
 //helpers
-import { getAllLeaveTypes } from '../../helpers/leaveLetterHelper';
+import { getAllLeaveTypes } from "../../helpers/leaveLetterHelper";
 // API calls
-import { 
-  getAllApprover, 
-  getAllInformTo 
-} from '../../apiCalls/supportingAPIs'
-import { createLeaveLetter } from '../../apiCalls/leaveLetterAPI';
+import { getAllApprover, getAllInformTo } from "../../apiCalls/supportingAPIs";
+import { createLeaveLetter } from "../../apiCalls/leaveLetterAPI";
 import Axios from "axios";
 
-// Notification redux 
-import { showNotification, hideNotification } from '../../redux/actions/notificationActions';
+// Notification redux
 import {
-  NOTIF_ERROR,
-  NOTIF_SUCCESS,
-} from '../../constants/notification';
-import CircularUnderLoad from '../../components/animation/CircularUnderLoad';
-const mapDispatchToProps = (dispatch) => {
+  showNotification,
+  hideNotification
+} from "../../redux/actions/notificationActions";
+import { NOTIF_ERROR, NOTIF_SUCCESS } from "../../constants/notification";
+import CircularUnderLoad from "../../components/Animation/CircularUnderLoad";
+
+const mapDispatchToProps = dispatch => {
   return {
-    handleShowNotif: (type, message) => dispatch(showNotification(type, message)),
+    handleShowNotif: (type, message) =>
+      dispatch(showNotification(type, message)),
     handleHideNotif: () => dispatch(hideNotification())
-  }
-}
+  };
+};
 
 const styles = theme => ({
   appBar: {
@@ -111,57 +110,59 @@ class AbsenceLetterWithFormik extends React.Component {
     templateList: {
       leaveTypesList: [],
       informToList: [],
-      approverList: [],
+      approverList: []
     },
-    otherReasonSelected: false,
-  }
+    otherReasonSelected: false
+  };
   handleChangeReason = value => {
     if (value === "Lý do khác") {
       this.setState(prevState => ({
         ...prevState,
-        otherReasonSelected: true,
+        otherReasonSelected: true
       }));
-    }
-    else {
+    } else {
       this.setState(prevState => ({
         ...prevState,
-        otherReasonSelected: false,
+        otherReasonSelected: false
       }));
     }
-  }
+  };
 
   componentDidMount() {
     const allLeaveTypes = getAllLeaveTypes();
-    
+
     // Call api request:
     Axios.all([getAllInformTo(), getAllApprover()])
-      .then(Axios.spread((first, second) => {
-        console.log(`first: `, first);
-        console.log(`second: `,second);
-        let allApprover = second.data.approvers.map((item) => ({
+      .then(
+        Axios.spread((first, second) => {
+          console.log(`first: `, first);
+          console.log(`second: `, second);
+          let allApprover = second.data.approvers.map(item => ({
             value: item.fId,
             label: `${item.fFirstName} ${item.fLastName}`
-        }));
-        let allInformTo = [{
-          value: first.data.teamLeader.fId,
-          label: `${first.data.teamLeader.fFirstName} ${first.data.teamLeader.fLastName}`
-        }];
+          }));
+          let allInformTo = [
+            {
+              value: first.data.teamLeader.fId,
+              label: `${first.data.teamLeader.fFirstName} ${
+                first.data.teamLeader.fLastName
+              }`
+            }
+          ];
 
-        
-      console.log(`leavetypes: `,allLeaveTypes);
-      console.log(`approvers: `, allApprover);
-      console.log(`informTo: `, allInformTo);
-        this.setState(prevState => ({
-          ...prevState,
-          templateList: {
-            leaveTypesList: allLeaveTypes,
-            informToList: allInformTo,
-            approverList: allApprover,
-          }
+          console.log(`leavetypes: `, allLeaveTypes);
+          console.log(`approvers: `, allApprover);
+          console.log(`informTo: `, allInformTo);
+          this.setState(prevState => ({
+            ...prevState,
+            templateList: {
+              leaveTypesList: allLeaveTypes,
+              informToList: allInformTo,
+              approverList: allApprover
+            }
+          }));
         })
-      );
-      }
-      ))
+      )
       .catch(err => {
         console.log(`axios.all -> err:`, err);
       });
@@ -169,8 +170,11 @@ class AbsenceLetterWithFormik extends React.Component {
 
   render() {
     const { classes, initialValues, handleShowNotif } = this.props;
-    const {templateList: { leaveTypesList, informToList, approverList }, otherReasonSelected } = this.state;
-    console.log("initialValues", initialValues);
+    const {
+      templateList: { leaveTypesList, informToList, approverList },
+      otherReasonSelected
+    } = this.state;
+
     return (
       <DashContainer>
         <main className={classes.layout}>
@@ -179,18 +183,17 @@ class AbsenceLetterWithFormik extends React.Component {
               initialValues={initialValues}
               validationSchema={ValidationSchema}
               onSubmit={(values, actions) => {
-                console.log(`[Create Leave Letter]`);
-                console.log(`-> create API has called`);
                 createLeaveLetter(values)
                   .then(res => {
-                    handleShowNotif(NOTIF_SUCCESS, `Leave request created successfully!`);
-                    console.log(`-> [SUCCESS] -> response values: `, res);
+                    handleShowNotif(
+                      NOTIF_SUCCESS,
+                      `Leave request created successfully!`
+                    );
                     actions.resetForm();
                     actions.setSubmitting(false);
                   })
                   .catch(err => {
                     handleShowNotif(NOTIF_ERROR, `Can't create Leave request!`);
-                    console.log(`-> [ERROR] -> response values: `, err);
                     actions.setSubmitting(false);
                   });
               }}
@@ -224,7 +227,10 @@ class AbsenceLetterWithFormik extends React.Component {
                               onClick={handleSubmit}
                             >
                               Send
-                              <Icon fontSize="small" className={classes.rightIcon}>
+                              <Icon
+                                fontSize="small"
+                                className={classes.rightIcon}
+                              >
                                 send_outlined
                               </Icon>
                             </Button>
@@ -240,7 +246,10 @@ class AbsenceLetterWithFormik extends React.Component {
                               onClick={handleReset}
                             >
                               Discard
-                              <Icon fontSize="small" className={classes.rightIcon}>
+                              <Icon
+                                fontSize="small"
+                                className={classes.rightIcon}
+                              >
                                 delete_sweep
                               </Icon>
                             </Button>
@@ -361,11 +370,10 @@ class AbsenceLetterWithFormik extends React.Component {
                                   label="Reason"
                                   value={values.reason}
                                   options={mockup_Reason}
-                                  onChange={({ target: { name, value } }) =>{
-                                      setFieldValue(name, value)
-                                      this.handleChangeReason(value)
-                                    }
-                                  }
+                                  onChange={({ target: { name, value } }) => {
+                                    setFieldValue(name, value);
+                                    this.handleChangeReason(value);
+                                  }}
                                 />
                               )}
                             />
@@ -383,13 +391,13 @@ class AbsenceLetterWithFormik extends React.Component {
                                     id="otherReason"
                                     name="otherReason"
                                     label="Reason detail"
-                                    onChange={({ target: { name, value } }) => 
+                                    onChange={({ target: { name, value } }) =>
                                       setFieldValue(name, value)
                                     }
                                   />
                                 )}
                               />
-                            ): null}
+                            ) : null}
                           </Grid>
                           {/* End - Reason in detail */}
                         </Grid>
@@ -422,11 +430,10 @@ class AbsenceLetterWithFormik extends React.Component {
                           onClick={handleReset}
                           className={classes.button}
                         >
-
-                        Discard
-                        <Icon fontSize="small" className={classes.rightIcon}>
-                          delete_sweep
-                        </Icon>
+                          Discard
+                          <Icon fontSize="small" className={classes.rightIcon}>
+                            delete_sweep
+                          </Icon>
                         </Button>
                       </Grid>
                     </React.Fragment>
@@ -449,13 +456,16 @@ AbsenceLetterWithFormik.defaultProps = {
     approver: {},
     informTo: [],
     reason: "",
-    otherReason: "",
+    otherReason: ""
     // substitute: {}
   }
 };
 
 export default withStyles(styles)(
-  connect(null, mapDispatchToProps)(AbsenceLetterWithFormik)
+  connect(
+    null,
+    mapDispatchToProps
+  )(AbsenceLetterWithFormik)
 );
 
 // Mockup data

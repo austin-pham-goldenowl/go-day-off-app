@@ -4,11 +4,11 @@ import { Typography, Button } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import MUIDataTable from "mui-datatables";
 import moment from "moment";
-import  {
+import {
   LEAVE_REQUEST_PENDING,
   LEAVE_REQUEST_APPROVED,
   LEAVE_REQUEST_REJECTED
-} from '../constants/requestStatusType';
+} from "../constants/requestStatusType";
 const styles = theme => ({
   paper: {
     padding: theme.spacing.unit * 5
@@ -121,7 +121,7 @@ class LetterManagement extends Component {
                     : "REJECTED"}
                 </span>,
                 <Link
-                  to={`/leaveLetter/details?id=${fId}`}
+                  to={`/leave-request/details?id=${fId}`}
                   className={classes.btnLink}
                 >
                   <Button variant="contained" color="primary">
