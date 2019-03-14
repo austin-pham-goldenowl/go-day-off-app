@@ -135,7 +135,7 @@ class LoginWithFormik extends React.Component {
                 .catch(err => {
                   console.log("ERROR -> Login -> Error.name: ", err.name);
                   console.log("ERROR -> Login -> Error.message: ", err.message);
-                  handleShowNotif(NOTIF_ERROR, `Login fail`);
+                  handleShowNotif(NOTIF_ERROR, `Login fail (${err.message})`);
                   actions.setSubmitting(false);
                 });
             }}
