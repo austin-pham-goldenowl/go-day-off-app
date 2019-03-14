@@ -13,8 +13,8 @@ import {
 import { withStyles } from "@material-ui/core/styles";
 import Icon from "@material-ui/core/Icon";
 
-import SelectCustom from "../../components/customSelect";
-import DatePickerField from "../../components/datePicker";
+import SelectCustom from "../../components/CustomSelect";
+import DatePickerField from "../../components/DatePicker";
 import DashContainer from "../DashContainer";
 
 const styles = theme => ({
