@@ -16,10 +16,25 @@ export const getProfile = id => {
   });
 };
 
+export const createNewUser = userEntity => {
+  return axios.post(
+    `${SERVER_HOST_DEV}/auth/account`,
+    {
+      ...userEntity
+    },
+    {
+      headers: {
+        'x-access-token': getCookie(ACCESS_TOKEN_KEY)
+      }
+    }
+  );
+};
+
 export const updateProfile = profileEntity => {
   let parsedEntity = {
     firstName: profileEntity.fFirstName,
     lastName: profileEntity.fLastName,
+    bday: new Date(),
     phone: profileEntity.fPhone,
     email: profileEntity.fEmail,
     gender: profileEntity.fGender

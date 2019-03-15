@@ -20,8 +20,16 @@ export const getAllInformTo = () => {
   });
 };
 
-export const getAlTeams = () => {
+export const getAllTeams = () => {
   return axios.get(`${SERVER_HOST_DEV}/team`, {
+    headers: {
+      'x-access-token': getCookie(ACCESS_TOKEN_KEY)
+    }
+  });
+};
+
+export const getAllPositions = () => {
+  return axios.get(`${SERVER_HOST_DEV}/position`, {
     headers: {
       'x-access-token': getCookie(ACCESS_TOKEN_KEY)
     }
