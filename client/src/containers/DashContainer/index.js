@@ -20,8 +20,9 @@ import {
 
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-// import NotificationsIcon from "@material-ui/icons/Notifications";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+import AssignmentIndIcon from "@material-ui/icons/AssignmentInd";
+import SignOutIcon from "@material-ui/icons/Input";
 
 import { PersonnelList, HRList, AdminList } from "./listItems";
 
@@ -110,6 +111,16 @@ const styles = theme => ({
   appTitle: {
     color: "#000",
     fontWeight: 600
+  },
+  signOutIcon: {
+    transform: "rotate(180deg)"
+  },
+  menuItem: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignItems: "center",
+    minWidth: 100
   }
 });
 
@@ -126,12 +137,13 @@ class Dashboard extends React.Component {
   handleCloseAccountMenu = () => {
     this.setState({ accountMenuAnchorEl: null });
   };
+
   handleOpenAccountMenu = event => {
     this.setState({ accountMenuAnchorEl: event.currentTarget });
   };
 
   render() {
-    const { classes, children } = this.props;
+    const { classes, children, history } = this.props;
     const { sidebarToggle, accountMenuAnchorEl } = this.state;
     const accountMenuOpen = Boolean(accountMenuAnchorEl);
     const userType = getUserTypeFromCookie();
@@ -196,13 +208,24 @@ class Dashboard extends React.Component {
                       open={accountMenuOpen}
                       onClose={this.handleCloseAccountMenu}
                     >
-                      <MenuItem onClick={this.handleCloseAccountMenu}>
-                        Profile
+                      <MenuItem
+                        className={classes.menuItem}
+                        onClick={() => history.push("/account/info")}
+                      >
+                        <AssignmentIndIcon className={classes.leftIcon} />
+                        <div>Profile</div>
                       </MenuItem>
                       <MenuItem
+                        className={classes.menuItem}
                         onClick={() => this.props.history.push("/logout")}
                       >
-                        Log out
+                        <SignOutIcon
+                          className={classNames(
+                            classes.rightIcon,
+                            classes.signOutIcon
+                          )}
+                        />
+                        <div>Log out</div>
                       </MenuItem>
                     </Menu>
                   </div>
