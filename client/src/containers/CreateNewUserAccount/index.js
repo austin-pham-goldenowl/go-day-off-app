@@ -1,5 +1,6 @@
-import React from "react";
-import { Formik, Form, Field } from "formik";
+import React from 'react';
+import { connect } from 'react-redux';
+import { Formik, Form, Field } from 'formik';
 
 import {
   Paper,
@@ -8,24 +9,45 @@ import {
   CssBaseline,
   TextField,
   Typography
-} from "@material-ui/core";
+} from '@material-ui/core';
 
-import { withStyles } from "@material-ui/core/styles";
-import Icon from "@material-ui/core/Icon";
+import { withStyles } from '@material-ui/core/styles';
+import Icon from '@material-ui/core/Icon';
 
 import SelectCustom from '../../components/CustomSelect';
-import DatePickerField from "../../components/DatePicker";
-import DashContainer from "../DashContainer";
+import DatePickerField from '../../components/DatePicker';
+import DashContainer from '../DashContainer';
+
+//Constants
+import { responseUserPermission } from '../../constants/permission';
+
+//API
+import Axios from 'axios';
+import { getAllTeams, getAllPositions } from '../../apiCalls/supportingAPIs';
+import { createNewUser } from '../../apiCalls/userAPIs';
+import moment from 'moment';
+
+// Notification redux
+import { showNotification } from '../../redux/actions/notificationActions';
+import { NOTIF_ERROR, NOTIF_SUCCESS } from '../../constants/notification';
+import CircularUnderLoad from '../../components/Animation/CircularUnderLoad';
+
+const mapDispatchToProps = dispatch => {
+  return {
+    handleShowNotif: (type, message) =>
+      dispatch(showNotification(type, message))
+  };
+};
 
 const styles = theme => ({
   layout: {
-    width: "auto",
+    width: 'auto',
     marginLeft: theme.spacing.unit * 2,
     marginRight: theme.spacing.unit * 2,
     [theme.breakpoints.up(600 + theme.spacing.unit * 2 * 2)]: {
       minWidth: 600,
-      marginLeft: "auto",
-      marginRight: "auto"
+      marginLeft: 'auto',
+      marginRight: 'auto'
     }
   },
   paper: {
@@ -40,23 +62,23 @@ const styles = theme => ({
     }
   },
   buttonGroupTop: {
-    justifyContent: "flex-start",
+    justifyContent: 'flex-start',
     marginBottom: theme.spacing.unit * 3,
-    [theme.breakpoints.down("xs")]: {
-      display: "none"
+    [theme.breakpoints.down('xs')]: {
+      display: 'none'
     },
-    [theme.breakpoints.up("sm")]: {
-      display: "flex"
+    [theme.breakpoints.up('sm')]: {
+      display: 'flex'
     }
   },
   buttonGroupBottom: {
-    justifyContent: "flex-end",
+    justifyContent: 'flex-end',
     marginTop: theme.spacing.unit * 6,
-    [theme.breakpoints.up("sm")]: {
-      display: "none"
+    [theme.breakpoints.up('sm')]: {
+      display: 'none'
     },
-    [theme.breakpoints.down("xs")]: {
-      display: "flex"
+    [theme.breakpoints.down('xs')]: {
+      display: 'flex'
     }
   },
   button: {
@@ -77,10 +99,40 @@ const styles = theme => ({
   }
 });
 
-class AccountInfo extends React.Component {
-  render() {
-    const { classes, initialValues } = this.props;
+class CreateNewAccount extends React.Component {
+  state = {
+    allTeams: [],
+    allPositions: []
+  };
 
+  componentDidMount = () => {
+    Axios.all([getAllTeams(), getAllPositions()])
+      .then(
+        Axios.spread((allTeamResponse, allPositionResponse) => {
+          let allTeams = allTeamResponse.data.teams.map(item => ({
+            value: item.fId,
+            label: item.fTeamName
+          }));
+
+          let allPositions = allPositionResponse.data.positions.map(item => ({
+            value: item.fId,
+            label: item.fPosName
+          }));
+
+          this.setState(prevState => ({
+            ...prevState,
+            allTeams,
+            allPositions
+          }));
+        })
+      )
+      .catch(err => {
+        console.log('error -> ', err);
+      });
+  };
+  render() {
+    const { classes, initialValues, handleShowNotif } = this.props;
+    const { allTeams, allPositions } = this.state;
     return (
       <DashContainer className={classes.layout}>
         <Paper className={classes.paper}>
@@ -89,11 +141,30 @@ class AccountInfo extends React.Component {
             initialValues={initialValues}
             onSubmit={(values, actions) => {
               //Call api update here
+              console.log(values);
+              createNewUser(values)
+                .then(res => {
+                  console.log(res);
+                  handleShowNotif(
+                    NOTIF_SUCCESS,
+                    `Created new account successfully!`
+                  );
+                  actions.setSubmitting(false);
+                })
+                .catch(err => {
+                  console.log(err);
+                  handleShowNotif(
+                    NOTIF_ERROR,
+                    `Action failed! (${err.message})`
+                  );
+                  actions.setSubmitting(false);
+                });
             }}
           >
             {({
               errors,
               values,
+              isSubmitting,
               handleReset,
               handleSubmit,
               setFieldValue,
@@ -118,6 +189,7 @@ class AccountInfo extends React.Component {
                             variant="contained"
                             color="primary"
                             onClick={handleSubmit}
+                            disabled={isSubmitting}
                           >
                             <Icon fontSize="small" className={classes.leftIcon}>
                               save
@@ -134,6 +206,7 @@ class AccountInfo extends React.Component {
                             color="secondary"
                             variant="outlined"
                             onClick={handleReset}
+                            disabled={isSubmitting}
                           >
                             <Icon fontSize="small" className={classes.leftIcon}>
                               delete_sweep
@@ -152,7 +225,7 @@ class AccountInfo extends React.Component {
                       variant="h5"
                       align="center"
                     >
-                      Edit account info
+                      Create new account
                     </Typography>
                   </React.Fragment>
                   <React.Fragment>
@@ -191,7 +264,7 @@ class AccountInfo extends React.Component {
                           }}
                         />
                       </Grid>
-                      {/** gender name */}
+                      {/** gender */}
                       <Grid item xs={12} sm={6}>
                         <Field
                           name="gender"
@@ -208,12 +281,13 @@ class AccountInfo extends React.Component {
                           }}
                         />
                       </Grid>
-                      {/** birthday name */}
+                      {/** birthday */}
                       <Grid item xs={12} sm={6}>
                         <Field
                           fullWidth
                           name="bday"
                           label="Birthday"
+                          enablePast
                           component={DatePickerField}
                         />
                       </Grid>
@@ -279,7 +353,7 @@ class AccountInfo extends React.Component {
                                 name={field.name}
                                 label="Team"
                                 value={field.value}
-                                options={mockup_team}
+                                options={allTeams}
                                 onChange={handleChange}
                               />
                             );
@@ -296,7 +370,43 @@ class AccountInfo extends React.Component {
                                 name={field.name}
                                 label="Position"
                                 value={field.value}
-                                options={mockup_position}
+                                options={allPositions}
+                                onChange={handleChange}
+                              />
+                            );
+                          }}
+                        />
+                      </Grid>
+                      {/** username  */}
+                      <Grid item xs={12} sm={6}>
+                        <Field
+                          name="username"
+                          render={({ field, form, ...otherProps }) => {
+                            return (
+                              <TextField
+                                multiline
+                                fullWidth
+                                label="Username"
+                                value={field.value}
+                                name={field.name}
+                                onChange={handleChange}
+                              />
+                            );
+                          }}
+                        />
+                      </Grid>
+                      {/** rawPwd  */}
+                      <Grid item xs={12} sm={6}>
+                        <Field
+                          name="rawPwd"
+                          render={({ field, form, ...otherProps }) => {
+                            return (
+                              <TextField
+                                multiline
+                                fullWidth
+                                label="Password"
+                                value={field.value}
+                                name={field.name}
                                 onChange={handleChange}
                               />
                             );
@@ -314,6 +424,7 @@ class AccountInfo extends React.Component {
                         variant="contained"
                         onClick={handleSubmit}
                         className={classes.button}
+                        disabled={isSubmitting}
                       >
                         <Icon fontSize="small" className={classes.leftIcon}>
                           save
@@ -326,6 +437,7 @@ class AccountInfo extends React.Component {
                         variant="outlined"
                         onClick={handleReset}
                         className={classes.button}
+                        disabled={isSubmitting}
                       >
                         <Icon fontSize="small" className={classes.leftIcon}>
                           delete_sweep
@@ -344,64 +456,41 @@ class AccountInfo extends React.Component {
   }
 }
 
-AccountInfo.defaultProps = {
+CreateNewAccount.defaultProps = {
   initialValues: {
-    firstName: "Quoc Cuong",
-    lastName: "Nguyen",
+    username: '',
+    rawPwd: '',
+    firstName: '',
+    lastName: '',
     gender: 0,
-    bday: new Date(),
-    position: "111#",
-    address: "TPHCM",
-    phone: "012345667",
-    team: "#123",
-    permission: "",
-    email: "abc@email.com"
+    bday: moment(),
+    position: '',
+    address: '',
+    phone: '',
+    team: '',
+    email: '',
+    typeId: responseUserPermission['USER']
   }
 };
 
 const mockup_gender = [
   {
     value: 0,
-    label: "Female"
+    label: 'Female'
   },
   {
     value: 1,
-    label: "Male"
+    label: 'Male'
   },
   {
     value: 2,
-    label: "Others"
+    label: 'Others'
   }
 ];
 
-const mockup_team = [
-  {
-    value: "#123", //team id
-    label: "Ruby on Rails" //team name
-  },
-  {
-    value: "#456",
-    label: "Project Assistant"
-  },
-  {
-    value: "#789",
-    label: "JAVascript"
-  }
-];
-
-const mockup_position = [
-  {
-    value: "111#", //team id
-    label: "Developer" //team name
-  },
-  {
-    value: "222#",
-    label: "Intern/Fresher"
-  },
-  {
-    value: "333#",
-    label: "Tech Lead"
-  }
-];
-
-export default withStyles(styles)(AccountInfo);
+export default withStyles(styles)(
+  connect(
+    null,
+    mapDispatchToProps
+  )(CreateNewAccount)
+);
