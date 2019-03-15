@@ -6,6 +6,11 @@ import { LEAVING_LETTER_STATUS_VALUES } from "../configs/constants";
  */
 import { DATETIME_FORMAT_TYPE1 } from "../configs/config";
 
+/**
+ * Helpers
+ */
+import arrToObj from "../helpers/arrayToObject";
+
 export default (sequelize, DataTypes) => {
   const LeaveLetter = sequelize.define("leaveLetters",
     {
@@ -86,18 +91,20 @@ export default (sequelize, DataTypes) => {
     "fUserId"
   ];
 
-  LeaveLetter.loadAll = (attributes = [], queryWhere = {}) =>
+  LeaveLetter.loadAll = (attributes = [], queryWhere = {}, ...options) =>
     new Promise(async (resolve, reject) => {
       try {
         let leaveLetters = null;
         if (attributes.length < 1)
           leaveLetters = await LeaveLetter.findAll({
-            ...queryWhere
+            ...queryWhere,
+            ...arrToObj(options)
           });
         else
           leaveLetters = await LeaveLetter.findAll({
             attributes,
-            ...queryWhere
+            ...queryWhere,
+            ...arrToObj(options)
           });
         resolve(leaveLetters);
       } catch (err) {

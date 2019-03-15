@@ -83,7 +83,9 @@ Router.get("/", async (req, res) => {
     if (userType !== "HR") throw { code: 401, msg: "NO_PERMISSION" };
 
     const userId = getIdFromToken(req.token_payload);
-    const rawLeaveLetters = await leaveLetterModel.loadAll();
+    const rawLeaveLetters = await leaveLetterModel.loadAll([],
+      {},
+      { order: [["fRdt", "DESC"]] });
     // load user fullName
     let leaveLetters = [];
     await (async () => {

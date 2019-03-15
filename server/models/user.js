@@ -105,7 +105,6 @@ export default (sequelize, DataTypes) => {
 
   User.loadAll = (attributes = [], queryWhere = {}) =>
     new Promise(async (resolve, reject) => {
-      console.log("TCL: attributes", attributes);
       try {
         let users = null;
         if (attributes.length < 1)
@@ -119,7 +118,6 @@ export default (sequelize, DataTypes) => {
           });
         resolve(users);
       } catch (err) {
-        console.log("TCL: }catch -> err", err);
         err.code = 500;
         err.msg = "DB_QUERY_ERROR";
         reject(err);
