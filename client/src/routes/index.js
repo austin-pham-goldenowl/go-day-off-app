@@ -7,6 +7,7 @@ import SignOut from '../containers/SignOut';
 
 import AbsenceLetterCreate from '../containers/CreateLeaveLetter';
 import EditAccountInfo from '../containers/EditAccountInfo';
+import CreateNewUserAccout from '../containers/CreateNewUserAccount';
 import Dashboard from '../containers/Dashboard';
 import AllLettersManagement from '../containers/AllLettersManagement';
 import LeaveRequestDetail from '../containers/LeaveRequestDetail';
@@ -51,12 +52,12 @@ const routes = [
     exact: true,
     comp: props => <EditAccountInfo {...props} />
   },
-  // {
-  //   path: '/account/edit',
-  //   isPrivate: true,
-  //   exact: true,
-  //   comp: props => (<EditAccountInfo {...props}/>)
-  // },
+  {
+    path: '/create-user',
+    isPrivate: true,
+    exact: true,
+    comp: props => <CreateNewUserAccout {...props} />
+  },
   {
     path: '/leave-request/details',
     isPrivate: true,
