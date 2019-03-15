@@ -8,35 +8,36 @@ import moment from 'moment';
 import 'moment/locale/vi';
 
 //Contants
-import { 
-  DATETIME_FORMAT_1,
-  DATETIME_LOCALE_VI
-} from '../constants/form';
+import { DATETIME_FORMAT_1, DATETIME_LOCALE_VI } from '../constants/form';
 
 moment.locale(DATETIME_LOCALE_VI);
 
-const DatePickerField = ({ field, form, label, keyboard, ...otherProps }) => {
+const DatePickerField = ({
+  field,
+  form,
+  label,
+  keyboard,
+  enablePast,
+  ...otherProps
+}) => {
   const currentError = form.errors[field.name];
 
   return (
-    <MuiPickersUtilsProvider 
-      utils={MomentUtils} 
-      moment={moment} 
-    >
+    <MuiPickersUtilsProvider utils={MomentUtils} moment={moment}>
       <DatePicker
         keyboard={keyboard && keyboard}
-        disablePast
+        disablePast={!enablePast}
         label={label}
         name={field.name}
-        value={field.value} 
+        value={field.value}
         helperText={currentError}
         format={DATETIME_FORMAT_1}
         error={Boolean(currentError)}
         onChange={date => form.setFieldValue(field.name, date, true)}
         onError={(_, error) => form.setFieldError(field.name, error)}
         {...otherProps}
-        />
+      />
     </MuiPickersUtilsProvider>
   );
-}
+};
 export default DatePickerField;
