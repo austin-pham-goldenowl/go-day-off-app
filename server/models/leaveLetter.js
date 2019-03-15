@@ -1,5 +1,10 @@
 import moment from "moment";
-import { LEAVING_LETTER_STATUS_VALUES } from "../configs/constants";
+import {
+  LEAVING_LETTER_STATUS_VALUES,
+  LEAVING_LETTER_STATUS,
+  FROM_OPTION_VALUES,
+  FROM_OPTION
+} from "../configs/constants";
 
 /**
  * Configs
@@ -48,10 +53,17 @@ export default (sequelize, DataTypes) => {
       fStatus: {
         type: DataTypes.ENUM,
         values: LEAVING_LETTER_STATUS_VALUES,
+        defaultValue: LEAVING_LETTER_STATUS.PENDING,
         allowNull: false
       },
       fReason: {
         type: DataTypes.STRING
+      },
+      fFromOpt: {
+        type: DataTypes.ENUM,
+        values: FROM_OPTION_VALUES,
+        defaultValue: FROM_OPTION.ALLDAY,
+        allowNull: false
       },
       absenceTypes_fId: { type: DataTypes.STRING(5) },
       users_fId: { type: DataTypes.STRING(10) },
