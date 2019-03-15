@@ -1,39 +1,39 @@
-import React from "react";
-import { withStyles } from "@material-ui/core/styles";
+import React from 'react';
+import { withStyles } from '@material-ui/core/styles';
 
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import Divider from "@material-ui/core/Divider";
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import Divider from '@material-ui/core/Divider';
 
-import DashboardIcon from "@material-ui/icons/Dashboard";
-import PersonIcon from "@material-ui/icons/Person";
-import EmailIcon from "@material-ui/icons/Email";
-import PersonAddIcon from "@material-ui/icons/PersonAdd";
-import SendIcon from "@material-ui/icons/Send";
-import HistoryIcon from "@material-ui/icons/History";
+import DashboardIcon from '@material-ui/icons/Dashboard';
+import PersonIcon from '@material-ui/icons/Person';
+import EmailIcon from '@material-ui/icons/Email';
+import PersonAddIcon from '@material-ui/icons/PersonAdd';
+import SendIcon from '@material-ui/icons/Send';
+import HistoryIcon from '@material-ui/icons/History';
 
-import { Link, withRouter } from "react-router-dom";
+import { Link, withRouter } from 'react-router-dom';
 
 const styles = theme => ({
   undecoratedLink: {
-    textDecoration: "none"
+    textDecoration: 'none'
   },
   selectedLink: {
-    backgroundColor: "rgba(0, 0, 0, 0.08)"
+    backgroundColor: 'rgba(0, 0, 0, 0.08)'
   }
 });
 
 const isSelectedLink = (history, pathname, classes) =>
-  pathname === history.location.pathname ? classes.selectedLink : "";
+  pathname === history.location.pathname ? classes.selectedLink : '';
 
 const PersonnelListItems = props => {
   const { classes, history } = props;
   return (
-    <>
+    <React.Fragment>
       <br />
       <Link to="/" className={classes.undecoratedLink}>
-        <ListItem button className={isSelectedLink(history, "/", classes)}>
+        <ListItem button className={isSelectedLink(history, '/', classes)}>
           <ListItemIcon>
             <DashboardIcon />
           </ListItemIcon>
@@ -43,7 +43,7 @@ const PersonnelListItems = props => {
       <Link to="/leave-request/create" className={classes.undecoratedLink}>
         <ListItem
           button
-          className={isSelectedLink(history, "/leave-request/create", classes)}
+          className={isSelectedLink(history, '/leave-request/create', classes)}
         >
           <ListItemIcon>
             <SendIcon />
@@ -54,7 +54,7 @@ const PersonnelListItems = props => {
       <Link to="/my-letters" className={classes.undecoratedLink}>
         <ListItem
           button
-          className={isSelectedLink(history, "/my-letters", classes)}
+          className={isSelectedLink(history, '/my-letters', classes)}
         >
           <ListItemIcon>
             <HistoryIcon />
@@ -63,20 +63,20 @@ const PersonnelListItems = props => {
         </ListItem>
       </Link>
       <br />
-    </>
+    </React.Fragment>
   );
 };
 
 const HRListItems = props => {
   const { classes, history } = props;
   return (
-    <>
+    <React.Fragment>
       <Divider />
       <br />
       <Link to="/leave-request/all" className={classes.undecoratedLink}>
         <ListItem
           button
-          className={isSelectedLink(history, "/leave-request/all", classes)}
+          className={isSelectedLink(history, '/leave-request/all', classes)}
         >
           <ListItemIcon>
             <EmailIcon />
@@ -84,20 +84,13 @@ const HRListItems = props => {
           <ListItemText primary="List all letters" />
         </ListItem>
       </Link>
-    </>
-  );
-};
-
-const AdminListItems = props => {
-  const { classes, history } = props;
-  return (
-    <>
+      <br />
       <Divider />
       <br />
       <Link to="/create-user" className={classes.undecoratedLink}>
         <ListItem
           button
-          className={isSelectedLink(history, "/create-user", classes)}
+          className={isSelectedLink(history, '/create-user', classes)}
         >
           <ListItemIcon>
             <PersonAddIcon />
@@ -108,7 +101,7 @@ const AdminListItems = props => {
       <Link to="/users-management" className={classes.undecoratedLink}>
         <ListItem
           button
-          className={isSelectedLink(history, "/users-management", classes)}
+          className={isSelectedLink(history, '/users-management', classes)}
         >
           <ListItemIcon>
             <PersonIcon />
@@ -116,10 +109,9 @@ const AdminListItems = props => {
           <ListItemText primary="List all users" />
         </ListItem>
       </Link>
-    </>
+    </React.Fragment>
   );
 };
 
 export const PersonnelList = withStyles(styles)(withRouter(PersonnelListItems));
 export const HRList = withStyles(styles)(withRouter(HRListItems));
-export const AdminList = withStyles(styles)(withRouter(AdminListItems));
