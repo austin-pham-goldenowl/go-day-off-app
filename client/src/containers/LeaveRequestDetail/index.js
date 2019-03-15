@@ -1,8 +1,8 @@
-import React from "react";
-import { connect } from "react-redux";
-import classNames from "classnames";
-import { Formik, Form, Field } from "formik";
-import { withRouter } from "react-router-dom";
+import React from 'react';
+import { connect } from 'react-redux';
+import classNames from 'classnames';
+import { Formik, Form, Field } from 'formik';
+import { withRouter } from 'react-router-dom';
 import {
   Paper,
   TextField,
@@ -11,51 +11,52 @@ import {
   Button,
   Grid,
   Divider
-} from "@material-ui/core";
-import { green } from "@material-ui/core/colors";
-import { withStyles } from "@material-ui/core/styles";
-import queryString from "query-string";
-import moment from "moment";
-import RequestStatusPill from "../../components/RequestStatusPill";
-import DashContainer from "../DashContainer";
+} from '@material-ui/core';
+import { green } from '@material-ui/core/colors';
+import { withStyles } from '@material-ui/core/styles';
+import queryString from 'query-string';
+import moment from 'moment';
+import RequestStatusPill from '../../components/RequestStatusPill';
+import DashContainer from '../DashContainer';
 
 import {
   ArrowBackIosOutlined as ArrowBackIcon,
   DoneOutlined as DoneIcon,
   RemoveCircleOutline as RemoveCircleIcon
-} from "@material-ui/icons";
+} from '@material-ui/icons';
 // Helper
-import { getLeaveType } from "../../helpers/leaveLetterHelper";
+import { getLeaveType } from '../../helpers/leaveLetterHelper';
 
 // Notification redux
 import {
   showNotification,
   hideNotification
-} from "../../redux/actions/notificationActions";
-import { NOTIF_ERROR, NOTIF_SUCCESS } from "../../constants/notification";
+} from '../../redux/actions/notificationActions';
+import { NOTIF_ERROR, NOTIF_SUCCESS } from '../../constants/notification';
 
 // API
-import { getLeaveLetterDetails } from "../../apiCalls/leaveLetterAPI";
-import { getProfile } from "../../apiCalls/userAPIs";
-import { updateLetterStatus } from "../../apiCalls/leaveLetterAPI";
+import { getLeaveLetterDetails } from '../../apiCalls/leaveLetterAPI';
+import { getProfile } from '../../apiCalls/userAPIs';
+import { updateLetterStatus } from '../../apiCalls/leaveLetterAPI';
 
 import {
   // LEAVE_REQUEST_REJECTED,
   LEAVE_REQUEST_APPROVED,
-  LEAVE_REQUEST_PENDING
-} from "../../constants/requestStatusType";
+  LEAVE_REQUEST_PENDING,
+  LEAVE_REQUEST_REJECTED
+} from '../../constants/requestStatusType';
 
-import { responseUserPermission } from "../../constants/permission";
+import { responseUserPermission } from '../../constants/permission';
 
 const styles = theme => ({
   layout: {
-    width: "auto",
+    width: 'auto',
     marginLeft: theme.spacing.unit * 2,
     marginRight: theme.spacing.unit * 2,
     [theme.breakpoints.up(600 + theme.spacing.unit * 2 * 2)]: {
       minWidth: 800,
-      marginLeft: "auto",
-      marginRight: "auto"
+      marginLeft: 'auto',
+      marginRight: 'auto'
     }
   },
   paper: {
@@ -70,7 +71,7 @@ const styles = theme => ({
     }
   },
   form: {
-    width: "100%", // Fix IE 11 issue.
+    width: '100%', // Fix IE 11 issue.
     marginTop: theme.spacing.unit,
     marginBottom: theme.spacing.unit,
     paddingLeft: theme.spacing.unit * 4,
@@ -86,12 +87,12 @@ const styles = theme => ({
     marginTop: theme.spacing.unit * 3
   },
   buttonGroupBottom: {
-    display: "flex",
-    justifyContent: "flex-end",
-    flexDirection: "row",
-    alignItems: "center",
+    display: 'flex',
+    justifyContent: 'flex-end',
+    flexDirection: 'row',
+    alignItems: 'center',
     [theme.breakpoints.down(360)]: {
-      justifyContent: "space-between"
+      justifyContent: 'space-between'
     },
     marginTop: theme.spacing.unit * 6
   },
@@ -101,9 +102,9 @@ const styles = theme => ({
     }
   },
   btnApprove: {
-    color: "white",
+    color: 'white',
     backgroundColor: green[500],
-    "&:hover": {
+    '&:hover': {
       backgroundColor: green[700]
     }
   },
@@ -117,30 +118,30 @@ const styles = theme => ({
     fontSize: 20
   },
   fieldTitle: {
-    color: "black",
+    color: 'black',
     fontWeight: 600,
     minWidth: 50,
-    [theme.breakpoints.down("xs")]: {
-      overflow: "scroll"
+    [theme.breakpoints.down('xs')]: {
+      overflow: 'scroll'
     }
   },
   fieldValue: {
-    color: "black",
+    color: 'black',
     fontWeight: 500
   },
   fieldWrapper: {
     paddingTop: 0,
     paddingBottom: 0,
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    alighItems: "center"
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alighItems: 'center'
   },
   topInfo: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: theme.spacing.unit * 3
   }
 });
@@ -189,6 +190,29 @@ class LeaveRequestDetail extends React.Component {
           <Formik
             initialValues={initialValues}
             validateOnBlur={true}
+            onReset={(values, actions) => {
+              //call api
+              updateLetterStatus(
+                queryString.parse(history.location.search).id,
+                leaveLetter.fUserId,
+                LEAVE_REQUEST_REJECTED
+              )
+                .then(res => {
+                  handleShowNotif(
+                    NOTIF_SUCCESS,
+                    `Leave request updated successfully!`
+                  );
+                  //Re call get
+                  this.loadData();
+                })
+                .catch(err => {
+                  handleShowNotif(
+                    NOTIF_ERROR,
+                    `Action failed (${err.message})`
+                  );
+                  actions.setSubmitting(false);
+                });
+            }}
             onSubmit={(values, actions) => {
               //call api
               updateLetterStatus(
@@ -338,7 +362,7 @@ class LeaveRequestDetail extends React.Component {
                             From:
                             <span className={classes.fieldValue}>{` ${moment(
                               leaveLetter.fFromDT
-                            ).format("MM/DD/YYYY")}`}</span>
+                            ).format('MM/DD/YYYY')}`}</span>
                           </div>
                         </Grid>
                         {/** ToDT */}
@@ -347,7 +371,7 @@ class LeaveRequestDetail extends React.Component {
                             To:
                             <span className={classes.fieldValue}>{` ${moment(
                               leaveLetter.fToDT
-                            ).format("MM/DD/YYYY")}`}</span>
+                            ).format('MM/DD/YYYY')}`}</span>
                           </div>
                         </Grid>
                         {/** Reason */}
@@ -365,7 +389,7 @@ class LeaveRequestDetail extends React.Component {
                   </React.Fragment>
                   {/* Bottom buttons */}
                   {leaveLetter.fStatus === LEAVE_REQUEST_PENDING &&
-                  userInfo.fTypeId === responseUserPermission["HR"] ? (
+                  userInfo.fTypeId === responseUserPermission['HR'] ? (
                     <React.Fragment>
                       <Grid
                         item
@@ -399,7 +423,9 @@ class LeaveRequestDetail extends React.Component {
                               size="small"
                               variant="contained"
                               color="secondary"
-                              onClick={handleReset}
+                              onClick={() => {
+                                handleReset();
+                              }}
                               disabled={isSubmitting}
                             >
                               <RemoveCircleIcon className={classes.leftIcon} />
@@ -423,7 +449,7 @@ class LeaveRequestDetail extends React.Component {
 
 LeaveRequestDetail.defaultProps = {
   initialValues: {
-    reason: ""
+    reason: ''
   }
 };
 

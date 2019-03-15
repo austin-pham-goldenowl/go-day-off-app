@@ -30,6 +30,8 @@ import { responseUserPermission } from '../../constants/permission';
 import { getUserId } from '../../helpers/authHelpers';
 import { getGenderName } from '../../helpers/userHelpers';
 //API
+import Axios from 'axios';
+import { getAllTeams, getAllPositions } from '../../apiCalls/supportingAPIs';
 import { getProfile, updateProfile } from '../../apiCalls/userAPIs';
 
 //Notif redux
@@ -142,9 +144,13 @@ class EditAccountInfo extends React.Component {
       fPhone: '',
       fTeamName: '',
       fEmail: '',
-      fTypeId: ''
+      fTypeId: '',
+      fTeamId: '',
+      fPosition: ''
     },
-    editMode: false
+    editMode: false,
+    allTeams: [],
+    allPositions: []
   };
 
   handleEnableEditMode = enable => {
@@ -166,6 +172,30 @@ class EditAccountInfo extends React.Component {
     } else {
       console.log(`err: `, response);
     }
+
+    Axios.all([getAllTeams(), getAllPositions()])
+      .then(
+        Axios.spread((allTeamResponse, allPositionResponse) => {
+          let allTeams = allTeamResponse.data.teams.map(item => ({
+            value: item.fId,
+            label: item.fTeamName
+          }));
+
+          let allPositions = allPositionResponse.data.positions.map(item => ({
+            value: item.fId,
+            label: item.fPosName
+          }));
+
+          this.setState(prevState => ({
+            ...prevState,
+            allTeams,
+            allPositions
+          }));
+        })
+      )
+      .catch(err => {
+        console.log('error -> ', err);
+      });
   };
 
   componentDidMount = () => {
@@ -175,7 +205,7 @@ class EditAccountInfo extends React.Component {
 
   render() {
     const { classes, handleShowNotif } = this.props;
-    const { user, editMode } = this.state;
+    const { user, editMode, allTeams, allPositions } = this.state;
     console.log(`state: `, this.state);
     return (
       <DashContainer className={classes.layout}>
@@ -377,14 +407,14 @@ class EditAccountInfo extends React.Component {
                             {/** fTeamName name */}
                             <Grid item xs={12} sm={6}>
                               <Field
-                                name="fTeamName"
+                                name="fTeamId"
                                 render={({ field, form, ...otherProps }) => {
                                   return (
                                     <SelectCustom
                                       name={field.name}
                                       label="Team"
                                       value={field.value}
-                                      options={mockup_team}
+                                      options={allTeams}
                                       onChange={handleChange}
                                     />
                                   );
@@ -394,14 +424,14 @@ class EditAccountInfo extends React.Component {
                             {/** fPositionName name */}
                             <Grid item xs={12} sm={6}>
                               <Field
-                                name="fPositionName"
+                                name="fPosition"
                                 render={({ field, form, ...otherProps }) => {
                                   return (
                                     <SelectCustom
                                       name={field.name}
                                       label="Position"
                                       value={field.value}
-                                      options={mockup_position}
+                                      options={allPositions}
                                       onChange={handleChange}
                                     />
                                   );
@@ -574,36 +604,6 @@ const mockup_gender = [
   {
     value: 2,
     label: 'Others'
-  }
-];
-
-const mockup_team = [
-  {
-    value: '#123', //team id
-    label: 'Ruby on Rails' //team name
-  },
-  {
-    value: '#456',
-    label: 'Project Assistant'
-  },
-  {
-    value: '#789',
-    label: 'JAVascript'
-  }
-];
-
-const mockup_position = [
-  {
-    value: '111#', //team id
-    label: 'Developer' //team name
-  },
-  {
-    value: '222#',
-    label: 'Intern/Fresher'
-  },
-  {
-    value: '333#',
-    label: 'Tech Lead'
   }
 ];
 
