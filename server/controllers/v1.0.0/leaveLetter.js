@@ -206,23 +206,20 @@ Router.get('/my-letters', async (req, res) => {
 
 Router.post('/send-email', async (req, res) => {
   try {
-    // sendMail((success, data) => {
-    //   if (success) {
-    //     console.log(`send-mail -> success info: `, data);
-    //     handleSuccess(res, {
-    //       data,
-    //       msg: 'Email has been sent'
-    //     });
-    //   } else {
-    //     console.log(`send-mail -> error info: `, data);
-    //     handleFailure(res, {
-    //       data,
-    //       msg: `Can't send email!`
-    //     });
-    //   }
-    // });
-    sendMail(res => {
-      console.log(res);
+    sendMail((success, data) => {
+      if (success) {
+        console.log(`send-mail -> success info: `, data);
+        handleSuccess(res, {
+          data,
+          msg: 'Email has been sent'
+        });
+      } else {
+        console.log(`send-mail -> error info: `, data);
+        handleFailure(res, {
+          data,
+          msg: `Can't send email!`
+        });
+      }
     });
   } catch (err) {
     console.log(`send-email -> catch(err): `, err);
