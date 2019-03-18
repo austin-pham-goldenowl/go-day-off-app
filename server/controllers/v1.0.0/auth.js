@@ -45,15 +45,12 @@ Router.post("/account", verifyAccToken, async (req, res) => {
     const entity = standardizeObj(req.body);
 
     // validate gender value
-    const { fGender, fBDay } = entity;
+    const { fGender } = entity;
     if (
       (fGender || 3) &&
       !userModel.rawAttributes.fGender.values.includes(fGender)
     )
       throw { msg: "INVALID_VALUES" };
-
-    // validate birthday value
-    if (fBDay && new Date(fBDay) >= new Date()) throw { msg: "INVALID_VALUES" };
 
     entity.fId = uid(USER_ID_LEN);
     // add foreign keys

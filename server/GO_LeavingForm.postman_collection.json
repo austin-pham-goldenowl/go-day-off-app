@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "930c8686-8cdb-4a59-b84c-52b1868005a1",
+		"_postman_id": "facf7726-e03b-4a42-8f76-deae98ef5b6e",
 		"name": "GO_LeavingForm",
 		"description": "Golden Owl - Leaving Form",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -351,7 +351,7 @@
 						"header": [
 							{
 								"key": "x-access-token",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJIOFVJQWRzeTdUIiwidXNlclR5cGUiOiJociIsImlhdCI6MTU1MjQ1MTMwOSwiZXhwIjoxNTUyNTExMzA5fQ.MlZQnA-0M2y2Df2z0dZRYsHBYdrvQ8m6NVLYQioq6K8",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJIOFVJQWRzeTdUIiwidXNlclR5cGUiOiJociIsImlhdCI6MTU1Mjg5Njc4OSwiZXhwIjoxNTUyOTU2Nzg5fQ.b1moqliZpecquHNoA5cmvY0-9tE4hFnH38gr12XlaR8",
 								"type": "text"
 							},
 							{
@@ -362,7 +362,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"absenceType\": \"1\",\n\t\"fromDT\": \"2019-02-10T16:29:56.000Z\",\n\t\"status\": 2,\n\t\"substituteId\": \"dxujR3BB4d\",\n\t\"toDT\": \"2019-02-17T16:29:56.000Z\",\n\t\"userId\": \"H8UIAdsy7T\"\n}"
+							"raw": "{\n\t\"absenceType\": \"1\",\n\t\"fromDT\": \"2019-04-10T16:29:56.000Z\",\n\t\"status\": 2,\n\t\"substituteId\": \"i53FItHeMK\",\n\t\"toDT\": \"2019-04-17T16:29:56.000Z\",\n\t\"userId\": \"H8UIAdsy7T\",\n\t\"approver\": \"H8UIAdsy7T\",\n\t\"fromOpt\": \"morning\",\n\t\"toOpt\": \"allday\"\n}"
 						},
 						"url": {
 							"raw": "localhost:3001/api/v1.0.0/leaveletter/",
@@ -705,7 +705,6 @@
 						},
 						"url": {
 							"raw": "localhost:3001/api/v1.0.0/user/approver",
-							"raw": "localhost:3001/api/v1.0.0/user/team-leader",
 							"host": [
 								"localhost"
 							],
@@ -736,7 +735,6 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "localhost:3001/api/v1.0.0/user/approver",
 							"raw": "localhost:3001/api/v1.0.0/user/team-leader",
 							"host": [
 								"localhost"
@@ -747,6 +745,59 @@
 								"v1.0.0",
 								"user",
 								"team-leader"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get filtered  letters",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJIOFVJQWRzeTdUIiwidXNlclR5cGUiOiJociIsImlhdCI6MTU1Mjg5Njc4OSwiZXhwIjoxNTUyOTU2Nzg5fQ.b1moqliZpecquHNoA5cmvY0-9tE4hFnH38gr12XlaR8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "localhost:3001/api/v1.0.0/leaveletter/filter?userId=H8UIAdsy7T&fromMonth=01&toMonth=04&fromYear=2019&toYear=2019",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"api",
+								"v1.0.0",
+								"leaveletter",
+								"filter"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "H8UIAdsy7T"
+								},
+								{
+									"key": "fromMonth",
+									"value": "01"
+								},
+								{
+									"key": "toMonth",
+									"value": "04"
+								},
+								{
+									"key": "fromYear",
+									"value": "2019"
+								},
+								{
+									"key": "toYear",
+									"value": "2019"
+								}
 							]
 						}
 					},

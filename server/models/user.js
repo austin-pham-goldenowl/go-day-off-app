@@ -16,16 +16,8 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.STRING(30),
         allowNull: false
       },
-      fBday: {
-        type: DataTypes.DATE,
-        allowNull: false
-      },
       fPosition: {
         type: DataTypes.STRING(5),
-        allowNull: false
-      },
-      fAddress: {
-        type: DataTypes.STRING(100),
         allowNull: false
       },
       fPhone: {
@@ -88,8 +80,6 @@ export default (sequelize, DataTypes) => {
     });
 
   const permittedFields = [
-    "fAddress",
-    "fBday",
     "fEmail",
     "fFirstName",
     "fPassword",

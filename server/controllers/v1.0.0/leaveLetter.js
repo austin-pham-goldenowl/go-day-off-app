@@ -1,6 +1,9 @@
 const express = require("express");
 const Router = express.Router();
 const uid = require("rand-token").uid;
+const { Op } = require("sequelize");
+const moment = require("moment");
+const dateArray = require('moment-array-dates');
 
 /**
  * Models
@@ -27,6 +30,11 @@ const {
   getIdFromToken,
   getPermissionByToken
 } = require("../../helpers/getUserInfo");
+
+/**
+ * Constants
+ */
+const { FROM_OPTION, TO_OPTION } = require("../../configs/constants")
 
 Router.get("/details", async (req, res) => {
   try {
@@ -199,6 +207,110 @@ Router.get("/my-letters", async (req, res) => {
       leaveLetters: leaveLetters.map(lt => lt.get({ plain: true }))
     });
   } catch (err) {
+    handleFailure(res, { err, route: req.originalUrl });
+  }
+});
+
+Router.get("/filter", async (req, res) => {
+  try {
+    // validating query params
+    let { userId, fromMonth, toMonth, fromYear, toYear } = req.query;
+    if(!userId)
+      throw { msg: "INVALID_QUERY" };
+    if(fromMonth && (isNaN(fromMonth) || fromMonth > 12))
+      throw { msg: "INVALID_QUERY" };
+    if(!fromMonth) fromMonth = "01";
+    if(toMonth && (isNaN(toMonth) || toMonth > 12 || toMonth < fromMonth))
+      throw { msg: "INVALID_QUERY" };
+    if(!toMonth) toMonth = "12";
+    const currentYear = (new Date()).getFullYear();
+    if(fromYear && (isNaN(fromYear) || fromYear > currentYear))
+      throw { msg: "INVALID_QUERY" };
+    if(!fromYear) fromYear = currentYear;
+    if(toYear && (isNaN(toYear) || toYear < fromYear))
+      throw { msg: "INVALID_QUERY" };
+    if(!toYear || toYear > currentYear) toYear = currentYear;
+
+    // only HR can export all; others can export oneself's
+    const fUserType = await getPermissionByToken(req.token_payload);
+    if(fUserType !== "HR" && userId !== getIdFromToken((req.token_payload)))
+      throw { code: 401, msg: "NO_PERMISSION" };
+
+    const fromDate = moment(`${fromMonth}/01/${fromYear}`),
+      toDate = moment(`${toMonth}/31/${toYear}`);
+    const rawLeaveLetters = await leaveLetterModel.loadAll([],
+      { where: { fUserId: userId,
+          fFromDT: { [Op.gte]: fromDate },
+          fToDT: { [Op.lte]: toDate }
+      }},
+      { order: [["fRdt", "ASC"]] });
+
+    let numOffDays = 0;
+    const leaveLetters = [];
+    await (async () => {
+      for (let i = 0; i < rawLeaveLetters.length; i++) {
+        const letter = rawLeaveLetters[i].get({ plain: true });
+        const { fUserId, fApprover, fSubstituteId } = letter;
+        // user's fullName
+        const users = await userModel.loadAll(["fFirstName", "fLastName"], {
+          where: { fId: fUserId }
+        });
+        if (users.length) {
+          const { fFirstName, fLastName } = users[0].get({ plain: true });
+          letter.fUserFullName = fFirstName + " " + fLastName;
+        }
+        // approver's fullName
+        const arrpovers = await userModel.loadAll(["fFirstName", "fLastName"], {
+          where: { fId: fApprover }
+        });
+        if (arrpovers.length) {
+          const { fFirstName, fLastName } = arrpovers[0].get({ plain: true });
+          letter.fApproverFullName = fFirstName + " " + fLastName;
+        }
+        // substitute's fullName
+        const substitutes = await userModel.loadAll(["fFirstName", "fLastName"], {
+          where: { fId: fSubstituteId }
+        });
+        if (substitutes.length) {
+          const { fFirstName, fLastName } = substitutes[0].get({ plain: true });
+          letter.fSubstituteFullName = fFirstName + " " + fLastName;
+        }
+        // add the customized letter to result
+        leaveLetters.push(letter);
+        // count how many off days used
+        const { fFromDT, fToDT, fFromOpt, fToOpt } = letter;
+        if(fFromOpt === FROM_OPTION.AFTERNOON) {
+          numOffDays += 0.5;
+          numOffDays += moment(fToDT).diff(moment(fFromDT), 'days');
+        }
+        // not duplicated at all
+        if(fToOpt !== TO_OPTION.ALLDAY) {
+          numOffDays += 0.5;
+          numOffDays += moment(fToDT).diff(moment(fFromDT), 'days');
+        }
+        // neither of above cases
+        if(fFromOpt !== FROM_OPTION.AFTERNOON && fToOpt === TO_OPTION.ALLDAY)
+          numOffDays += moment(fToDT).diff(moment(fFromDT), 'days') + 1;
+        // exclude weekend
+        const datesArray = dateArray.range(fFromDT, fToDT, 'MM/DD/YYYY');
+        for (let j = 0; j < datesArray.length; j++) {
+          const isWeekend = [0, 6].includes(moment(datesArray[j]).day());
+          if(isWeekend) {
+            // if the date was same as fFromDT, check if half day
+            if(fFromOpt === FROM_OPTION.AFTERNOON)
+              numOffDays -= 0.5;
+            // if the date was same as fToDT, check if half day
+            else if(fToOpt !== TO_OPTION.ALLDAY)
+              numOffDays -= 0.5;
+            // other than that simply subtract 1 day
+            else numOffDays -= 1;
+          }
+        }
+      }
+    })();
+
+    handleSuccess(res, { leaveLetters, numOffDays });
+  } catch(err) {
     handleFailure(res, { err, route: req.originalUrl });
   }
 });

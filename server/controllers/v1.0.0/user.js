@@ -39,8 +39,6 @@ Router.get("/profile", async (req, res) => {
       throw { code: 401, msg: "NO_PERMISSION" };
 
     const attributes = [
-      "fAddress",
-      "fBday",
       "fEmail",
       "fFirstName",
       "fLastName",
@@ -98,15 +96,12 @@ Router.patch("/profile", async (req, res) => {
     if (fUserType !== "HR") throw { cod: 401, msg: "NO_PERMISSION" };
 
     // validate gender value
-    const { fGender, fBDay } = entity;
+    const { fGender } = entity;
     if (
       (fGender || 3) &&
       !userModel.rawAttributes.fGender.values.includes(fGender)
     )
       throw { msg: "INVALID_VALUES" };
-
-    // validate birthday value
-    if (fBDay && new Date(fBDay) >= new Date()) throw { msg: "INVALID_VALUES" };
 
     // update foreign keys
     const { fTeamId, fPositionId, fTypeId } = entity;

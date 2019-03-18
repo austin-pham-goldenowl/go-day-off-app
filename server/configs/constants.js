@@ -14,5 +14,12 @@ export const FROM_OPTION = {
 };
 export const FROM_OPTION_VALUES = ["allday", "morning", "afternoon"];
 
+export const TO_OPTION = {
+  ALLDAY: "allday",
+  MORNING: "morning"
+}
+
+export const TO_OPTION_VALUES = ["allday", "morning"];
+
 export const API_VERSIONS = ["v1.0.0"];
 export const DEFAULT_API_VERSION = "v1.0.0";

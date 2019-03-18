@@ -3,7 +3,9 @@ import {
   LEAVING_LETTER_STATUS_VALUES,
   LEAVING_LETTER_STATUS,
   FROM_OPTION_VALUES,
-  FROM_OPTION
+  FROM_OPTION,
+  TO_OPTION_VALUES,
+  TO_OPTION
 } from "../configs/constants";
 
 /**
@@ -63,6 +65,12 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.ENUM,
         values: FROM_OPTION_VALUES,
         defaultValue: FROM_OPTION.ALLDAY,
+        allowNull: false
+      },
+      fToOpt: {
+        type: DataTypes.ENUM,
+        values: TO_OPTION_VALUES,
+        defaultValue: TO_OPTION.ALLDAY,
         allowNull: false
       },
       absenceTypes_fId: { type: DataTypes.STRING(5) },
