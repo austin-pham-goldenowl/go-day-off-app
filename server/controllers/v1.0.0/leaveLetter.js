@@ -1,19 +1,20 @@
-const express = require("express");
+const express = require('express');
 const Router = express.Router();
-const uid = require("rand-token").uid;
+const uid = require('rand-token').uid;
 
+import { sendMail } from '../../helpers/mailingHelpers/nodemailer';
 /**
  * Models
  */
 const {
   leaveLetters: leaveLetterModel,
   users: userModel
-} = require("../../models");
+} = require('../../models');
 
 /**
  * Configs
  */
-const { LEAVING_FORM_ID_LEN } = require("../../configs/config");
+const { LEAVING_FORM_ID_LEN } = require('../../configs/config');
 
 /**
  * Helpers
@@ -21,54 +22,54 @@ const { LEAVING_FORM_ID_LEN } = require("../../configs/config");
 const {
   handleSuccess,
   handleFailure
-} = require("../../helpers/handleResponse");
-const { standardizeObj } = require("../../helpers/standardize");
+} = require('../../helpers/handleResponse');
+const { standardizeObj } = require('../../helpers/standardize');
 const {
   getIdFromToken,
   getPermissionByToken
-} = require("../../helpers/getUserInfo");
+} = require('../../helpers/getUserInfo');
 
-Router.get("/details", async (req, res) => {
+Router.get('/details', async (req, res) => {
   try {
     // validate if userPermission is permitted
     const fUserType = await getPermissionByToken(req.token_payload);
-    if (!fUserType) throw { code: 401, msg: "NO_PERMISSION" };
+    if (!fUserType) throw { code: 401, msg: 'NO_PERMISSION' };
 
     // others can view oneself's
     const fId = req.query.id;
-    if (!fId) throw { msg: "INVALID_QUERY" };
+    if (!fId) throw { msg: 'INVALID_QUERY' };
 
-    const letters = await leaveLetterModel.loadAll(["fUserId"], {
+    const letters = await leaveLetterModel.loadAll(['fUserId'], {
       where: { fId }
     });
-    if (!letters || letters.length !== 1) throw { msg: "LETTER_NOT_FOUND" };
+    if (!letters || letters.length !== 1) throw { msg: 'LETTER_NOT_FOUND' };
     const { fUserId } = letters[0].get({ plain: true });
 
     const userId = getIdFromToken(req.token_payload);
-    if (fUserType !== "HR" && userId !== fUserId)
-      throw { code: 401, msg: "NO_PERMISSION" };
+    if (fUserType !== 'HR' && userId !== fUserId)
+      throw { code: 401, msg: 'NO_PERMISSION' };
 
     // only HR can view everyone's
     const leaveLetters = await leaveLetterModel.loadAll([], {
       where: { fId }
     });
     if (!leaveLetters || leaveLetters.length !== 1)
-      throw { msg: "LETTER_NOT_FOUND" };
+      throw { msg: 'LETTER_NOT_FOUND' };
 
     // load substitute fullName
     const letter = leaveLetters[0].get({ plain: true });
     const { fApprover } = letter;
     // only HR marked as approver in letter is able to view and approve it
-    if (fUserType === "HR" && fApprover !== userId)
-      throw { code: 401, msg: "NO_PERMISSION" };
+    if (fUserType === 'HR' && fApprover !== userId)
+      throw { code: 401, msg: 'NO_PERMISSION' };
 
     const { fSubstituteId } = letter;
-    const users = await userModel.loadAll(["fFirstName", "fLastName"], {
+    const users = await userModel.loadAll(['fFirstName', 'fLastName'], {
       where: { fId: fSubstituteId }
     });
     if (users.length) {
       const { fFirstName, fLastName } = users[0].get({ plain: true });
-      letter.fFullName = fFirstName + " " + fLastName;
+      letter.fFullName = fFirstName + ' ' + fLastName;
     }
 
     handleSuccess(res, { leaveLetter: letter });
@@ -77,15 +78,15 @@ Router.get("/details", async (req, res) => {
   }
 });
 
-Router.get("/", async (req, res) => {
+Router.get('/', async (req, res) => {
   try {
     const userType = await getPermissionByToken(req.token_payload);
-    if (userType !== "HR") throw { code: 401, msg: "NO_PERMISSION" };
+    if (userType !== 'HR') throw { code: 401, msg: 'NO_PERMISSION' };
 
     const userId = getIdFromToken(req.token_payload);
     const rawLeaveLetters = await leaveLetterModel.loadAll([],
       {},
-      { order: [["fRdt", "DESC"]] });
+      { order: [['fRdt', 'DESC']] });
     // load user fullName
     let leaveLetters = [];
     await (async () => {
@@ -95,12 +96,12 @@ Router.get("/", async (req, res) => {
         // only HR marked as approver in letter is able to view and approve it
         if (userId !== fUserId && userId !== fApprover) continue;
 
-        const users = await userModel.loadAll(["fFirstName", "fLastName"], {
+        const users = await userModel.loadAll(['fFirstName', 'fLastName'], {
           where: { fId: fUserId }
         });
         if (users.length) {
           const { fFirstName, fLastName } = users[0].get({ plain: true });
-          letter.fFullName = fFirstName + " " + fLastName;
+          letter.fFullName = fFirstName + ' ' + fLastName;
         }
         leaveLetters.push(letter);
       }
@@ -112,9 +113,9 @@ Router.get("/", async (req, res) => {
   }
 });
 
-Router.post("/", async (req, res) => {
+Router.post('/', async (req, res) => {
   try {
-    if (Object.keys(req.body).length < 1) throw { msg: "INVALID_VALUES" };
+    if (Object.keys(req.body).length < 1) throw { msg: 'INVALID_VALUES' };
 
     const id = uid(LEAVING_FORM_ID_LEN);
     const entity = standardizeObj({ ...req.body, id });
@@ -125,11 +126,11 @@ Router.post("/", async (req, res) => {
       (fStatus || 3) &&
       !leaveLetterModel.rawAttributes.fStatus.values.includes(fStatus)
     )
-      throw { msg: "INVALID_VALUES" };
+      throw { msg: 'INVALID_VALUES' };
 
     // validate whether fromDT <= toDT
     if (fFromDT && fToDT && new Date(fFromDT) > new Date(fToDT))
-      throw { msg: "INVALID_VALUES" };
+      throw { msg: 'INVALID_VALUES' };
 
     // add foreign keys
     const { fUserId, fAbsenceType, fApprover } = entity;
@@ -145,22 +146,22 @@ Router.post("/", async (req, res) => {
   }
 });
 
-Router.patch("/", async (req, res) => {
+Router.patch('/', async (req, res) => {
   try {
     // validate if userPermission is permitted
     const fUserType = await getPermissionByToken(req.token_payload);
-    if (!fUserType) throw { code: 401, msg: "NO_PERMISSION" };
+    if (!fUserType) throw { code: 401, msg: 'NO_PERMISSION' };
     // others can update oneself's
     const entity = standardizeObj(req.body.info);
     const userId = getIdFromToken(req.token_payload);
     const { fUserId } = entity;
-    if (fUserType !== "HR" && userId !== fUserId)
-      throw { code: 401, msg: "NO_PERMISSION" };
+    if (fUserType !== 'HR' && userId !== fUserId)
+      throw { code: 401, msg: 'NO_PERMISSION' };
 
     // only HR can update everyone's
     const fId = req.body.id;
     if (!entity || Object.keys(entity).length < 1 || !fId)
-      throw { msg: "INVALID_VALUES" };
+      throw { msg: 'INVALID_VALUES' };
 
     const { fStatus, fFromDT, fToDT } = entity;
     // validate status value
@@ -168,16 +169,16 @@ Router.patch("/", async (req, res) => {
       (fStatus || 3) &&
       !leaveLetterModel.rawAttributes.fStatus.values.includes(fStatus)
     )
-      throw { msg: "INVALID_VALUES" };
+      throw { msg: 'INVALID_VALUES' };
 
     // validate whether fromDT <= toDT
     if (fFromDT && fToDT && new Date(fFromDT) > new Date(fToDT))
-      throw { msg: "INVALID_VALUES" };
+      throw { msg: 'INVALID_VALUES' };
 
     const affected = await leaveLetterModel.modify(entity, {
       where: { fId, fUserId }
     });
-    if (affected[0] < 1) throw { msg: "LETTER_NOT_FOUND" };
+    if (affected[0] < 1) throw { msg: 'LETTER_NOT_FOUND' };
 
     handleSuccess(res, { leaveLetter: entity });
   } catch (err) {
@@ -185,10 +186,10 @@ Router.patch("/", async (req, res) => {
   }
 });
 
-Router.get("/my-letters", async (req, res) => {
+Router.get('/my-letters', async (req, res) => {
   try {
     const userId = getIdFromToken(req.token_payload);
-    if (!userId) throw { msg: "USER_NOT_FOUND" };
+    if (!userId) throw { msg: 'USER_NOT_FOUND' };
 
     const leaveLetters = await leaveLetterModel.loadAll([], {
       where: { fUserId: userId }
@@ -203,4 +204,29 @@ Router.get("/my-letters", async (req, res) => {
   }
 });
 
+Router.post('/send-email', async (req, res) => {
+  try {
+    // sendMail((success, data) => {
+    //   if (success) {
+    //     console.log(`send-mail -> success info: `, data);
+    //     handleSuccess(res, {
+    //       data,
+    //       msg: 'Email has been sent'
+    //     });
+    //   } else {
+    //     console.log(`send-mail -> error info: `, data);
+    //     handleFailure(res, {
+    //       data,
+    //       msg: `Can't send email!`
+    //     });
+    //   }
+    // });
+    sendMail(res => {
+      console.log(res);
+    });
+  } catch (err) {
+    console.log(`send-email -> catch(err): `, err);
+    handleFailure(res, { err, route: req.originalUrl });
+  }
+});
 module.exports = Router;
