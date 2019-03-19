@@ -1,14 +1,16 @@
-import React, { Component } from "react";
-import { Link } from "react-router-dom";
-import { Typography, Button } from "@material-ui/core";
-import { withStyles } from "@material-ui/core/styles";
-import MUIDataTable from "mui-datatables";
-import moment from "moment";
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import { Typography, Button } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
+import MUIDataTable from 'mui-datatables';
+import moment from 'moment';
+//constants
 import {
   LEAVE_REQUEST_PENDING,
   LEAVE_REQUEST_APPROVED,
   LEAVE_REQUEST_REJECTED
-} from "../constants/requestStatusType";
+} from '../constants/requestStatusType';
+import { DATE_FORMAT_HALF } from '../constants/dateTimeFormats';
 const styles = theme => ({
   paper: {
     padding: theme.spacing.unit * 5
@@ -16,10 +18,10 @@ const styles = theme => ({
   title: {
     marginTop: theme.spacing.unit * 3,
     marginBottom: theme.spacing.unit * 3,
-    textAlign: "left"
+    textAlign: 'left'
   },
   btnLink: {
-    textDecoration: "none"
+    textDecoration: 'none'
   }
 });
 
@@ -58,30 +60,30 @@ class LetterManagement extends Component {
       data: Array.isArray(letters)
         ? letters.map(letter => {
             const { fFullName, fFromDT, fToDT, fStatus, fId, fRdt } = letter;
-            if (type === "hr")
+            if (type === 'hr')
               return [
-                fFullName || "Unknown",
+                fFullName || 'Unknown',
                 moment(fFromDT)
-                  .locale("en")
-                  .format("MM/DD/YYYY"),
+                  .locale('en')
+                  .format(DATE_FORMAT_HALF),
                 moment(fToDT)
-                  .locale("en")
-                  .format("MM/DD/YYYY"),
+                  .locale('en')
+                  .format(DATE_FORMAT_HALF),
                 <span
                   style={{
                     color:
                       fStatus === LEAVE_REQUEST_PENDING
-                        ? "#ffe43a"
+                        ? '#ffe43a'
                         : fStatus === LEAVE_REQUEST_APPROVED
-                        ? "#0eba25"
-                        : "gray"
+                        ? '#0eba25'
+                        : 'gray'
                   }}
                 >
                   {fStatus === LEAVE_REQUEST_PENDING
-                    ? "PENDING"
+                    ? 'PENDING'
                     : fStatus === LEAVE_REQUEST_APPROVED
-                    ? "APPROVED"
-                    : "REJECTED"}
+                    ? 'APPROVED'
+                    : 'REJECTED'}
                 </span>,
                 <Link
                   to={`/leave-request/details?id=${fId}`}
@@ -95,29 +97,29 @@ class LetterManagement extends Component {
             else
               return [
                 moment(fRdt)
-                  .locale("en")
-                  .format("MM/DD/YYYY"),
+                  .locale('en')
+                  .format(DATE_FORMAT_HALF),
                 moment(fFromDT)
-                  .locale("en")
-                  .format("MM/DD/YYYY"),
+                  .locale('en')
+                  .format(DATE_FORMAT_HALF),
                 moment(fToDT)
-                  .locale("en")
-                  .format("MM/DD/YYYY"),
+                  .locale('en')
+                  .format(DATE_FORMAT_HALF),
                 <span
                   style={{
                     color:
                       fStatus === LEAVE_REQUEST_PENDING
-                        ? "#ffe43a"
+                        ? '#ffe43a'
                         : fStatus === LEAVE_REQUEST_APPROVED
-                        ? "#0eba25"
-                        : "gray"
+                        ? '#0eba25'
+                        : 'gray'
                   }}
                 >
                   {fStatus === LEAVE_REQUEST_PENDING
-                    ? "PENDING"
+                    ? 'PENDING'
                     : fStatus === LEAVE_REQUEST_APPROVED
-                    ? "APPROVED"
-                    : "REJECTED"}
+                    ? 'APPROVED'
+                    : 'REJECTED'}
                 </span>,
                 <Link
                   to={`/leave-request/details?id=${fId}`}
@@ -131,12 +133,12 @@ class LetterManagement extends Component {
           })
         : [],
       columns:
-        type === "hr"
-          ? ["Name", "From", "To", "Status", "Actions"]
-          : ["When", "From", "To", "Status", "Actions"],
+        type === 'hr'
+          ? ['Name', 'From', 'To', 'Status', 'Actions']
+          : ['When', 'From', 'To', 'Status', 'Actions'],
       options: {
         selectableRows: false,
-        responsive: "scroll",
+        responsive: 'scroll',
         print: true,
         download: true,
         viewColumns: false,
