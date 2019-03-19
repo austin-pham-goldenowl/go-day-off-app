@@ -82,7 +82,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"username\" : \"hr\",\n\t\"rawPwd\" : \"password\"\n}"
+							"raw": "{\n\t\"username\" : \"user\",\n\t\"rawPwd\" : \"password\"\n}"
 						},
 						"url": {
 							"raw": "localhost:3001/api/v1.0.0/auth/login",
@@ -246,7 +246,7 @@
 						"header": [
 							{
 								"key": "x-access-token",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiZlVzZXJJZCI6Ilk4dnNzUXU3aDMifSwiaWF0IjoxNTUxOTQ2MjQ5LCJleHAiOjE1NTIwMDYyNDl9.78cCnze2s4cDSGEWF1LI1H9Gify78Vw_XxReeWPdW_c",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJIOFVJQWRzeTdUIiwidXNlclR5cGUiOiJociIsImlhdCI6MTU1Mjk2NzI2MiwiZXhwIjoxNTUzMDI3MjYyfQ.f57Dbi5om0jxzZ29XK3VcC-7kmAMXZ4MGfag0mKST9s",
 								"type": "text"
 							}
 						],
@@ -255,7 +255,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "localhost:3001/api/v1.0.0/leaveletter/",
+							"raw": "localhost:3001/api/v1.0.0/leaveletter?size=5&page=2",
 							"host": [
 								"localhost"
 							],
@@ -263,8 +263,17 @@
 							"path": [
 								"api",
 								"v1.0.0",
-								"leaveletter",
-								""
+								"leaveletter"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "5"
+								},
+								{
+									"key": "page",
+									"value": "2"
+								}
 							]
 						}
 					},
@@ -351,7 +360,7 @@
 						"header": [
 							{
 								"key": "x-access-token",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJIOFVJQWRzeTdUIiwidXNlclR5cGUiOiJociIsImlhdCI6MTU1Mjg5Njc4OSwiZXhwIjoxNTUyOTU2Nzg5fQ.b1moqliZpecquHNoA5cmvY0-9tE4hFnH38gr12XlaR8",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJIOFVJQWRzeTdUIiwidXNlclR5cGUiOiJociIsImlhdCI6MTU1Mjk2NzI2MiwiZXhwIjoxNTUzMDI3MjYyfQ.f57Dbi5om0jxzZ29XK3VcC-7kmAMXZ4MGfag0mKST9s",
 								"type": "text"
 							},
 							{
@@ -362,7 +371,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"absenceType\": \"1\",\n\t\"fromDT\": \"2019-04-10T16:29:56.000Z\",\n\t\"status\": 2,\n\t\"substituteId\": \"i53FItHeMK\",\n\t\"toDT\": \"2019-04-17T16:29:56.000Z\",\n\t\"userId\": \"H8UIAdsy7T\",\n\t\"approver\": \"H8UIAdsy7T\",\n\t\"fromOpt\": \"morning\",\n\t\"toOpt\": \"allday\"\n}"
+							"raw": "{\n\t\"absenceType\": \"1\",\n\t\"fromDT\": \"2019-01-13T16:29:56.000Z\",\n\t\"status\": 2,\n\t\"substituteId\": \"i53FItHeMK\",\n\t\"toDT\": \"2019-01-15T16:29:56.000Z\",\n\t\"userId\": \"H8UIAdsy7T\",\n\t\"approver\": \"H8UIAdsy7T\",\n\t\"fromOpt\": \"morning\",\n\t\"toOpt\": \"morning\"\n}"
 						},
 						"url": {
 							"raw": "localhost:3001/api/v1.0.0/leaveletter/",
@@ -664,7 +673,7 @@
 						"header": [
 							{
 								"key": "x-access-token",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJIOFVJQWRzeTdUIiwidXNlclR5cGUiOiJociIsImlhdCI6MTU1MjQ1MTMwOSwiZXhwIjoxNTUyNTExMzA5fQ.MlZQnA-0M2y2Df2z0dZRYsHBYdrvQ8m6NVLYQioq6K8",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJpNTNGSXRIZU1LIiwidXNlclR5cGUiOiJwZXJzb25uZWwiLCJpYXQiOjE1NTI5NzI1NDIsImV4cCI6MTU1MzAzMjU0Mn0._lvEmkmDbPiRgSDpfgmHbf5uL8aJsNV5VkKh9qq2Rt4",
 								"type": "text"
 							}
 						],
@@ -673,7 +682,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "localhost:3001/api/v1.0.0/leaveletter/my-letters",
+							"raw": "localhost:3001/api/v1.0.0/leaveletter/my-letters?userId=eKmuZqYzzm&size=5&page=1",
 							"host": [
 								"localhost"
 							],
@@ -683,6 +692,20 @@
 								"v1.0.0",
 								"leaveletter",
 								"my-letters"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "eKmuZqYzzm"
+								},
+								{
+									"key": "size",
+									"value": "5"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								}
 							]
 						}
 					},
@@ -757,7 +780,7 @@
 						"header": [
 							{
 								"key": "x-access-token",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJIOFVJQWRzeTdUIiwidXNlclR5cGUiOiJociIsImlhdCI6MTU1Mjg5Njc4OSwiZXhwIjoxNTUyOTU2Nzg5fQ.b1moqliZpecquHNoA5cmvY0-9tE4hFnH38gr12XlaR8",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJIOFVJQWRzeTdUIiwidXNlclR5cGUiOiJociIsImlhdCI6MTU1Mjk2NzI2MiwiZXhwIjoxNTUzMDI3MjYyfQ.f57Dbi5om0jxzZ29XK3VcC-7kmAMXZ4MGfag0mKST9s",
 								"type": "text"
 							}
 						],
@@ -766,7 +789,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "localhost:3001/api/v1.0.0/leaveletter/filter?userId=H8UIAdsy7T&fromMonth=01&toMonth=04&fromYear=2019&toYear=2019",
+							"raw": "localhost:3001/api/v1.0.0/leaveletter/filter?userId=H8UIAdsy7T&fromMonth=01&toMonth=04&fromYear=2019&toYear=2019&page=1&size=5",
 							"host": [
 								"localhost"
 							],
@@ -797,6 +820,14 @@
 								{
 									"key": "toYear",
 									"value": "2019"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "5"
 								}
 							]
 						}

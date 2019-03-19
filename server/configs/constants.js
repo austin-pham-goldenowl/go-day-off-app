@@ -23,3 +23,9 @@ export const TO_OPTION_VALUES = ["allday", "morning"];
 
 export const API_VERSIONS = ["v1.0.0"];
 export const DEFAULT_API_VERSION = "v1.0.0";
+
+export const DEFAULT_PAGE_ORDER = 1;
+export const DEFAULT_PAGE_SIZE = 10;
+export const ALLOWED_PAGE_SIZE = [5, 10, 15];
+
+export const WEEKEND_ORDERS = [0, 6];

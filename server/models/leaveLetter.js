@@ -160,5 +160,30 @@ export default (sequelize, DataTypes) => {
       }
     });
 
+  LeaveLetter.countAll = (attributes = [], queryWhere = {}, ...options) =>
+    new Promise(async (resolve, reject) => {
+      try {
+        let result = null;
+        if (attributes.length < 1)
+          result = await LeaveLetter.findAndCountAll({
+            ...queryWhere,
+            ...arrToObj(options)
+          });
+        else
+          result = await LeaveLetter.findAndCountAll({
+            attributes,
+            ...queryWhere,
+            ...arrToObj(options)
+          });
+
+        const { rows: rawLeaveLetters, count } = result;
+        resolve({ rawLeaveLetters, count });
+      } catch (err) {
+        err.code = 500;
+        err.msg = "DB_QUERY_ERROR";
+        reject(err);
+      }
+    });
+
   return LeaveLetter;
 };
