@@ -24,7 +24,7 @@ html
         span #{position}
       p Tôi làm đơn này kính đề nghị Công ty cho tôi được nghỉ phép
       p 
-        span(class="fieldTitle") Từ 
+        span(class="fieldTitle") Từ:
         span #{fromTime} 
         span(class="fieldTitle") ngày 
         span #{fromDate} 
@@ -54,13 +54,13 @@ html
     div(class="formFooter")
       div Tp.HCM, ngày #{createDateTime.date} tháng #{createDateTime.month} năm #{createDateTime.year}
       div(class="signings")
-        div(class="departmentSigning")
+        div(class="approverSigning")
           p Đơn vị
           p (Ký, ghi rõ họ tên)
           |
           |
           |
-          p(class="signingName") #{department}
+          p(class="signingName") #{approver}
         div(class="author")
           p Người làm đơn
           p (Ký, ghi rõ họ tên)

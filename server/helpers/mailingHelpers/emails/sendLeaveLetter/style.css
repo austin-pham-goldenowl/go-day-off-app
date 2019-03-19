@@ -1,7 +1,8 @@
 body {
   width: 600px;
-  height: 1000px;
-  border: 1px solid black;
+  height: 100%;
+  padding: 10px;
+  margin: 0;
 }
 
 .companyInfo {
@@ -30,7 +31,7 @@ body {
 }
 
 .dearsContainer {
-  margin: 40px 20px;
+  margin: 40px 0;
 }
 
 .dearsContainer .dears {
@@ -39,7 +40,7 @@ body {
 }
 
 .main {
-  margin: 0 20px;
+  margin: 0;
 }
 
 .fieldTitle {
@@ -47,12 +48,12 @@ body {
 }
 
 .formFooter {
-  margin: 40px 20px;
+  margin: 40px 0;
   text-align: right;
 }
 
 .formFooter .signings {
-  margin: 10px 40px;
+  margin: 10px 20px;
   text-align: center;
 }
 
@@ -63,7 +64,7 @@ body {
   clear: both;
 }
 
-.formFooter .signings .departmentSigning {
+.formFooter .signings .approverSigning {
   display: block;
   float: left;
 }
