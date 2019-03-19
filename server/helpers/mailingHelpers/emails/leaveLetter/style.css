@@ -1,0 +1,78 @@
+body {
+  width: 600px;
+  height: 1000px;
+  border: 1px solid black;
+}
+
+.companyInfo {
+  display: inline-block;
+  text-align: center;
+}
+
+.companyInfo .logo {
+  display: inline;
+}
+
+.companyInfo .companyName {
+  font-weight: bold;
+}
+
+.nationalBrand {
+  margin-top: 40px;
+  text-align: center;
+}
+
+.formTitle {
+  text-align: center;
+  font-weight: bold;
+  font-size: 150%;
+  margin: 20px 0;
+}
+
+.dearsContainer {
+  margin: 40px 20px;
+}
+
+.dearsContainer .dears {
+  margin-left: 60px;
+  font-weight: bold;
+}
+
+.main {
+  margin: 0 20px;
+}
+
+.fieldTitle {
+  font-style: italic;
+}
+
+.formFooter {
+  margin: 40px 20px;
+  text-align: right;
+}
+
+.formFooter .signings {
+  margin: 10px 40px;
+  text-align: center;
+}
+
+.formFooter .signings::after {
+  content: ' ';
+  display: block;
+  height: 0;
+  clear: both;
+}
+
+.formFooter .signings .departmentSigning {
+  display: block;
+  float: left;
+}
+
+.formFooter .signings .author {
+  display: block;
+  float: right;
+}
+
+.formFooter .signings .signingName {
+  margin-top: 70px;
+}

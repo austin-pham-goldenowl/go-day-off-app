@@ -1,0 +1,70 @@
+doctype html
+html
+  head
+    style
+      include style.css
+  body
+    div(class="companyInfo")
+      div(class="logo")
+        img(src="http://www.goldenowl.asia/assets/logo_new-63f0e0a0eded028f0e82f995ae1bcb050c569d0b42f43b90b8fa3b51fdabd80c.png", alt="logo goes here")
+      div(class="companyName") Golden Owl Consulting Ltd.,
+    div(class="nationalBrand")
+      div CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM
+      div Độc lập - Tự do - Hạnh phúc
+    div(class="formTitle") ĐƠN XIN NGHỈ PHÉP
+    div(class="dearsContainer")
+      div(class="fieldTitle") Kính gửi:
+      div(class="dears") #{`- Ban Giám Đốc Công ty Golden Owl Consulting`}
+    div(class="main")
+      p 
+        span(class="fieldTitle") Họ và tên: 
+        span #{fullName}
+      p
+        span(class="fieldTitle") Chức danh: 
+        span #{position}
+      p Tôi làm đơn này kính đề nghị Công ty cho tôi được nghỉ phép
+      p 
+        span(class="fieldTitle") Từ 
+        span #{fromTime} 
+        span(class="fieldTitle") ngày 
+        span #{fromDate} 
+        span(class="fieldTitle") Đến: 
+        span #{toTime} 
+        span(class="fieldTitle") ngày 
+        span #{toDate}
+      p 
+        span(class="fieldTitle") Lý do: 
+        span #{reason}.
+      p(class="leaveType") 
+        span(class="fieldTitle") Nghỉ theo diện:
+        span
+          = ` ${leaveType===1 ? '[x]' : '[ ]'} Việc riêng`
+          = ` ${leaveType===2 ? '[x]' : '[ ]'} Phép năm`
+          = ` ${leaveType===3 ? '[x]' : '[ ]'} Nghỉ ốm`
+          = ` ${leaveType===4 ? '[x]' : '[ ]'} Nghỉ chế độ`
+      p 
+        span(class="fieldTitle") Người thay thế công việc trong lúc vắng mặt:
+        span #{substituteName}
+      p 
+        span(class="fieldTitle") Số điện thoại liên hệ: 
+        span #{phone}
+      p Tôi cam đoan đã bàn giao công việc lại cho bộ phận có liên quan trước nghỉ việc.
+      p Rất mong Ban Giám Đốc xem xét và chấp thuận.
+      p Tôi xin chân thành cảm ơn!
+    div(class="formFooter")
+      div Tp.HCM, ngày #{createDateTime.date} tháng #{createDateTime.month} năm #{createDateTime.year}
+      div(class="signings")
+        div(class="departmentSigning")
+          p Đơn vị
+          p (Ký, ghi rõ họ tên)
+          |
+          |
+          |
+          p(class="signingName") #{department}
+        div(class="author")
+          p Người làm đơn
+          p (Ký, ghi rõ họ tên)
+          |
+          |
+          |
+          p(class="signingName") #{fullName}
