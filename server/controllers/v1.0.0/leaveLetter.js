@@ -206,6 +206,9 @@ Router.get('/my-letters', async (req, res) => {
 
 Router.post('/send-email', async (req, res) => {
   try {
+    const userId = getIdFromToken(req.token_payload);
+    if (!userId) throw { msg: 'USER_NOT_FOUND' };
+
     sendMail((success, data) => {
       if (success) {
         console.log(`send-mail -> success info: `, data);

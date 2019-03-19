@@ -24,7 +24,7 @@ const email = new Email({
   transport: serviceInfo
 });
 
-export const sendMail = cb => {
+export const sendMail = (letterEntity, cb) => {
   email
     .send({
       template: 'leaveLetter',
@@ -61,26 +61,3 @@ export const sendMail = cb => {
       cb && cb(false, err);
     });
 };
-
-// export const sendMail = cb => {
-//   const clientEmail = `tuanvjp2605@gmail.com`;
-//   let code = uid(10);
-//   console.log(`creds.user: `, creds.user);
-//   console.log(`creds.pass: `, creds.pass);
-//   const mailOptions = {
-//     from: creds.user,
-//     to: clientEmail,
-//     subject: `Verify transaction - ${code}`,
-//     html: output(code)
-//   };
-
-//   transporter.sendMail(mailOptions, (err, info) => {
-//     if (err) {
-//       console.log(`Email not sent! Details: `, err);
-//       cb(false, err);
-//     } else {
-//       console.log(`Email sent: ${info.response}`);
-//       cb(true, info);
-//     }
-//   });
-// };
