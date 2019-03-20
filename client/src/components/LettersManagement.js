@@ -10,7 +10,7 @@ import {
   LEAVE_REQUEST_APPROVED,
   LEAVE_REQUEST_REJECTED
 } from '../constants/requestStatusType';
-import { DATE_FORMAT_HALF } from '../constants/dateTimeFormats';
+import { DATE_FORMAT_WITH_WEEKDAYS } from '../constants/dateTimeFormats';
 const styles = theme => ({
   paper: {
     padding: theme.spacing.unit * 5
@@ -65,10 +65,10 @@ class LetterManagement extends Component {
                 fFullName || 'Unknown',
                 moment(fFromDT)
                   .locale('en')
-                  .format(DATE_FORMAT_HALF),
+                  .format(DATE_FORMAT_WITH_WEEKDAYS),
                 moment(fToDT)
                   .locale('en')
-                  .format(DATE_FORMAT_HALF),
+                  .format(DATE_FORMAT_WITH_WEEKDAYS),
                 <span
                   style={{
                     color:
@@ -98,13 +98,13 @@ class LetterManagement extends Component {
               return [
                 moment(fRdt)
                   .locale('en')
-                  .format(DATE_FORMAT_HALF),
+                  .format(DATE_FORMAT_WITH_WEEKDAYS),
                 moment(fFromDT)
                   .locale('en')
-                  .format(DATE_FORMAT_HALF),
+                  .format(DATE_FORMAT_WITH_WEEKDAYS),
                 moment(fToDT)
                   .locale('en')
-                  .format(DATE_FORMAT_HALF),
+                  .format(DATE_FORMAT_WITH_WEEKDAYS),
                 <span
                   style={{
                     color:
