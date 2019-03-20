@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getCookie } from 'tiny-cookie';
 import { SERVER_HOST_DEV } from '../constants/api';
 import { ACCESS_TOKEN_KEY } from '../constants/token';
 
@@ -13,18 +14,9 @@ export const getAllSettings = () =>
     }
   });
 
-export const addNewSettings = settings =>
+export const saveSettings = pairs =>
   axios.post(`${SERVER_HOST_DEV}/setting`,
-    ...settings,
-    {
-      headers: {
-        "x-access-token": getCookie(ACCESS_TOKEN_KEY)
-      }
-    });
-
-export const updateSettings = settings =>
-  axios.patch(`${SERVER_HOST_DEV}/setting`,
-    ...settings,
+    { pairs },
     {
       headers: {
         "x-access-token": getCookie(ACCESS_TOKEN_KEY)

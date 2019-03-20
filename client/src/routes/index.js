@@ -12,6 +12,7 @@ import Dashboard from '../containers/Dashboard';
 import AllLettersManagement from '../containers/AllLettersManagement';
 import LeaveRequestDetail from '../containers/LeaveRequestDetail';
 import MyLetters from '../containers/MyLetters';
+import Settings from '../containers/Settings'
 
 // import EditAccountInfo from '../containers/EditAccountInfo/container';
 
@@ -75,6 +76,12 @@ const routes = [
     isPrivate: true,
     exact: true,
     comp: props => <MyLetters {...props} />
+  },
+  {
+    path: '/setting',
+    isPrivate: true,
+    exact: true,
+    comp: props => <Settings {...props} />
   },
   {
     path: '',

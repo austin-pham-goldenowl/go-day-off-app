@@ -110,6 +110,9 @@ const HRListItems = props => {
           <ListItemText primary="List all users" />
         </ListItem>
       </Link>
+      <br />
+      <Divider />
+      <br />
       <Link to="/setting" className={classes.undecoratedLink}>
         <ListItem
           button
