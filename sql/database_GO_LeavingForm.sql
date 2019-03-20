@@ -1,384 +1,219 @@
--- Valentina Studio --
--- MySQL dump --
--- ---------------------------------------------------------
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
--- ---------------------------------------------------------
-
-
--- DROP DATABASE "leavingForm" -----------------------------
 DROP DATABASE IF EXISTS `leavingForm`;
--- ---------------------------------------------------------
-
-
--- CREATE DATABASE "leavingForm" ---------------------------
 CREATE DATABASE `leavingForm` CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 USE `leavingForm`;
--- ---------------------------------------------------------
-
-
--- CREATE TABLE "absenceTypes" ---------------------------------
-CREATE TABLE `absenceTypes` ( 
-	`fId` Int( 11 ) NOT NULL,
-	`fAbsenceTypeName` VarChar( 45 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-	PRIMARY KEY ( `fId` ) )
-CHARACTER SET = utf8
-COLLATE = utf8_unicode_ci
-ENGINE = InnoDB;
--- -------------------------------------------------------------
-
-
--- CREATE TABLE "leaveLetters" ---------------------------------
-CREATE TABLE `leaveLetters` ( 
-	`fId` VarChar( 10 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-	`fRdt` DateTime NOT NULL,
-	`fFromDT` DateTime NOT NULL,
-	`fToDT` DateTime NOT NULL,
-	`fAbsenceType` Int( 11 ) NOT NULL,
-	`fSubstituteId` VarChar( 10 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL,
-	`fUserId` VarChar( 10 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-	`users_fId` VarChar( 10 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL,
-	`users_fId1` VarChar( 10 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL,
-	`absenceTypes_fId` Int( 11 ) NULL,
-	`approver_fId` VarChar( 10 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL,
-	`fStatus` Int( 11 ) NOT NULL DEFAULT 1,
-	`fReason` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL,
-	`fApprover` VarChar( 10 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-	`fFromOpt` Enum( 'allday', 'morning', 'afternoon' ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT 'allday',
-	`fToOpt` Enum( 'allday', 'morning' ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT 'allday',
-	PRIMARY KEY ( `fId` ),
-	CONSTRAINT `fId_UNIQUE` UNIQUE( `fId` ) )
-CHARACTER SET = utf8
-COLLATE = utf8_unicode_ci
-ENGINE = InnoDB;
--- -------------------------------------------------------------
-
-
--- CREATE TABLE "positions" ------------------------------------
-CREATE TABLE `positions` ( 
-	`fId` VarChar( 5 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-	`fPosName` VarChar( 45 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-	PRIMARY KEY ( `fId` ),
-	CONSTRAINT `fId_UNIQUE` UNIQUE( `fId` ) )
-CHARACTER SET = utf8
-COLLATE = utf8_unicode_ci
-ENGINE = InnoDB;
--- -------------------------------------------------------------
-
-
--- CREATE TABLE "rejectedLetterDetail" -------------------------
-CREATE TABLE `rejectedLetterDetail` ( 
-	`fLetterId` VarChar( 10 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-	`fReason` VarChar( 45 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-	`fRejectType` Int( 11 ) NOT NULL,
-	`leaveLetters_fId` VarChar( 10 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL,
-	PRIMARY KEY ( `fLetterId` ) )
-CHARACTER SET = utf8
-COLLATE = utf8_unicode_ci
-ENGINE = InnoDB;
--- -------------------------------------------------------------
-
-
--- CREATE TABLE "teams" ----------------------------------------
-CREATE TABLE `teams` ( 
-	`fId` VarChar( 5 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-	`fTeamName` VarChar( 45 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-	`fTeamLead` VarChar( 10 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-	`users_fId` VarChar( 10 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL,
-	PRIMARY KEY ( `fId` ),
-	CONSTRAINT `fId_UNIQUE` UNIQUE( `fId` ) )
-CHARACTER SET = utf8
-COLLATE = utf8_unicode_ci
-ENGINE = InnoDB;
--- -------------------------------------------------------------
-
-
--- CREATE TABLE "userPermission" -------------------------------
-CREATE TABLE `userPermission` ( 
-	`fId` VarChar( 5 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-	`fUserType` VarChar( 45 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-	PRIMARY KEY ( `fId` ),
-	CONSTRAINT `fId_UNIQUE` UNIQUE( `fId` ) )
-CHARACTER SET = utf8
-COLLATE = utf8_unicode_ci
-ENGINE = InnoDB;
--- -------------------------------------------------------------
-
-
--- CREATE TABLE "userRefToken" ---------------------------------
-CREATE TABLE `userRefToken` ( 
-	`fUserId` VarChar( 10 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-	`fRefToken` VarChar( 80 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-	`fRdt` DateTime NOT NULL,
-	`users_fId` VarChar( 10 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL,
-	PRIMARY KEY ( `fUserId` ),
-	CONSTRAINT `fUserId_UNIQUE` UNIQUE( `fUserId` ) )
-CHARACTER SET = utf8
-COLLATE = utf8_unicode_ci
-ENGINE = InnoDB;
--- -------------------------------------------------------------
-
-
--- CREATE TABLE "users" ----------------------------------------
-CREATE TABLE `users` ( 
-	`fId` VarChar( 10 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-	`fFirstName` VarChar( 30 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-	`fLastName` VarChar( 30 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-	`fPosition` VarChar( 5 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-	`fPhone` VarChar( 10 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-	`fTeamId` VarChar( 5 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL,
-	`fTypeId` VarChar( 5 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-	`fEmail` VarChar( 45 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-	`fGender` Int( 11 ) NOT NULL DEFAULT 3,
-	`fPassword` VarChar( 64 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-	`fUsername` VarChar( 45 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-	`positions_fId` VarChar( 5 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL,
-	`userPermission_fId` VarChar( 5 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL,
-	`teams_fId` VarChar( 5 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL,
-	PRIMARY KEY ( `fId` ),
-	CONSTRAINT `fEmail` UNIQUE( `fEmail` ),
-	CONSTRAINT `fId_UNIQUE` UNIQUE( `fId` ),
-	CONSTRAINT `fUsername` UNIQUE( `fUsername` ) )
-CHARACTER SET = utf8
-COLLATE = utf8_unicode_ci
-ENGINE = InnoDB;
--- -------------------------------------------------------------
-
-
--- CREATE TABLE "configs" --------------------------------------
-CREATE TABLE `configs` ( 
-	`fEmail` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL,
-	`fPassword` VarChar( 255 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT 'password',
-	`fTotalOffDaysPerYear` TinyInt( 255 ) UNSIGNED NULL DEFAULT 15 )
-CHARACTER SET = utf8
-COLLATE = utf8_unicode_ci
-ENGINE = InnoDB;
--- -------------------------------------------------------------
-
-
--- Dump data of "absenceTypes" -----------------------------
-INSERT INTO `absenceTypes`(`fId`,`fAbsenceTypeName`) VALUES ( '1', 'Việc riêng' );
-INSERT INTO `absenceTypes`(`fId`,`fAbsenceTypeName`) VALUES ( '2', 'Nghỉ phép năm' );
-INSERT INTO `absenceTypes`(`fId`,`fAbsenceTypeName`) VALUES ( '3', 'Nghỉ ốm' );
-INSERT INTO `absenceTypes`(`fId`,`fAbsenceTypeName`) VALUES ( '4', 'Nghỉ chế độ' );
--- ---------------------------------------------------------
-
-
--- Dump data of "leaveLetters" -----------------------------
-INSERT INTO `leaveLetters`(`fId`,`fRdt`,`fFromDT`,`fToDT`,`fAbsenceType`,`fSubstituteId`,`fUserId`,`users_fId`,`users_fId1`,`absenceTypes_fId`,`approver_fId`,`fStatus`,`fReason`,`fApprover`,`fFromOpt`,`fToOpt`) VALUES ( 'mOpjmZ3ANs', '2019-03-15 02:44:27', '2019-03-10 16:29:56', '2019-03-17 16:29:56', '1', 'i53FItHeMK', 'eKmuZqYzzm', 'eKmuZqYzzm', 'eKmuZqYzzm', '1', 'H8UIAdsy7T', '2', NULL, 'H8UIAdsy7T', 'allday', 'allday' );
-INSERT INTO `leaveLetters`(`fId`,`fRdt`,`fFromDT`,`fToDT`,`fAbsenceType`,`fSubstituteId`,`fUserId`,`users_fId`,`users_fId1`,`absenceTypes_fId`,`approver_fId`,`fStatus`,`fReason`,`fApprover`,`fFromOpt`,`fToOpt`) VALUES ( 'NSX1R13Me3', '2019-03-15 02:44:02', '2019-03-10 16:29:56', '2019-03-17 16:29:56', '1', 'i53FItHeMK', 'eKmuZqYzzm', 'eKmuZqYzzm', 'eKmuZqYzzm', '1', 'H8UIAdsy7T', '2', NULL, 'H8UIAdsy7T', 'allday', 'allday' );
-INSERT INTO `leaveLetters`(`fId`,`fRdt`,`fFromDT`,`fToDT`,`fAbsenceType`,`fSubstituteId`,`fUserId`,`users_fId`,`users_fId1`,`absenceTypes_fId`,`approver_fId`,`fStatus`,`fReason`,`fApprover`,`fFromOpt`,`fToOpt`) VALUES ( 'QH7h4SQDXn', '2019-03-15 02:44:31', '2019-03-10 16:29:56', '2019-03-17 16:29:56', '1', 'i53FItHeMK', 'eKmuZqYzzm', 'eKmuZqYzzm', 'eKmuZqYzzm', '1', 'H8UIAdsy7T', '2', NULL, 'H8UIAdsy7T', 'allday', 'allday' );
-INSERT INTO `leaveLetters`(`fId`,`fRdt`,`fFromDT`,`fToDT`,`fAbsenceType`,`fSubstituteId`,`fUserId`,`users_fId`,`users_fId1`,`absenceTypes_fId`,`approver_fId`,`fStatus`,`fReason`,`fApprover`,`fFromOpt`,`fToOpt`) VALUES ( 'zaeiFTica8', '2019-03-15 02:44:17', '2019-03-10 16:29:56', '2019-03-17 16:29:56', '1', 'i53FItHeMK', 'eKmuZqYzzm', 'eKmuZqYzzm', 'eKmuZqYzzm', '1', 'H8UIAdsy7T', '2', NULL, 'H8UIAdsy7T', 'allday', 'allday' );
--- ---------------------------------------------------------
 
-
--- Dump data of "positions" --------------------------------
-INSERT INTO `positions`(`fId`,`fPosName`) VALUES ( '1qRly', 'Accountant' );
-INSERT INTO `positions`(`fId`,`fPosName`) VALUES ( '8mCqq', 'CTO' );
-INSERT INTO `positions`(`fId`,`fPosName`) VALUES ( 'B4QIq', 'Tech Lead' );
-INSERT INTO `positions`(`fId`,`fPosName`) VALUES ( 'cpvd7', 'Intern/Fresher' );
-INSERT INTO `positions`(`fId`,`fPosName`) VALUES ( 'hGKx5', 'COO' );
-INSERT INTO `positions`(`fId`,`fPosName`) VALUES ( 'ir0gE', 'Team Leader' );
-INSERT INTO `positions`(`fId`,`fPosName`) VALUES ( 'JVh4R', 'Business Analyst (BA)' );
-INSERT INTO `positions`(`fId`,`fPosName`) VALUES ( 'Kebva', 'Digital Marketer' );
-INSERT INTO `positions`(`fId`,`fPosName`) VALUES ( 'mXLNt', 'Project Assistant (PA)' );
-INSERT INTO `positions`(`fId`,`fPosName`) VALUES ( 'MYPyH', 'Software Tester' );
-INSERT INTO `positions`(`fId`,`fPosName`) VALUES ( 'psS14', 'Human Resouces (HR)' );
-INSERT INTO `positions`(`fId`,`fPosName`) VALUES ( 's8l4h', 'Designer' );
-INSERT INTO `positions`(`fId`,`fPosName`) VALUES ( 'Sz0d1', 'CEO' );
-INSERT INTO `positions`(`fId`,`fPosName`) VALUES ( 'U4d4k', 'Software Engineer (SE)' );
-INSERT INTO `positions`(`fId`,`fPosName`) VALUES ( 'wHK7p', 'Project Manager (PM)' );
--- ---------------------------------------------------------
-
-
--- Dump data of "rejectedLetterDetail" ---------------------
-INSERT INTO `rejectedLetterDetail`(`fLetterId`,`fReason`,`fRejectType`,`leaveLetters_fId`) VALUES ( 'mLLrBQpcwZ', 'Đi ăn hỏi', '0', NULL );
--- ---------------------------------------------------------
-
-
--- Dump data of "teams" ------------------------------------
-INSERT INTO `teams`(`fId`,`fTeamName`,`fTeamLead`,`users_fId`) VALUES ( '1LwZq', 'PHP', 'MytsQhUPQG', NULL );
-INSERT INTO `teams`(`fId`,`fTeamName`,`fTeamLead`,`users_fId`) VALUES ( '4TCgb', 'Ruby/Ruby on Rails', 'MytsQhUPQG', NULL );
-INSERT INTO `teams`(`fId`,`fTeamName`,`fTeamLead`,`users_fId`) VALUES ( '5eMvD', 'Design', 'MytsQhUPQG', NULL );
-INSERT INTO `teams`(`fId`,`fTeamName`,`fTeamLead`,`users_fId`) VALUES ( 'A91fa', 'Khác', 'MytsQhUPQG', NULL );
-INSERT INTO `teams`(`fId`,`fTeamName`,`fTeamLead`,`users_fId`) VALUES ( 'FfI2V', 'Javascript', 'MytsQhUPQG', NULL );
-INSERT INTO `teams`(`fId`,`fTeamName`,`fTeamLead`,`users_fId`) VALUES ( 'G81cf', 'Leaders', 'MytsQhUPQG', NULL );
-INSERT INTO `teams`(`fId`,`fTeamName`,`fTeamLead`,`users_fId`) VALUES ( 'Gg6sG', 'QA', 'MytsQhUPQG', NULL );
-INSERT INTO `teams`(`fId`,`fTeamName`,`fTeamLead`,`users_fId`) VALUES ( 'kTW7B', 'PA', 'MytsQhUPQG', NULL );
--- ---------------------------------------------------------
-
-
--- Dump data of "userPermission" ---------------------------
-INSERT INTO `userPermission`(`fId`,`fUserType`) VALUES ( '3sVfP', 'Personnel' );
-INSERT INTO `userPermission`(`fId`,`fUserType`) VALUES ( 'NH6Bs', 'HR' );
--- ---------------------------------------------------------
-
-
--- Dump data of "userRefToken" -----------------------------
--- ---------------------------------------------------------
-
-
--- Dump data of "users" ------------------------------------
-INSERT INTO `users`(`fId`,`fFirstName`,`fLastName`,`fPosition`,`fPhone`,`fTeamId`,`fTypeId`,`fEmail`,`fGender`,`fPassword`,`fUsername`,`positions_fId`,`userPermission_fId`,`teams_fId`) VALUES ( 'eKmuZqYzzm', 'Nolan', 'Christopher', 'B4QIq', '0123456789', 'A91fa', 'NH6Bs', 'abc@gojs.com', '3', '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8', 'hr1', 'B4QIq', '3sVfP', 'A91fa' );
-INSERT INTO `users`(`fId`,`fFirstName`,`fLastName`,`fPosition`,`fPhone`,`fTeamId`,`fTypeId`,`fEmail`,`fGender`,`fPassword`,`fUsername`,`positions_fId`,`userPermission_fId`,`teams_fId`) VALUES ( 'H8UIAdsy7T', 'Adena', 'Justin', 'mXLNt', '0778329121', '1LwZq', 'NH6Bs', 'nulla.Integer@Aliquam.net', '3', '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8', 'hr', NULL, NULL, NULL );
-INSERT INTO `users`(`fId`,`fFirstName`,`fLastName`,`fPosition`,`fPhone`,`fTeamId`,`fTypeId`,`fEmail`,`fGender`,`fPassword`,`fUsername`,`positions_fId`,`userPermission_fId`,`teams_fId`) VALUES ( 'i53FItHeMK', 'Daphne', 'Zachery', 'U4d4k', '0157694180', '4TCgb', '3sVfP', 'augue.Sed.molestie@congueInscelerisque.org', '1', '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8', 'user', NULL, NULL, NULL );
--- ---------------------------------------------------------
-
-
--- Dump data of "configs" ----------------------------------
--- ---------------------------------------------------------
-
-
--- CREATE INDEX "fk_leaveLetters_absenceTypes1_idx" ------------
-CREATE INDEX `fk_leaveLetters_absenceTypes1_idx` USING BTREE ON `leaveLetters`( `absenceTypes_fId` );
--- -------------------------------------------------------------
-
-
--- CREATE INDEX "fk_leaveLetters_users1_idx" -------------------
-CREATE INDEX `fk_leaveLetters_users1_idx` USING BTREE ON `leaveLetters`( `users_fId1` );
--- -------------------------------------------------------------
-
-
--- CREATE INDEX "fk_leaveLetters_users2" -----------------------
-CREATE INDEX `fk_leaveLetters_users2` USING BTREE ON `leaveLetters`( `approver_fId` );
--- -------------------------------------------------------------
-
-
--- CREATE INDEX "fk_leaveLetters_users_idx" --------------------
-CREATE INDEX `fk_leaveLetters_users_idx` USING BTREE ON `leaveLetters`( `users_fId` );
--- -------------------------------------------------------------
-
-
--- CREATE INDEX "fk_rejectedLetterDetail_leaveLetters1_idx" ----
-CREATE INDEX `fk_rejectedLetterDetail_leaveLetters1_idx` USING BTREE ON `rejectedLetterDetail`( `leaveLetters_fId` );
--- -------------------------------------------------------------
-
-
--- CREATE INDEX "fk_teams_users1_idx" --------------------------
-CREATE INDEX `fk_teams_users1_idx` USING BTREE ON `teams`( `users_fId` );
--- -------------------------------------------------------------
-
-
--- CREATE INDEX "fk_userRefToken_users1_idx" -------------------
-CREATE INDEX `fk_userRefToken_users1_idx` USING BTREE ON `userRefToken`( `users_fId` );
--- -------------------------------------------------------------
-
-
--- CREATE INDEX "fk_users_positions1_idx" ----------------------
-CREATE INDEX `fk_users_positions1_idx` USING BTREE ON `users`( `positions_fId` );
--- -------------------------------------------------------------
-
-
--- CREATE INDEX "fk_users_teams1_idx" --------------------------
-CREATE INDEX `fk_users_teams1_idx` USING BTREE ON `users`( `teams_fId` );
--- -------------------------------------------------------------
-
-
--- CREATE INDEX "fk_users_userPermission1_idx" -----------------
-CREATE INDEX `fk_users_userPermission1_idx` USING BTREE ON `users`( `userPermission_fId` );
--- -------------------------------------------------------------
-
-
--- CREATE LINK "fk_leaveLetters_absenceTypes1" -----------------
-ALTER TABLE `leaveLetters`
-	ADD CONSTRAINT `fk_leaveLetters_absenceTypes1` FOREIGN KEY ( `absenceTypes_fId` )
-	REFERENCES `absenceTypes`( `fId` )
-	ON DELETE No Action
-	ON UPDATE No Action;
--- -------------------------------------------------------------
-
-
--- CREATE LINK "fk_leaveLetters_users" -------------------------
-ALTER TABLE `leaveLetters`
-	ADD CONSTRAINT `fk_leaveLetters_users` FOREIGN KEY ( `users_fId` )
-	REFERENCES `users`( `fId` )
-	ON DELETE No Action
-	ON UPDATE No Action;
--- -------------------------------------------------------------
-
-
--- CREATE LINK "fk_leaveLetters_users1" ------------------------
-ALTER TABLE `leaveLetters`
-	ADD CONSTRAINT `fk_leaveLetters_users1` FOREIGN KEY ( `users_fId1` )
-	REFERENCES `users`( `fId` )
-	ON DELETE No Action
-	ON UPDATE No Action;
--- -------------------------------------------------------------
-
-
--- CREATE LINK "fk_leaveLetters_users2" ------------------------
-ALTER TABLE `leaveLetters`
-	ADD CONSTRAINT `fk_leaveLetters_users2` FOREIGN KEY ( `approver_fId` )
-	REFERENCES `users`( `fId` )
-	ON DELETE No Action
-	ON UPDATE No Action;
--- -------------------------------------------------------------
-
-
--- CREATE LINK "fk_rejectedLetterDetail_leaveLetters1" ---------
-ALTER TABLE `rejectedLetterDetail`
-	ADD CONSTRAINT `fk_rejectedLetterDetail_leaveLetters1` FOREIGN KEY ( `leaveLetters_fId` )
-	REFERENCES `leaveLetters`( `fId` )
-	ON DELETE No Action
-	ON UPDATE No Action;
--- -------------------------------------------------------------
-
-
--- CREATE LINK "fk_teams_users1" -------------------------------
-ALTER TABLE `teams`
-	ADD CONSTRAINT `fk_teams_users1` FOREIGN KEY ( `users_fId` )
-	REFERENCES `users`( `fId` )
-	ON DELETE No Action
-	ON UPDATE No Action;
--- -------------------------------------------------------------
-
-
--- CREATE LINK "fk_userRefToken_users1" ------------------------
-ALTER TABLE `userRefToken`
-	ADD CONSTRAINT `fk_userRefToken_users1` FOREIGN KEY ( `users_fId` )
-	REFERENCES `users`( `fId` )
-	ON DELETE No Action
-	ON UPDATE No Action;
--- -------------------------------------------------------------
-
-
--- CREATE LINK "fk_users_positions1" ---------------------------
-ALTER TABLE `users`
-	ADD CONSTRAINT `fk_users_positions1` FOREIGN KEY ( `positions_fId` )
-	REFERENCES `positions`( `fId` )
-	ON DELETE No Action
-	ON UPDATE No Action;
--- -------------------------------------------------------------
-
-
--- CREATE LINK "fk_users_teams1" -------------------------------
-ALTER TABLE `users`
-	ADD CONSTRAINT `fk_users_teams1` FOREIGN KEY ( `teams_fId` )
-	REFERENCES `teams`( `fId` )
-	ON DELETE No Action
-	ON UPDATE No Action;
--- -------------------------------------------------------------
-
-
--- CREATE LINK "fk_users_userPermission1" ----------------------
-ALTER TABLE `users`
-	ADD CONSTRAINT `fk_users_userPermission1` FOREIGN KEY ( `userPermission_fId` )
-	REFERENCES `userPermission`( `fId` )
-	ON DELETE No Action
-	ON UPDATE No Action;
--- -------------------------------------------------------------
-
-
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
--- ---------------------------------------------------------
-
-
+create table absenceTypes
+(
+  fId              int         not null
+    primary key,
+  fAbsenceTypeName varchar(45) not null
+);
+
+INSERT INTO leavingForm.absenceTypes (fId, fAbsenceTypeName) VALUES (1, 'Việc riêng');
+INSERT INTO leavingForm.absenceTypes (fId, fAbsenceTypeName) VALUES (2, 'Nghỉ phép năm');
+INSERT INTO leavingForm.absenceTypes (fId, fAbsenceTypeName) VALUES (3, 'Nghỉ ốm');
+INSERT INTO leavingForm.absenceTypes (fId, fAbsenceTypeName) VALUES (4, 'Nghỉ chế độ');
+create table leaveLetters
+(
+  fId              varchar(10)                                              not null,
+  fRdt             datetime                                                 not null,
+  fFromDT          datetime                                                 not null,
+  fToDT            datetime                                                 not null,
+  fAbsenceType     int                                                      not null,
+  fSubstituteId    varchar(10)                                              null,
+  fUserId          varchar(10)                                              not null,
+  users_fId        varchar(10)                                              null,
+  users_fId1       varchar(10)                                              null,
+  absenceTypes_fId int                                                      null,
+  approver_fId     varchar(10)                                              null,
+  fStatus          int                                     default 1        not null,
+  fReason          varchar(255)                                             null,
+  fApprover        varchar(10)                                              not null,
+  fFromOpt         enum ('allday', 'morning', 'afternoon') default 'allday' not null,
+  fToOpt           enum ('allday', 'morning')              default 'allday' not null,
+  constraint fId_UNIQUE
+    unique (fId),
+  constraint fk_leaveLetters_absenceTypes1
+    foreign key (absenceTypes_fId) references absenceTypes (fId),
+  constraint fk_leaveLetters_users
+    foreign key (users_fId) references users (fId),
+  constraint fk_leaveLetters_users1
+    foreign key (users_fId1) references users (fId),
+  constraint fk_leaveLetters_users2
+    foreign key (approver_fId) references users (fId)
+);
+
+create index fk_leaveLetters_absenceTypes1_idx
+  on leaveLetters (absenceTypes_fId);
+
+create index fk_leaveLetters_users1_idx
+  on leaveLetters (users_fId1);
+
+create index fk_leaveLetters_users_idx
+  on leaveLetters (users_fId);
+
+alter table leaveLetters
+  add primary key (fId);
+
+INSERT INTO leavingForm.leaveLetters (fId, fRdt, fFromDT, fToDT, fAbsenceType, fSubstituteId, fUserId, users_fId, users_fId1, absenceTypes_fId, approver_fId, fStatus, fReason, fApprover, fFromOpt, fToOpt) VALUES ('cwwwZB8JOQ', '2019-03-19 04:29:14', '2019-04-01 16:29:56', '2019-04-12 16:29:56', 1, 'i53FItHeMK', 'H8UIAdsy7T', 'H8UIAdsy7T', 'H8UIAdsy7T', 1, 'H8UIAdsy7T', 2, null, 'H8UIAdsy7T', 'morning', 'morning');
+INSERT INTO leavingForm.leaveLetters (fId, fRdt, fFromDT, fToDT, fAbsenceType, fSubstituteId, fUserId, users_fId, users_fId1, absenceTypes_fId, approver_fId, fStatus, fReason, fApprover, fFromOpt, fToOpt) VALUES ('HIObAeYUgj', '2019-03-18 08:24:09', '2019-02-10 16:29:56', '2019-02-17 16:29:56', 1, 'dxujR3BB4d', 'eKmuZqYzzm', 'H8UIAdsy7T', 'H8UIAdsy7T', 1, 'H8UIAdsy7T', 2, null, 'H8UIAdsy7T', 'allday', 'allday');
+INSERT INTO leavingForm.leaveLetters (fId, fRdt, fFromDT, fToDT, fAbsenceType, fSubstituteId, fUserId, users_fId, users_fId1, absenceTypes_fId, approver_fId, fStatus, fReason, fApprover, fFromOpt, fToOpt) VALUES ('mCT0zX6vyf', '2019-03-19 04:29:41', '2019-02-01 16:29:56', '2019-02-12 16:29:56', 1, 'i53FItHeMK', 'H8UIAdsy7T', 'H8UIAdsy7T', 'H8UIAdsy7T', 1, 'H8UIAdsy7T', 2, null, 'H8UIAdsy7T', 'allday', 'morning');
+INSERT INTO leavingForm.leaveLetters (fId, fRdt, fFromDT, fToDT, fAbsenceType, fSubstituteId, fUserId, users_fId, users_fId1, absenceTypes_fId, approver_fId, fStatus, fReason, fApprover, fFromOpt, fToOpt) VALUES ('QuNQ8qKQ6W', '2019-03-19 04:29:30', '2019-03-01 16:29:56', '2019-03-12 16:29:56', 1, 'i53FItHeMK', 'H8UIAdsy7T', 'H8UIAdsy7T', 'H8UIAdsy7T', 1, 'H8UIAdsy7T', 2, null, 'H8UIAdsy7T', 'afternoon', 'morning');
+INSERT INTO leavingForm.leaveLetters (fId, fRdt, fFromDT, fToDT, fAbsenceType, fSubstituteId, fUserId, users_fId, users_fId1, absenceTypes_fId, approver_fId, fStatus, fReason, fApprover, fFromOpt, fToOpt) VALUES ('urwx1MRbkJ', '2019-03-19 04:30:02', '2019-01-01 16:29:56', '2019-01-12 16:29:56', 1, 'i53FItHeMK', 'H8UIAdsy7T', 'H8UIAdsy7T', 'H8UIAdsy7T', 1, 'H8UIAdsy7T', 2, null, 'H8UIAdsy7T', 'morning', 'morning');
+INSERT INTO leavingForm.leaveLetters (fId, fRdt, fFromDT, fToDT, fAbsenceType, fSubstituteId, fUserId, users_fId, users_fId1, absenceTypes_fId, approver_fId, fStatus, fReason, fApprover, fFromOpt, fToOpt) VALUES ('V9b79oNV3b', '2019-03-18 09:19:44', '2019-04-10 16:29:56', '2019-04-17 16:29:56', 1, 'i53FItHeMK', 'eKmuZqYzzm', 'H8UIAdsy7T', 'H8UIAdsy7T', 1, 'H8UIAdsy7T', 2, null, 'H8UIAdsy7T', 'morning', 'allday');
+INSERT INTO leavingForm.leaveLetters (fId, fRdt, fFromDT, fToDT, fAbsenceType, fSubstituteId, fUserId, users_fId, users_fId1, absenceTypes_fId, approver_fId, fStatus, fReason, fApprover, fFromOpt, fToOpt) VALUES ('Xh6rbzsAfj', '2019-03-19 04:30:18', '2019-01-13 16:29:56', '2019-01-15 16:29:56', 1, 'i53FItHeMK', 'H8UIAdsy7T', 'H8UIAdsy7T', 'H8UIAdsy7T', 1, 'H8UIAdsy7T', 2, null, 'H8UIAdsy7T', 'morning', 'morning');
+INSERT INTO leavingForm.leaveLetters (fId, fRdt, fFromDT, fToDT, fAbsenceType, fSubstituteId, fUserId, users_fId, users_fId1, absenceTypes_fId, approver_fId, fStatus, fReason, fApprover, fFromOpt, fToOpt) VALUES ('z9nn8F5Whf', '2019-03-18 08:30:19', '2019-03-10 16:29:56', '2019-03-17 16:29:56', 1, 'dxujR3BB4d', 'eKmuZqYzzm', 'H8UIAdsy7T', 'H8UIAdsy7T', 1, 'H8UIAdsy7T', 2, null, 'H8UIAdsy7T', 'afternoon', 'allday');
+create table positions
+(
+  fId      varchar(5)  not null,
+  fPosName varchar(45) not null,
+  constraint fId_UNIQUE
+    unique (fId)
+);
+
+alter table positions
+  add primary key (fId);
+
+INSERT INTO leavingForm.positions (fId, fPosName) VALUES ('1qRly', 'Accountant');
+INSERT INTO leavingForm.positions (fId, fPosName) VALUES ('8mCqq', 'CTO');
+INSERT INTO leavingForm.positions (fId, fPosName) VALUES ('B4QIq', 'Tech Lead');
+INSERT INTO leavingForm.positions (fId, fPosName) VALUES ('cpvd7', 'Intern/Fresher');
+INSERT INTO leavingForm.positions (fId, fPosName) VALUES ('hGKx5', 'COO');
+INSERT INTO leavingForm.positions (fId, fPosName) VALUES ('ir0gE', 'Team Leader');
+INSERT INTO leavingForm.positions (fId, fPosName) VALUES ('JVh4R', 'Business Analyst (BA)');
+INSERT INTO leavingForm.positions (fId, fPosName) VALUES ('Kebva', 'Digital Marketer');
+INSERT INTO leavingForm.positions (fId, fPosName) VALUES ('mXLNt', 'Project Assistant (PA)');
+INSERT INTO leavingForm.positions (fId, fPosName) VALUES ('MYPyH', 'Software Tester');
+INSERT INTO leavingForm.positions (fId, fPosName) VALUES ('psS14', 'Human Resouces (HR)');
+INSERT INTO leavingForm.positions (fId, fPosName) VALUES ('s8l4h', 'Designer');
+INSERT INTO leavingForm.positions (fId, fPosName) VALUES ('Sz0d1', 'CEO');
+INSERT INTO leavingForm.positions (fId, fPosName) VALUES ('U4d4k', 'Software Engineer (SE)');
+INSERT INTO leavingForm.positions (fId, fPosName) VALUES ('wHK7p', 'Project Manager (PM)');
+create table rejectedLetterDetail
+(
+  fLetterId        varchar(10) not null
+    primary key,
+  fReason          varchar(45) not null,
+  fRejectType      int         not null,
+  leaveLetters_fId varchar(10) null,
+  constraint fk_rejectedLetterDetail_leaveLetters1
+    foreign key (leaveLetters_fId) references leaveLetters (fId)
+);
+
+create index fk_rejectedLetterDetail_leaveLetters1_idx
+  on rejectedLetterDetail (leaveLetters_fId);
+
+INSERT INTO leavingForm.rejectedLetterDetail (fLetterId, fReason, fRejectType, leaveLetters_fId) VALUES ('mLLrBQpcwZ', 'Đi ăn hỏi', 0, null);
+create table settings
+(
+  fName  varchar(255) not null
+    primary key,
+  fValue varchar(255) not null
+);
+
+INSERT INTO leavingForm.settings (fName, fValue) VALUES ('email', 'golden_owl@gmail.com');
+INSERT INTO leavingForm.settings (fName, fValue) VALUES ('password', 'password');
+create table teams
+(
+  fId       varchar(5)  not null,
+  fTeamName varchar(45) not null,
+  fTeamLead varchar(10) not null,
+  users_fId varchar(10) null,
+  constraint fId_UNIQUE
+    unique (fId),
+  constraint fk_teams_users1
+    foreign key (users_fId) references users (fId)
+);
+
+create index fk_teams_users1_idx
+  on teams (users_fId);
+
+alter table teams
+  add primary key (fId);
+
+INSERT INTO leavingForm.teams (fId, fTeamName, fTeamLead, users_fId) VALUES ('1LwZq', 'PHP', 'MytsQhUPQG', null);
+INSERT INTO leavingForm.teams (fId, fTeamName, fTeamLead, users_fId) VALUES ('4TCgb', 'Ruby/Ruby on Rails', 'MytsQhUPQG', null);
+INSERT INTO leavingForm.teams (fId, fTeamName, fTeamLead, users_fId) VALUES ('5eMvD', 'Design', 'MytsQhUPQG', null);
+INSERT INTO leavingForm.teams (fId, fTeamName, fTeamLead, users_fId) VALUES ('A91fa', 'Khác', 'MytsQhUPQG', null);
+INSERT INTO leavingForm.teams (fId, fTeamName, fTeamLead, users_fId) VALUES ('FfI2V', 'Javascript', 'MytsQhUPQG', null);
+INSERT INTO leavingForm.teams (fId, fTeamName, fTeamLead, users_fId) VALUES ('G81cf', 'Leaders', 'MytsQhUPQG', null);
+INSERT INTO leavingForm.teams (fId, fTeamName, fTeamLead, users_fId) VALUES ('Gg6sG', 'QA', 'MytsQhUPQG', null);
+INSERT INTO leavingForm.teams (fId, fTeamName, fTeamLead, users_fId) VALUES ('kTW7B', 'PA', 'MytsQhUPQG', null);
+create table userPermission
+(
+  fId       varchar(5)  not null,
+  fUserType varchar(45) not null,
+  constraint fId_UNIQUE
+    unique (fId)
+);
+
+alter table userPermission
+  add primary key (fId);
+
+INSERT INTO leavingForm.userPermission (fId, fUserType) VALUES ('3sVfP', 'Personnel');
+INSERT INTO leavingForm.userPermission (fId, fUserType) VALUES ('NH6Bs', 'HR');
+create table userRefToken
+(
+  fUserId   varchar(10) not null,
+  fRefToken varchar(80) not null,
+  fRdt      datetime    not null,
+  users_fId varchar(10) null,
+  constraint fUserId_UNIQUE
+    unique (fUserId),
+  constraint fk_userRefToken_users1
+    foreign key (users_fId) references users (fId)
+);
+
+create index fk_userRefToken_users1_idx
+  on userRefToken (users_fId);
+
+alter table userRefToken
+  add primary key (fUserId);
+
+INSERT INTO leavingForm.userRefToken (fUserId, fRefToken, fRdt, users_fId) VALUES ('H8UIAdsy7T', '0Z6QXTsxP567jwbtpPSNbcZjSL2SxPM3eH8rQkh20pUZuvzFEsj18oX4ypLTp418dc98Q13xGDomV6O6', '2019-03-19 03:47:42', null);
+INSERT INTO leavingForm.userRefToken (fUserId, fRefToken, fRdt, users_fId) VALUES ('i53FItHeMK', 'ghenlIlUctwiww6fUXSdJVSUoUs3IB1jEYCKMzhoBupRhYM6eRnDxo6HyJv21gzx0hUbIRtcP29xFoTI', '2019-03-19 05:15:42', null);
+create table users
+(
+  fId                varchar(10)   not null,
+  fFirstName         varchar(30)   not null,
+  fLastName          varchar(30)   not null,
+  fPosition          varchar(5)    not null,
+  fPhone             varchar(10)   not null,
+  fTeamId            varchar(5)    null,
+  fTypeId            varchar(5)    not null,
+  fEmail             varchar(45)   not null,
+  fGender            int default 3 not null,
+  fPassword          varchar(64)   not null,
+  fUsername          varchar(45)   not null,
+  positions_fId      varchar(5)    null,
+  userPermission_fId varchar(5)    null,
+  teams_fId          varchar(5)    null,
+  constraint fEmail
+    unique (fEmail),
+  constraint fId_UNIQUE
+    unique (fId),
+  constraint fUsername
+    unique (fUsername),
+  constraint fk_users_positions1
+    foreign key (positions_fId) references positions (fId),
+  constraint fk_users_teams1
+    foreign key (teams_fId) references teams (fId),
+  constraint fk_users_userPermission1
+    foreign key (userPermission_fId) references userPermission (fId)
+);
+
+create index fk_users_positions1_idx
+  on users (positions_fId);
+
+create index fk_users_teams1_idx
+  on users (teams_fId);
+
+create index fk_users_userPermission1_idx
+  on users (userPermission_fId);
+
+alter table users
+  add primary key (fId);
+
+INSERT INTO leavingForm.users (fId, fFirstName, fLastName, fPosition, fPhone, fTeamId, fTypeId, fEmail, fGender, fPassword, fUsername, positions_fId, userPermission_fId, teams_fId) VALUES ('eKmuZqYzzm', 'Nolan', 'Christopher', 'B4QIq', '0123456789', 'A91fa', 'NH6Bs', 'abc@gojs.com', 3, '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8', 'hr1', 'B4QIq', '3sVfP', 'A91fa');
+INSERT INTO leavingForm.users (fId, fFirstName, fLastName, fPosition, fPhone, fTeamId, fTypeId, fEmail, fGender, fPassword, fUsername, positions_fId, userPermission_fId, teams_fId) VALUES ('H8UIAdsy7T', 'Adena', 'Justin', 'mXLNt', '0778329121', '1LwZq', 'NH6Bs', 'nulla.Integer@Aliquam.net', 3, '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8', 'hr', null, null, null);
+INSERT INTO leavingForm.users (fId, fFirstName, fLastName, fPosition, fPhone, fTeamId, fTypeId, fEmail, fGender, fPassword, fUsername, positions_fId, userPermission_fId, teams_fId) VALUES ('i53FItHeMK', 'Daphne', 'Zachery', 'U4d4k', '0157694180', '4TCgb', '3sVfP', 'augue.Sed.molestie@congueInscelerisque.org', 1, '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8', 'user', null, null, null);
