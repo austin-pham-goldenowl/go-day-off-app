@@ -93,7 +93,7 @@ class Setting extends React.Component {
   };
 
   render() {
-    const { classes, initialValues, handleShowNotif } = this.props;
+    const { classes, initialValues, handleShowNotif, validationSchema } = this.props;
 
     return (
       <DashContainer>
