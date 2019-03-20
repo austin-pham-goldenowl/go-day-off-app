@@ -12,6 +12,7 @@ import EmailIcon from '@material-ui/icons/Email';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import SendIcon from '@material-ui/icons/Send';
 import HistoryIcon from '@material-ui/icons/History';
+import SettingIcon from '@material-ui/icons/Settings'
 
 import { Link, withRouter } from 'react-router-dom';
 
@@ -107,6 +108,17 @@ const HRListItems = props => {
             <PersonIcon />
           </ListItemIcon>
           <ListItemText primary="List all users" />
+        </ListItem>
+      </Link>
+      <Link to="/setting" className={classes.undecoratedLink}>
+        <ListItem
+          button
+          className={isSelectedLink(history, '/setting', classes)}
+        >
+          <ListItemIcon>
+            <SettingIcon />
+          </ListItemIcon>
+          <ListItemText primary="Settings" />
         </ListItem>
       </Link>
     </React.Fragment>
