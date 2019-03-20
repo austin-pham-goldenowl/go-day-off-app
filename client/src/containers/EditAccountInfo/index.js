@@ -29,6 +29,10 @@ import { responseUserPermission } from '../../constants/permission';
 //Helpers
 import { getUserId } from '../../helpers/authHelpers';
 import { getGenderName } from '../../helpers/userHelpers';
+
+//Utilities
+import { compareJsonObjectValue } from '../../utilities';
+
 //API
 import Axios from 'axios';
 import { getAllTeams, getAllPositions } from '../../apiCalls/supportingAPIs';
@@ -199,7 +203,6 @@ class EditAccountInfo extends React.Component {
   };
 
   componentDidMount = () => {
-    //call api get user profile
     this.loadData();
   };
 
@@ -248,6 +251,7 @@ class EditAccountInfo extends React.Component {
                 handleChange,
                 ...formikProps
               }) => {
+                const isUserInfoChanged = !compareJsonObjectValue(values, user);
                 return (
                   <Form>
                     {/* Top buttons */}
@@ -266,7 +270,7 @@ class EditAccountInfo extends React.Component {
                               variant="contained"
                               color="primary"
                               onClick={handleSubmit}
-                              disabled={isSubmitting}
+                              disabled={isSubmitting || !isUserInfoChanged}
                             >
                               <Icon
                                 fontSize="small"
@@ -291,13 +295,27 @@ class EditAccountInfo extends React.Component {
                                 this.handleEnableEditMode(false);
                               }}
                             >
-                              <Icon
-                                fontSize="small"
-                                className={classes.leftIcon}
-                              >
-                                delete_sweep
-                              </Icon>
-                              Discard
+                              {!isUserInfoChanged ? (
+                                <React.Fragment>
+                                  <Icon
+                                    fontSize="small"
+                                    className={classes.leftIcon}
+                                  >
+                                    cancel
+                                  </Icon>
+                                  Cancel
+                                </React.Fragment>
+                              ) : (
+                                <React.Fragment>
+                                  <Icon
+                                    fontSize="small"
+                                    className={classes.leftIcon}
+                                  >
+                                    delete_sweep
+                                  </Icon>
+                                  Discard
+                                </React.Fragment>
+                              )}
                             </Button>
                           )}
                         />
@@ -450,7 +468,7 @@ class EditAccountInfo extends React.Component {
                           color="primary"
                           variant="contained"
                           onClick={handleSubmit}
-                          disabled={isSubmitting}
+                          disabled={isSubmitting || !isUserInfoChanged}
                           className={classes.button}
                         >
                           <Icon fontSize="small" className={classes.leftIcon}>
@@ -469,10 +487,27 @@ class EditAccountInfo extends React.Component {
                             this.handleEnableEditMode(false);
                           }}
                         >
-                          <Icon fontSize="small" className={classes.leftIcon}>
-                            delete_sweep
-                          </Icon>
-                          Discard
+                          {!isUserInfoChanged ? (
+                            <React.Fragment>
+                              <Icon
+                                fontSize="small"
+                                className={classes.leftIcon}
+                              >
+                                cancel
+                              </Icon>
+                              Cancel
+                            </React.Fragment>
+                          ) : (
+                            <React.Fragment>
+                              <Icon
+                                fontSize="small"
+                                className={classes.leftIcon}
+                              >
+                                delete_sweep
+                              </Icon>
+                              Discard
+                            </React.Fragment>
+                          )}
                         </Button>
                       </Grid>
                     </React.Fragment>
@@ -578,19 +613,6 @@ class EditAccountInfo extends React.Component {
     );
   }
 }
-
-EditAccountInfo.defaultProps = {
-  initialValues: {
-    fFirstName: '',
-    fLastName: '',
-    fGender: '',
-    fPositionName: '',
-    fPhone: '',
-    fTeamName: '',
-    fEmail: '',
-    fTypeId: ''
-  }
-};
 
 const mockup_gender = [
   {
