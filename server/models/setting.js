@@ -36,22 +36,10 @@ export default (sequelize, DataTypes) => {
       }
     });
 
-  Setting.add = (attributes = {}) =>
+  Setting.save = (attributes = {}, queryWhere = {}) =>
     new Promise(async (resolve, reject) => {
       try {
-        const setting = await Setting.create(attributes);
-        resolve({ setting });
-      } catch (err) {
-        err.code = 500;
-        err.msg = "DB_QUERY_ERROR";
-        reject(err);
-      }
-    });
-
-  Setting.modify = (attributes = {}, queryWhere = {}) =>
-    new Promise(async (resolve, reject) => {
-      try {
-        const affected = await Setting.update(attributes, queryWhere);
+        const affected = await Setting.upsert(attributes, queryWhere);
         resolve(affected);
       } catch (err) {
         if (!err.code) err.code = 500;

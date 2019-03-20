@@ -19,7 +19,7 @@ const {
 
 Router.get("/", async (req, res) => {
   try {
-    // only HR can get configs
+    // only HR can get settings
     const fUserType = await getPermissionByToken(req.token_payload);
     if (fUserType !== "HR") throw { cod: 401, msg: "NO_PERMISSION" };
 
@@ -33,38 +33,23 @@ Router.get("/", async (req, res) => {
 
 Router.post("/", async (req, res) => {
   try {
-    // only HR can edit configs
+    // only HR can edit settings
     const fUserType = await getPermissionByToken(req.token_payload);
     if (fUserType !== "HR") throw { cod: 401, msg: "NO_PERMISSION" };
     const { pairs } = req.body;
     if (!Array.isArray(pairs) || pairs.length < 1) throw { msg: "INVALID_VALUES" };
 
-    const entities = pairs.map(setting => settingModel.add({ fName: setting[0], fValue: setting[1] }));
-    Promise.all(entities)
-      .then(() => {
-        handleSuccess(res, { code: 201 });
-      })
-      .catch(err => handleFailure(res, { err, route: req.originalUrl }));
-  }
-  catch(err) {
-    handleFailure(res, { err, route: req.originalUrl });
-  }
-});
-
-Router.patch("/", async (req, res) => {
-  try {
-    // only HR can edit configs
-    const fUserType = await getPermissionByToken(req.token_payload);
-    if (fUserType !== "HR") throw { cod: 401, msg: "NO_PERMISSION" };
-    const { pairs } = req.body;
-    if (!Array.isArray(pairs) || pairs.length < 1) throw { msg: "INVALID_VALUES" };
-
-    const entities = pairs.map(setting => settingModel.modify({ fValue: setting[1] }, { where: { fName: setting[0] } }));
-    Promise.all(entities)
-      .then(affections => {
-        if(affections.some(affected => affected[0] !== 1)) throw { msg: "FAILED_UPDATE_SOME" };
-        else  handleSuccess(res); })
+    const entities = pairs
+      // not save empty fields
+      .filter(setting => setting[0].length > 0)
+      .map(setting => 
+        settingModel.save({ fValue: setting[1], fName: setting[0] }, { 
+          where: { fName: setting[0] } }));
+          
+    if(entities.length > 0) Promise.all(entities)
+      .then(() => handleSuccess(res))
       .catch(err => handleFailure(res, { err, route: req.originalUrl }) );
+    else throw { msg: "INVALID_VALUES" }
   } catch (err) {
     handleFailure(res, { err, route: req.originalUrl });
   }
