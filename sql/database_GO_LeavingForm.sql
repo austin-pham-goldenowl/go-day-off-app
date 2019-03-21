@@ -92,11 +92,11 @@ CREATE TABLE `leaveLetters` (
   `fToOpt` enum('allday','morning') CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT 'allday',
   PRIMARY KEY (`fId`),
   UNIQUE KEY `fId_UNIQUE` (`fId`),
-  KEY `fk_leaveLetters_absenceTypes1_idx` (`absenceTypes_fId`) USING BTREE,
+  KEY `fk_leaveLetters_absenceTypes_idx` (`absenceTypes_fId`) USING BTREE,
   KEY `fk_leaveLetters_users1_idx` (`users_fId1`) USING BTREE,
   KEY `fk_leaveLetters_users2` (`approver_fId`) USING BTREE,
   KEY `fk_leaveLetters_users_idx` (`users_fId`) USING BTREE,
-  CONSTRAINT `fk_leaveLetters_absenceTypes1` FOREIGN KEY (`absenceTypes_fId`) REFERENCES `absencetypes` (`fId`),
+  CONSTRAINT `fk_leaveLetters_absenceTypes` FOREIGN KEY (`absenceTypes_fId`) REFERENCES `absenceTypes` (`fId`),
   CONSTRAINT `fk_leaveLetters_users` FOREIGN KEY (`users_fId`) REFERENCES `users` (`fId`),
   CONSTRAINT `fk_leaveLetters_users1` FOREIGN KEY (`users_fId1`) REFERENCES `users` (`fId`),
   CONSTRAINT `fk_leaveLetters_users2` FOREIGN KEY (`approver_fId`) REFERENCES `users` (`fId`)
@@ -191,7 +191,7 @@ CREATE TABLE `teams` (
 
 LOCK TABLES `teams` WRITE;
 /*!40000 ALTER TABLE `teams` DISABLE KEYS */;
-INSERT INTO `teams` VALUES ('1LwZq','PHP','MNeCqLCc4y',NULL),('4TCgb','Ruby/Ruby on Rails','6kl9baxAUv',NULL),('5eMvD','Design','pJa4TkFAz8',NULL),('A91fa','Khác','wYC0nl3LqV',NULL),('FfI2V','Javascript','Pq2UWS3gJm',NULL),('G81cf','Leaders','wYC0nl3LqV',NULL),('Gg6sG','QA','Ucb07m5zgI',NULL),('kTW7B','PA','LzPq90f8bZ',NULL);
+INSERT INTO `teams` VALUES ('1LwZq','PHP','MNeCqLCc4y',NULL),('4TCgb','Ruby/Ruby on Rails','6kl9baxAUv',NULL),('5eMvD','Design','pJa4TkFAz8',NULL),('A91fa','Khác','wYC0nl3LqV',NULL),('FfI2V','Javascript','Pq2UWS3gJm',NULL),('G81cf','Leaders','wYC0nI3LqV',NULL),('Gg6sG','QA','Ucb07m5zgI',NULL),('kTW7B','PA','LzPq90f8bZ',NULL);
 /*!40000 ALTER TABLE `teams` ENABLE KEYS */;
 UNLOCK TABLES;
 

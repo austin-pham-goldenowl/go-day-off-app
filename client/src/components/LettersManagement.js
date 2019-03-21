@@ -11,15 +11,15 @@ import * as requestStatusType  from '../constants/requestStatusType';
 
 const styles = theme => ({
   paper: {
-    padding: theme.spacing.unit * 5
+    padding: theme.spacing.unit * 5,
   },
   title: {
+    textAlign: 'left',
     marginTop: theme.spacing.unit * 3,
     marginBottom: theme.spacing.unit * 3,
-    textAlign: 'left'
   },
   btnLink: {
-    textDecoration: 'none'
+    textDecoration: 'none',
   }
 });
 
@@ -49,21 +49,28 @@ const getDate = (rawDate = "") => {
 
 class LetterManagement extends Component {
   state = {
+    page: 1,
+    count: 0,
+    size: 10,
     letters: [],
   };
 
   componentDidMount = async () => {
     try {
-      const {
-        status,
-        data: { success, leaveLetters: letters }
+      const { data: { success, leaveLetters: letters, count }
       } = await this.props.api();
-      if (status !== 200 || !success) return;
-      this.setState({ letters });
+      if (success) this.setState({ letters, count });
     } catch (err) {
       console.log(err);
     }
   };
+
+  changePage = (page, size) => {
+    this.props.api(page, size)
+    .then(({ data: { success, leaveLetters: letters, count } }) => 
+      success && this.setState({ letters, count, page, size }))
+    .catch(error => console.log(error));
+  }
 
   render() {
     const { letters } = this.state;
@@ -76,8 +83,7 @@ class LetterManagement extends Component {
         </Typography>
       ),
       data: Array.isArray(letters)
-        ? letters.map(letter => {
-            const { fUserFullName, fFromDT, fToDT, fStatus, fId, fRdt } = letter;
+        ? letters.map(({ fUserFullName, fFromDT, fToDT, fStatus, fId, fRdt }) => {
             if (type === 'hr')
               return [
                 getDate(fRdt),
@@ -118,26 +124,29 @@ class LetterManagement extends Component {
           })
         : [],
       columns:
-        type === "hr"
-          ? ['When', 'Name', 'From', 'To', 'Status', 'Actions']
-          : ['When', 'From', 'To', 'Status', 'Actions'],
+        type !== "hr"
+        ? ['When', 'From', 'To', 'Status', 'Actions']
+        : ['When', 'Name', 'From', 'To', 'Status', 'Actions'],
       options: {
-        selectableRows: false,
-        responsive: 'scroll',
-        print: true,
-        download: true,
-        viewColumns: false,
         filter: true,
-        rowsPerPage: 10,
-        rowsPerPageOptions: [5, 10, 15, 20]
+        download: true,
+        serverSide: true,
+        viewColumns: false,
+        responsive: 'scroll',
+        selectableRows: false,
+        count: this.state.count,
+        rowsPerPage: this.state.size,
+        rowsPerPageOptions: [5, 10, 15, 20],
+        onChangeRowsPerPage: size => this.changePage(1, size),
+        onTableChange: (action, tableState) => action === 'changePage' && this.changePage(tableState.page + 1, tableState.rowsPerPage),
       }
     };
 
     return (
       <MUIDataTable
-        className={classes.paper}
-        title={tableInfo.title}
         data={tableInfo.data}
+        title={tableInfo.title}
+        className={classes.paper}
         columns={tableInfo.columns}
         options={tableInfo.options}
       />

@@ -139,8 +139,7 @@ Router.get('/', async (req, res) => {
       }
     })();
 
-    const numPages = Math.ceil(count / size);
-    handleSuccess(res, { leaveLetters, numPages });
+    handleSuccess(res, { leaveLetters, count: leaveLetters.length > 0 && count || 0 });
   } catch (err) {
     handleFailure(res, { err, route: req.originalUrl });
   }
@@ -148,7 +147,7 @@ Router.get('/', async (req, res) => {
 
 Router.post('/', async (req, res) => {
   try {
-    if (Object.keys(req.body).length < 1) throw { msg: 'VALUES_MISSING' };
+    if (Object.keys(req.body).length < 1) throw { msg: 'INVALID_VALUES' };
 
     const id = uid(LEAVING_FORM_ID_LEN);
     const entity = standardizeObj({ ...req.body, id });
@@ -260,7 +259,8 @@ Router.get('/my-letters', async (req, res) => {
       for (let i = 0; i < rawLeaveLetters.length; i++) {
         const letter = rawLeaveLetters[i].get({ plain: true });
         const { fApprover, fUserId, fSubstituteId } = letter;
-        // only HR marked as approver in letter is able to view and approve it
+        // console.log(">>> ", letter.fId, userId, fUserId, fApprover);
+        // only oneself or HR marked as approver in letter is able to view it
         if (userId !== fUserId && userId !== fApprover) continue;
         // user's fullName
         const users = await userModel.loadAll(["fFirstName", "fLastName"], {
@@ -291,8 +291,7 @@ Router.get('/my-letters', async (req, res) => {
       }
     })();
 
-    const numPages = Math.ceil(count / size);
-    handleSuccess(res, { success: true, leaveLetters, numPages });
+    handleSuccess(res, { success: true, leaveLetters, count: leaveLetters.length > 0 && count || 0 });
   } catch (err) {
     handleFailure(res, { err, route: req.originalUrl });
   }
@@ -394,8 +393,7 @@ Router.get('/filter', async (req, res) => {
       }
     })();
 
-    const numPages = Math.ceil(count / size);
-    handleSuccess(res, { leaveLetters, numOffDays, numPages });
+    handleSuccess(res, { leaveLetters, numOffDays, count: leaveLetters.length && count || 0 });
   } catch(err) {
     handleFailure(res, { err, route: req.originalUrl });
   }
@@ -426,4 +424,5 @@ Router.post('/send-email', async (req, res) => {
     handleFailure(res, { err, route: req.originalUrl });
   }
 });
+
 module.exports = Router;

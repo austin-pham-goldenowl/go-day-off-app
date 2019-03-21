@@ -27,7 +27,7 @@ const Dashboard = props => {
         My letters
       </Typography>
       <div className={classes.tableContainer}>
-        <LettersManagement api={() => getMyLeaveLetters(getUserId())} />
+        <LettersManagement api={getMyLeaveLetters} />
       </div>
     </DashContainer>
   );

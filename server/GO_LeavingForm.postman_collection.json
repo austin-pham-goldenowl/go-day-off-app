@@ -82,7 +82,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"username\" : \"user\",\n\t\"rawPwd\" : \"password\"\n}"
+							"raw": "{\n\t\"username\" : \"hr1\",\n\t\"rawPwd\" : \"password\"\n}"
 						},
 						"url": {
 							"raw": "localhost:3001/api/v1.0.0/auth/login",
@@ -246,7 +246,7 @@
 						"header": [
 							{
 								"key": "x-access-token",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJIOFVJQWRzeTdUIiwidXNlclR5cGUiOiJociIsImlhdCI6MTU1Mjk2NzI2MiwiZXhwIjoxNTUzMDI3MjYyfQ.f57Dbi5om0jxzZ29XK3VcC-7kmAMXZ4MGfag0mKST9s",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlS211WnFZenptIiwidXNlclR5cGUiOiJociIsImlhdCI6MTU1MzE1NzMzMiwiZXhwIjoxNTUzMjE3MzMyfQ.SGU1Sou4vn7ph-d2TiYwpGsjI89bSZ0OGq9RVIDgIE8",
 								"type": "text"
 							}
 						],
@@ -255,7 +255,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "localhost:3001/api/v1.0.0/leaveletter?size=5&page=2",
+							"raw": "localhost:3001/api/v1.0.0/leaveletter?size=5&page=1",
 							"host": [
 								"localhost"
 							],
@@ -272,7 +272,7 @@
 								},
 								{
 									"key": "page",
-									"value": "2"
+									"value": "1"
 								}
 							]
 						}
@@ -360,7 +360,7 @@
 						"header": [
 							{
 								"key": "x-access-token",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJIOFVJQWRzeTdUIiwidXNlclR5cGUiOiJociIsImlhdCI6MTU1Mjk2NzI2MiwiZXhwIjoxNTUzMDI3MjYyfQ.f57Dbi5om0jxzZ29XK3VcC-7kmAMXZ4MGfag0mKST9s",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlS211WnFZenptIiwidXNlclR5cGUiOiJociIsImlhdCI6MTU1MzE1NzMzMiwiZXhwIjoxNTUzMjE3MzMyfQ.SGU1Sou4vn7ph-d2TiYwpGsjI89bSZ0OGq9RVIDgIE8",
 								"type": "text"
 							},
 							{
@@ -371,7 +371,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"absenceType\": \"1\",\n\t\"fromDT\": \"2019-01-13T16:29:56.000Z\",\n\t\"status\": 2,\n\t\"substituteId\": \"i53FItHeMK\",\n\t\"toDT\": \"2019-01-15T16:29:56.000Z\",\n\t\"userId\": \"H8UIAdsy7T\",\n\t\"approver\": \"H8UIAdsy7T\",\n\t\"fromOpt\": \"morning\",\n\t\"toOpt\": \"morning\"\n}"
+							"raw": "{\n\t\"absenceType\": 1,\n\t\"fromDT\": \"2019-04-23T16:29:56.000Z\",\n\t\"status\": 1,\n\t\"substituteId\": \"i53FItHeMK\",\n\t\"toDT\": \"2019-04-25T16:29:56.000Z\",\n\t\"userId\": \"eKmuZqYzzm\",\n\t\"approver\": \"H8UIAdsy7T\",\n\t\"fromOpt\": \"allday\",\n\t\"toOpt\": \"morning\"\n}"
 						},
 						"url": {
 							"raw": "localhost:3001/api/v1.0.0/leaveletter/",
@@ -673,7 +673,7 @@
 						"header": [
 							{
 								"key": "x-access-token",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJpNTNGSXRIZU1LIiwidXNlclR5cGUiOiJwZXJzb25uZWwiLCJpYXQiOjE1NTI5NzI1NDIsImV4cCI6MTU1MzAzMjU0Mn0._lvEmkmDbPiRgSDpfgmHbf5uL8aJsNV5VkKh9qq2Rt4",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlS211WnFZenptIiwidXNlclR5cGUiOiJociIsImlhdCI6MTU1MzE1NzMzMiwiZXhwIjoxNTUzMjE3MzMyfQ.SGU1Sou4vn7ph-d2TiYwpGsjI89bSZ0OGq9RVIDgIE8",
 								"type": "text"
 							}
 						],
@@ -749,7 +749,7 @@
 						"header": [
 							{
 								"key": "x-access-token",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJIOFVJQWRzeTdUIiwidXNlclR5cGUiOiJociIsImlhdCI6MTU1MjQ1MTMwOSwiZXhwIjoxNTUyNTExMzA5fQ.MlZQnA-0M2y2Df2z0dZRYsHBYdrvQ8m6NVLYQioq6K8",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJIOFVJQWRzeTdUIiwidXNlclR5cGUiOiJociIsImlhdCI6MTU1MzA2MzkxNCwiZXhwIjoxNTUzMTIzOTE0fQ.nfKlUVAj8hx7WzQxshuGFclsQ368Gz9eGQ-2kEdJU7k",
 								"type": "text"
 							}
 						],
@@ -780,7 +780,7 @@
 						"header": [
 							{
 								"key": "x-access-token",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJIOFVJQWRzeTdUIiwidXNlclR5cGUiOiJociIsImlhdCI6MTU1Mjk2NzI2MiwiZXhwIjoxNTUzMDI3MjYyfQ.f57Dbi5om0jxzZ29XK3VcC-7kmAMXZ4MGfag0mKST9s",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJIOFVJQWRzeTdUIiwidXNlclR5cGUiOiJociIsImlhdCI6MTU1MzE1NjQwMSwiZXhwIjoxNTUzMjE2NDAxfQ.v7x3vYRjzIQMGVR0BBUuqhcG-Sh0iTDs2cLTEOkPQ-k",
 								"type": "text"
 							}
 						],
@@ -835,20 +835,20 @@
 					"response": []
 				},
 				{
-					"name": "Add new setting",
+					"name": "Save setting",
 					"request": {
 						"method": "POST",
 						"header": [
 							{
 								"key": "x-access-token",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJIOFVJQWRzeTdUIiwidXNlclR5cGUiOiJociIsImlhdCI6MTU1Mjk2NzI2MiwiZXhwIjoxNTUzMDI3MjYyfQ.f57Dbi5om0jxzZ29XK3VcC-7kmAMXZ4MGfag0mKST9s",
-								"type": "text"
+								"type": "text",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJIOFVJQWRzeTdUIiwidXNlclR5cGUiOiJociIsImlhdCI6MTU1MzA3Njc0NiwiZXhwIjoxNTUzMTM2NzQ2fQ.Qf3_fn4R3r9xxhwqGlUQCBhpz9tWLrSPZaMwjs18zVA"
 							},
 							{
 								"key": "Content-Type",
 								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
+								"type": "text",
+								"value": "application/json"
 							}
 						],
 						"body": {
@@ -878,50 +878,13 @@
 						"header": [
 							{
 								"key": "x-access-token",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJIOFVJQWRzeTdUIiwidXNlclR5cGUiOiJociIsImlhdCI6MTU1Mjk2NzI2MiwiZXhwIjoxNTUzMDI3MjYyfQ.f57Dbi5om0jxzZ29XK3VcC-7kmAMXZ4MGfag0mKST9s",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlS211WnFZenptIiwidXNlclR5cGUiOiJociIsImlhdCI6MTU1MzE1NjMyOCwiZXhwIjoxNTUzMjE2MzI4fQ.jbiMqMOfwe4H9JdJ4hmTAEwzpRlFM1W9KUex088XqjQ",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": ""
-						},
-						"url": {
-							"raw": "localhost:3001/api/v1.0.0/setting/",
-							"host": [
-								"localhost"
-							],
-							"port": "3001",
-							"path": [
-								"api",
-								"v1.0.0",
-								"setting",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update setting",
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "x-access-token",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJIOFVJQWRzeTdUIiwidXNlclR5cGUiOiJociIsImlhdCI6MTU1Mjk2NzI2MiwiZXhwIjoxNTUzMDI3MjYyfQ.f57Dbi5om0jxzZ29XK3VcC-7kmAMXZ4MGfag0mKST9s",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"pairs\": [\n\t\t[ \"email\", \"golden_owl@gmail.com\" ]\n\t]\n}"
 						},
 						"url": {
 							"raw": "localhost:3001/api/v1.0.0/setting/",
