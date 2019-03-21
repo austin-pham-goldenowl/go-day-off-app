@@ -9,11 +9,14 @@ import * as Yup from 'yup';
     otherReason: '',
  */
 const AbsenceLetterSchema = Yup.object().shape({
-    leaveType: Yup.number().required('Required'),
-    startDate: Yup.date().required('Required'),
-    endDate: Yup.date().required('Required'),
-    approver: Yup.string().required('Required'),
-    informTo: Yup.array(),
-    reason: Yup.string().required(),
+  leaveType: Yup.number().required(`'Leave type' is required.`),
+  startDate: Yup.date().required(`'From date' is required.`),
+  endDate: Yup.date().required(`'End date' is required.`),
+  approver: Yup.string()
+    .min(1)
+    .required(`'Approver' is required.`),
+  informTo: Yup.array().required(`'Inform to' is required.`),
+  reason: Yup.string().required(`'Reason' is required.`),
+  otherReason: Yup.string().required(`'Reason detail' is required.`)
 });
 export default AbsenceLetterSchema;
