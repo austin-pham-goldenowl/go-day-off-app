@@ -69,7 +69,7 @@ Router.get('/details', async (req, res) => {
     const letter = leaveLetters[0].get({ plain: true });
     const { fApprover } = letter;
     // only HR marked as approver in letter is able to view and approve it
-    if (fUserType === 'HR' && fApprover !== userId)
+    if (fUserType === 'HR' && fApprover !== userId && fUserId !== userId)
       throw { code: 401, msg: 'NO_PERMISSION' };
 
     const { fSubstituteId } = letter;
@@ -111,7 +111,7 @@ Router.get('/', async (req, res) => {
         // only HR marked as approver in letter is able to view and approve it
         if (userId !== fUserId && userId !== fApprover) continue;
         // user's fullName
-        const users = await userModel.loadAll(['fFirstNam', 'fLastName'], {
+        const users = await userModel.loadAll(['fFirstName', 'fLastName'], {
           where: { fId: fUserId }
         });
         if (users.length) {
