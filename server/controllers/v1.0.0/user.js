@@ -167,19 +167,21 @@ Router.get('/team-leader', async (req, res) => {
     // find the team leader name
     const { fTeamLead } = teams[0].get({ plain: true });
     console.log(`-> fTeamLead: `, fTeamLead);
-    const leaders = await userModel.loadAll(['fFirstName', 'fLastName'], {
-      where: { fId: fTeamLead }
-    });
+    const leaders = await userModel.loadAll(['fFirstName', 'fLastName', 'fEmail'],
+      {
+        where: { fId: fTeamLead }
+      });
     console.log(`-> leaders: `, leaders);
     console.log(`-> leaders.length: `, leaders.length);
     if (!leaders || leaders.length !== 1) throw { msg: 'LEADERS_NOT_FOUND' };
     console.log(`[PASS] 3`);
 
-    const { fFirstName, fLastName } = leaders[0].get({ plain: true });
+    const { fFirstName, fLastName, fEmail } = leaders[0].get({ plain: true });
     const teamLeader = {
       fId: fTeamLead,
       fFirstName,
-      fLastName
+      fLastName,
+      fEmail
     };
 
     handleSuccess(res, { teamLeader });
