@@ -1,10 +1,10 @@
-const express = require("express");
+const express = require('express');
 const Router = express.Router();
 
 /**
  * Models
  */
-const { settings: settingModel } = require("../../models");
+const { settings: settingModel } = require('../../models');
 
 /**
  * Helpers
@@ -12,9 +12,14 @@ const { settings: settingModel } = require("../../models");
 const {
   handleSuccess,
   handleFailure
-} = require("../../helpers/handleResponse");
+} = require('../../helpers/handleResponse');
 
-Router.get("/", async (req, res) => {
+/**
+ * Middlewares
+ */
+const bodyMustNotEmpty = require('../../middlewares/bodyMustNotEmpty');
+
+Router.get('/', async (req, res) => {
   try {
     const settings = await settingModel.loadAll();
     handleSuccess(res, { settings });
@@ -24,10 +29,10 @@ Router.get("/", async (req, res) => {
   }
 });
 
-Router.post("/", async (req, res) => {
+Router.post('/', bodyMustNotEmpty, async (req, res) => {
   try {
     const { pairs } = req.body;
-    if (!Array.isArray(pairs) || pairs.length < 1) throw { msg: "INVALID_VALUES" };
+    if (!Array.isArray(pairs) || pairs.length < 1) throw { msg: 'INVALID_VALUES' };
 
     const entities = pairs
       // not save empty fields
@@ -39,7 +44,7 @@ Router.post("/", async (req, res) => {
     if(entities.length > 0) Promise.all(entities)
       .then(() => handleSuccess(res))
       .catch(err => handleFailure(res, { err, route: req.originalUrl }) );
-    else throw { msg: "INVALID_VALUES" }
+    else throw { msg: 'INVALID_VALUES' }
   } catch (err) {
     handleFailure(res, { err, route: req.originalUrl });
   }

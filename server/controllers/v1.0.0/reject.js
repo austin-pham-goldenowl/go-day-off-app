@@ -1,4 +1,4 @@
-const express = require("express");
+const express = require('express');
 const Router = express.Router();
 
 /**
@@ -7,8 +7,13 @@ const Router = express.Router();
 const {
   handleSuccess,
   handleFailure
-} = require("../../helpers/handleResponse");
-const { standardizeObj } = require("../../helpers/standardize");
+} = require('../../helpers/handleResponse');
+const { standardizeObj } = require('../../helpers/standardize');
+
+/**
+ * Middlewares
+ */
+const bodyMustNotEmpty = require('../../middlewares/bodyMustNotEmpty');
 
 /**
  * Models
@@ -16,23 +21,23 @@ const { standardizeObj } = require("../../helpers/standardize");
 const {
   rejectedLetterDetail: rejectModel,
   leaveLetters: leaveLetterModel
-} = require("../../models");
+} = require('../../models');
 
-Router.get("/", async (req, res) => {
+Router.get('/', async (req, res) => {
   try {
     const fLetterId = req.query.id;
-    if (!fLetterId) throw { msg: "INVALID_QUERY" };
+    if (!fLetterId) throw { msg: 'INVALID_QUERY' };
     const rejects = await rejectModel.loadAll([], {
       where: { fLetterId }
     });
-    if (!rejects || rejects.length !== 1) throw { msg: "REJECTION_NOT_FOUND" };
+    if (!rejects || rejects.length !== 1) throw { msg: 'REJECTION_NOT_FOUND' };
 
     // check if leave letter corresponding with rejection exists
     const reject = rejects[0];
     const letters = await leaveLetterModel.loadAll([], {
       where: { fId: fLetterId }
     });
-    if (!letters || letters.length !== 1) throw { msg: "REJECTION_NOT_FOUND" };
+    if (!letters || letters.length !== 1) throw { msg: 'REJECTION_NOT_FOUND' };
 
     handleSuccess(res, { reject });
   } catch (err) {
@@ -40,17 +45,15 @@ Router.get("/", async (req, res) => {
   }
 });
 
-Router.post("/", async (req, res) => {
+Router.post('/', bodyMustNotEmpty, async (req, res) => {
   try {
     const entity = standardizeObj(req.body);
-    if (Object.keys(entity) < 1) throw { msg: "INVALID_VALUES" };
-
     // validate rejectType value
     if (
       (entity.fRejectType || 1) &&
       !rejectModel.rawAttributes.fRejectType.values.includes(entity.fRejectType)
     )
-      throw { msg: "INVALID_VALUES" };
+      throw { msg: 'INVALID_VALUES' };
 
     entity.leaveLetters_fId = entity.fLetterId;
     await rejectModel.add({

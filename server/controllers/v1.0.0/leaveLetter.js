@@ -35,7 +35,8 @@ const {
 /**
  * Middlewares
  */
-const userMustBeHR = require("../../middlewares/userMustBeHR");
+const userMustBeHR = require('../../middlewares/userMustBeHR');
+const bodyMustNotEmpty = require('../../middlewares/bodyMustNotEmpty');
 
 /**
  * Constants
@@ -147,10 +148,8 @@ Router.get('/', userMustBeHR, async (req, res) => {
   }
 });
 
-Router.post('/', async (req, res) => {
+Router.post('/', bodyMustNotEmpty, async (req, res) => {
   try {
-    if (Object.keys(req.body).length < 1) throw { msg: 'INVALID_VALUES' };
-
     const id = uid(LEAVING_FORM_ID_LEN);
     const entity = standardizeObj({ ...req.body, id });
 
@@ -197,7 +196,7 @@ Router.post('/', async (req, res) => {
   }
 });
 
-Router.patch('/', async (req, res) => {
+Router.patch('/', bodyMustNotEmpty, async (req, res) => {
   try {
     // validate if userPermission is permitted
     const fUserType = await getPermissionByToken(req.token_payload);

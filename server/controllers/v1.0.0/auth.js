@@ -1,6 +1,6 @@
-const express = require("express");
+const express = require('express');
 const Router = express.Router();
-const uid = require("rand-token").uid;
+const uid = require('rand-token').uid;
 
 /**
  * Models
@@ -9,12 +9,12 @@ const {
   userRefToken: refTokenModel,
   users: userModel,
   userPermission: permissionModel
-} = require("../../models");
+} = require('../../models');
 
 /**
  * Configs
  */
-const { USER_ID_LEN } = require("../../configs/config");
+const { USER_ID_LEN } = require('../../configs/config');
 
 /**
  * Helpers
@@ -22,36 +22,35 @@ const { USER_ID_LEN } = require("../../configs/config");
 const {
   handleSuccess,
   handleFailure
-} = require("../../helpers/handleResponse");
-const { genRefToken, verifyAccToken } = require("../../helpers/jwt");
-const { standardizeObj } = require("../../helpers/standardize");
+} = require('../../helpers/handleResponse');
+const { genRefToken, verifyAccToken } = require('../../helpers/jwt');
+const { standardizeObj } = require('../../helpers/standardize');
 const {
   getIdFromToken
-} = require("../../helpers/getUserInfo");
+} = require('../../helpers/getUserInfo');
 
 /**
  * Middlewares
  */
-const userMustBeHR = require("../../middlewares/userMustBeHR");
+const userMustBeHR = require('../../middlewares/userMustBeHR');
+const bodyMustNotEmpty = require('../../middlewares/bodyMustNotEmpty');
 
 /**
  * ADD NEW User
  */
-Router.post("/account", verifyAccToken, userMustBeHR, async (req, res) => {
+Router.post('/account', bodyMustNotEmpty, verifyAccToken, userMustBeHR, async (req, res) => {
   try {
     const userId = getIdFromToken(req.token_payload);
-    if (!userId) throw { msg: "USER_NOT_FOUND" };
+    if (!userId) throw { msg: 'USER_NOT_FOUND' };
 
-    if (Object.keys(req.body).length < 1) throw { msg: "INVALID_VALUES" };
     const entity = standardizeObj(req.body);
-
     // validate gender value
     const { fGender } = entity;
     if (
       (fGender || 3) &&
       !userModel.rawAttributes.fGender.values.includes(fGender)
     )
-      throw { msg: "INVALID_VALUES" };
+      throw { msg: 'INVALID_VALUES' };
 
     entity.fId = uid(USER_ID_LEN);
     // add foreign keys
@@ -70,16 +69,16 @@ Router.post("/account", verifyAccToken, userMustBeHR, async (req, res) => {
 /**
  * LOGIN user
  */
-Router.post("/login", async (req, res) => {
+Router.post('/login', bodyMustNotEmpty, async (req, res) => {
   try {
     const { username, rawPwd } = req.body;
-    if (!username || !rawPwd) throw { msg: "MISSING_REQUIRED_FIELDS" };
+    if (!username || !rawPwd) throw { msg: 'MISSING_REQUIRED_FIELDS' };
 
     const user = await userModel.login({
       fUsername: username.toLowerCase(),
       rawPwd
     });
-    if (!user) throw { msg: "INVALID_USERNAME_PASSWORD" };
+    if (!user) throw { msg: 'INVALID_USERNAME_PASSWORD' };
 
     const entity = user.get({ plain: true });
     const fRefToken = genRefToken();
@@ -94,7 +93,7 @@ Router.post("/login", async (req, res) => {
       where: { fId: fTypeId }
     });
     if (!permissions || permissions.length !== 1)
-      throw { msg: "NO_PERMISSION" };
+      throw { msg: 'NO_PERMISSION' };
 
     const { fUserType } = permissions[0].get({ plain: true });
     const accToken = await refTokenModel.genAccToken(fUserId, fUserType);
@@ -103,9 +102,9 @@ Router.post("/login", async (req, res) => {
       access_token: accToken,
       refresh_token: fRefToken,
       user: {
-        firstName: entity.fFirstName || "",
-        lastName: entity.fLastName || "",
-        typeName: fUserType || ""
+        firstName: entity.fFirstName || '',
+        lastName: entity.fLastName || '',
+        typeName: fUserType || ''
       }
     });
   } catch (err) {
@@ -116,27 +115,27 @@ Router.post("/login", async (req, res) => {
 /**
  * GET new accessToken
  */
-Router.get("/token", async (req, res) => {
+Router.get('/token', async (req, res) => {
   try {
     // validate refToken
-    const fRefToken = req.headers["x-ref-token"];
-    if (!fRefToken) throw { code: 401, msg: "NO_REFRESH_TOKEN" };
+    const fRefToken = req.headers['x-ref-token'];
+    if (!fRefToken) throw { code: 401, msg: 'NO_REFRESH_TOKEN' };
     await refTokenModel.validateRefToken(fRefToken);
     // refToken is valid, gen & return new accToken
     const fUserId = await refTokenModel.findUserByRefToken(fRefToken);
-    if (!fUserId) throw { msg: "USER_NOT_FOUND" };
+    if (!fUserId) throw { msg: 'USER_NOT_FOUND' };
 
-    const users = await userModel.loadAll(["fTypeId"], {
+    const users = await userModel.loadAll(['fTypeId'], {
       where: { fId: fUserId }
     });
-    if (!users || users.length !== 1) throw { msg: "USER_NOT_FOUND" };
+    if (!users || users.length !== 1) throw { msg: 'USER_NOT_FOUND' };
 
     const { fTypeId } = users[0].get({ plain: true });
-    const permissions = await permissionModel.loadAll(["fUserType"], {
+    const permissions = await permissionModel.loadAll(['fUserType'], {
       where: { fId: fTypeId }
     });
     if (!permissions || permissions.length !== 1)
-      throw { msg: "NO_PERMISSION" };
+      throw { msg: 'NO_PERMISSION' };
 
     const { fUserType } = permissions[0].get({ plain: true });
     const accToken = await refTokenModel.genAccToken(fUserId, fUserType);
