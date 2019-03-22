@@ -24,6 +24,11 @@ const {
   getPermissionByUserId
 } = require("../../helpers/getUserInfo");
 
+/**
+ * Middlewares
+ */
+const museBeHR = require("../../middlewares/mustBeHR");
+
 // Get user profile
 Router.get("/profile", async (req, res) => {
   try {
@@ -76,7 +81,7 @@ Router.get("/profile", async (req, res) => {
 });
 
 // Update user profile
-Router.patch("/profile", async (req, res) => {
+Router.patch("/profile", museBeHR, async (req, res) => {
   try {
     const userId = getIdFromToken(req.token_payload);
     if (!userId) throw { msg: "USER_NOT_FOUND" };
@@ -89,11 +94,6 @@ Router.patch("/profile", async (req, res) => {
     )
       throw { msg: "INVALID_VALUES" };
     const entity = req.body.info && standardizeObj(req.body.info);
-
-    // validate whether userPermission is permitted
-    // only HR can edit profile
-    const fUserType = await getPermissionByUserId(userId);
-    if (fUserType !== "HR") throw { cod: 401, msg: "NO_PERMISSION" };
 
     // validate gender value
     const { fGender } = entity;

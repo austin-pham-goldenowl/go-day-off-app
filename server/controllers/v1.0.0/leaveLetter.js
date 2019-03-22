@@ -33,6 +33,11 @@ const {
 } = require('../../helpers/getUserInfo');
 
 /**
+ * Middlewares
+ */
+const mustBeHR = require("../../middlewares/mustBeHR");
+
+/**
  * Constants
  */
 const { FROM_OPTION, TO_OPTION, DEFAULT_PAGE_ORDER, DEFAULT_PAGE_SIZE,
@@ -87,11 +92,8 @@ Router.get('/details', async (req, res) => {
   }
 });
 
-Router.get('/', async (req, res) => {
+Router.get('/', mustBeHR, async (req, res) => {
   try {
-    const userType = await getPermissionByToken(req.token_payload);
-    if (userType !== 'HR') throw { code: 401, msg: 'NO_PERMISSION' };
-
     let { page = DEFAULT_PAGE_ORDER, size = DEFAULT_PAGE_SIZE } = req.query;
     if(page < 1 || isNaN(page)) page = DEFAULT_PAGE_ORDER;
     if(!ALLOWED_PAGE_SIZE.includes(+size)) size = DEFAULT_PAGE_SIZE;

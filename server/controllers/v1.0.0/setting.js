@@ -13,16 +13,9 @@ const {
   handleSuccess,
   handleFailure
 } = require("../../helpers/handleResponse");
-const {
-  getPermissionByToken
-} = require("../../helpers/getUserInfo");
 
 Router.get("/", async (req, res) => {
   try {
-    // only HR can get settings
-    const fUserType = await getPermissionByToken(req.token_payload);
-    if (fUserType !== "HR") throw { cod: 401, msg: "NO_PERMISSION" };
-
     const settings = await settingModel.loadAll();
     handleSuccess(res, { settings });
   }
@@ -33,9 +26,6 @@ Router.get("/", async (req, res) => {
 
 Router.post("/", async (req, res) => {
   try {
-    // only HR can edit settings
-    const fUserType = await getPermissionByToken(req.token_payload);
-    if (fUserType !== "HR") throw { cod: 401, msg: "NO_PERMISSION" };
     const { pairs } = req.body;
     if (!Array.isArray(pairs) || pairs.length < 1) throw { msg: "INVALID_VALUES" };
 

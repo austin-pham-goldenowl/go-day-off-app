@@ -50,6 +50,7 @@ if (process.env.NODE_ENV === "development") {
  * Middlewares/Helpers
  */
 const { verifyAccToken } = require("./helpers/jwt");
+const mustBeHR = require("./middlewares/mustBeHR");
 
 /**
  * Controllers
@@ -78,7 +79,7 @@ API_VERSIONS.forEach(version => {
   server.use(`/api/${version}/reject`, verifyAccToken, rejectCtrl);
   // --
   const settingCtrl = require(`./controllers/${version}/setting`);
-  server.use(`/api/${version}/setting`, verifyAccToken, settingCtrl);
+  server.use(`/api/${version}/setting`, verifyAccToken, mustBeHR, settingCtrl);
 });
 
 // If no api version specified, rollback to the default one
@@ -104,7 +105,7 @@ const rejectCtrl = require(`./controllers/${DEFAULT_API_VERSION}/reject`);
 server.use(`/api/reject`, verifyAccToken, rejectCtrl);
 // --
 const settingCtrl = require(`./controllers/${DEFAULT_API_VERSION}/setting`);
-server.use(`/api/setting`, verifyAccToken, settingCtrl);
+server.use(`/api/setting`, verifyAccToken, mustBeHR, settingCtrl);
 
 // Handle invalid routes
 server.all("*", (req, res) => {

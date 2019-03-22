@@ -26,20 +26,21 @@ const {
 const { genRefToken, verifyAccToken } = require("../../helpers/jwt");
 const { standardizeObj } = require("../../helpers/standardize");
 const {
-  getIdFromToken,
-  getPermissionByUserId
+  getIdFromToken
 } = require("../../helpers/getUserInfo");
+
+/**
+ * Middlewares
+ */
+const museBeHR = require("../../middlewares/mustBeHR");
 
 /**
  * ADD NEW User
  */
-Router.post("/account", verifyAccToken, async (req, res) => {
+Router.post("/account", verifyAccToken, museBeHR, async (req, res) => {
   try {
     const userId = getIdFromToken(req.token_payload);
     if (!userId) throw { msg: "USER_NOT_FOUND" };
-
-    const fUserType = await getPermissionByUserId(userId);
-    if (fUserType !== "HR") throw { code: 401, msg: "NO_PERMISSION" };
 
     if (Object.keys(req.body).length < 1) throw { msg: "INVALID_VALUES" };
     const entity = standardizeObj(req.body);
