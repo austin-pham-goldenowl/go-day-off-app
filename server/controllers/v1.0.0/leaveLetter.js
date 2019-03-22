@@ -98,6 +98,7 @@ Router.get('/', userMustBeHR, async (req, res) => {
     let { page = DEFAULT_PAGE_ORDER, size = DEFAULT_PAGE_SIZE } = req.query;
     if(page < 1 || isNaN(page)) page = DEFAULT_PAGE_ORDER;
     if(!ALLOWED_PAGE_SIZE.includes(+size)) size = DEFAULT_PAGE_SIZE;
+    if(size === 0) size = Number.MAX_SAFE_INTEGER;
 
     const userId = getIdFromToken(req.token_payload);
     const { rawLeaveLetters, count } = await leaveLetterModel.countAll([],
@@ -314,6 +315,7 @@ Router.get('/filter', async (req, res) => {
     if(toYear > currentYear) toYear = currentYear;
     if(page < 1 || isNaN(page)) page = DEFAULT_PAGE_ORDER;
     if(!ALLOWED_PAGE_SIZE.includes(+size)) size = DEFAULT_PAGE_SIZE;
+    if(size === 0) size = Number.MAX_SAFE_INTEGER;
 
     // only HR can export all; others can export oneself's
     const fUserType = await getPermissionByToken(req.token_payload);
