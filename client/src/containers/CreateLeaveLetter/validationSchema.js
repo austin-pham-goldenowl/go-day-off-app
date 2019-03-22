@@ -16,7 +16,6 @@ const AbsenceLetterSchema = Yup.object().shape({
     .min(1)
     .required(`'Approver' is required.`),
   informTo: Yup.array().required(`'Inform to' is required.`),
-  reason: Yup.string().required(`'Reason' is required.`),
-  otherReason: Yup.string().required(`'Reason detail' is required.`)
+  reason: Yup.string().required(`'Reason' is required.`)
 });
 export default AbsenceLetterSchema;
