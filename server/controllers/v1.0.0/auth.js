@@ -32,12 +32,12 @@ const {
 /**
  * Middlewares
  */
-const museBeHR = require("../../middlewares/mustBeHR");
+const userMustBeHR = require("../../middlewares/userMustBeHR");
 
 /**
  * ADD NEW User
  */
-Router.post("/account", verifyAccToken, museBeHR, async (req, res) => {
+Router.post("/account", verifyAccToken, userMustBeHR, async (req, res) => {
   try {
     const userId = getIdFromToken(req.token_payload);
     if (!userId) throw { msg: "USER_NOT_FOUND" };

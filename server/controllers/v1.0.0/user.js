@@ -27,7 +27,7 @@ const {
 /**
  * Middlewares
  */
-const museBeHR = require("../../middlewares/mustBeHR");
+const userMustBeHR = require("../../middlewares/userMustBeHR");
 
 // Get user profile
 Router.get("/profile", async (req, res) => {
@@ -81,7 +81,7 @@ Router.get("/profile", async (req, res) => {
 });
 
 // Update user profile
-Router.patch("/profile", museBeHR, async (req, res) => {
+Router.patch("/profile", userMustBeHR, async (req, res) => {
   try {
     const userId = getIdFromToken(req.token_payload);
     if (!userId) throw { msg: "USER_NOT_FOUND" };

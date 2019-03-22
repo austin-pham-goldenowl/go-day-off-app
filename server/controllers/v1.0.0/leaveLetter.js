@@ -35,7 +35,7 @@ const {
 /**
  * Middlewares
  */
-const mustBeHR = require("../../middlewares/mustBeHR");
+const userMustBeHR = require("../../middlewares/userMustBeHR");
 
 /**
  * Constants
@@ -92,7 +92,7 @@ Router.get('/details', async (req, res) => {
   }
 });
 
-Router.get('/', mustBeHR, async (req, res) => {
+Router.get('/', userMustBeHR, async (req, res) => {
   try {
     let { page = DEFAULT_PAGE_ORDER, size = DEFAULT_PAGE_SIZE } = req.query;
     if(page < 1 || isNaN(page)) page = DEFAULT_PAGE_ORDER;
