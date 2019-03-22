@@ -44,29 +44,6 @@ INSERT INTO `absenceTypes` VALUES (1,'Việc riêng'),(2,'Nghỉ phép năm'),(3
 UNLOCK TABLES;
 
 --
--- Table structure for table `configs`
---
-
-DROP TABLE IF EXISTS `configs`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
- SET character_set_client = utf8mb4 ;
-CREATE TABLE `configs` (
-  `fEmail` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
-  `fPassword` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT 'password',
-  `fTotalOffDaysPerYear` tinyint(255) unsigned DEFAULT '15'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `configs`
---
-
-LOCK TABLES `configs` WRITE;
-/*!40000 ALTER TABLE `configs` DISABLE KEYS */;
-/*!40000 ALTER TABLE `configs` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `leaveLetters`
 --
 
@@ -280,7 +257,7 @@ CREATE TABLE `users` (
   KEY `fk_users_userPermission1_idx` (`userPermission_fId`) USING BTREE,
   CONSTRAINT `fk_users_positions1` FOREIGN KEY (`positions_fId`) REFERENCES `positions` (`fId`),
   CONSTRAINT `fk_users_teams1` FOREIGN KEY (`teams_fId`) REFERENCES `teams` (`fId`),
-  CONSTRAINT `fk_users_userPermission1` FOREIGN KEY (`userPermission_fId`) REFERENCES `userpermission` (`fId`)
+  CONSTRAINT `fk_users_userPermission1` FOREIGN KEY (`userPermission_fId`) REFERENCES `userPermission` (`fId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
