@@ -233,8 +233,6 @@ class AbsenceLetterWithFormik extends React.Component {
                 ...formikProps
               }) => {
                 const { buttonClickable } = this.state;
-                console.log(`approver: `, values.approver);
-                console.log(`informTo: `, values.informTo);
                 return (
                   <Form>
                     {/* Top buttons */}
