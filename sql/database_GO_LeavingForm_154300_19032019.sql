@@ -4,10 +4,6 @@
 -- ------------------------------------------------------
 -- Server version	8.0.15
 
-DROP DATABASE IF EXISTS `leavingForm`;
-CREATE DATABASE `leavingForm` CHARACTER SET utf8 COLLATE utf8_unicode_ci;
-USE `leavingForm`;
-
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
@@ -92,11 +88,11 @@ CREATE TABLE `leaveLetters` (
   `fToOpt` enum('allday','morning') CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT 'allday',
   PRIMARY KEY (`fId`),
   UNIQUE KEY `fId_UNIQUE` (`fId`),
-  KEY `fk_leaveLetters_absenceTypes_idx` (`absenceTypes_fId`) USING BTREE,
+  KEY `fk_leaveLetters_absenceTypes1_idx` (`absenceTypes_fId`) USING BTREE,
   KEY `fk_leaveLetters_users1_idx` (`users_fId1`) USING BTREE,
   KEY `fk_leaveLetters_users2` (`approver_fId`) USING BTREE,
   KEY `fk_leaveLetters_users_idx` (`users_fId`) USING BTREE,
-  CONSTRAINT `fk_leaveLetters_absenceTypes` FOREIGN KEY (`absenceTypes_fId`) REFERENCES `absenceTypes` (`fId`),
+  CONSTRAINT `fk_leaveLetters_absenceTypes1` FOREIGN KEY (`absenceTypes_fId`) REFERENCES `absencetypes` (`fId`),
   CONSTRAINT `fk_leaveLetters_users` FOREIGN KEY (`users_fId`) REFERENCES `users` (`fId`),
   CONSTRAINT `fk_leaveLetters_users1` FOREIGN KEY (`users_fId1`) REFERENCES `users` (`fId`),
   CONSTRAINT `fk_leaveLetters_users2` FOREIGN KEY (`approver_fId`) REFERENCES `users` (`fId`)
@@ -191,7 +187,7 @@ CREATE TABLE `teams` (
 
 LOCK TABLES `teams` WRITE;
 /*!40000 ALTER TABLE `teams` DISABLE KEYS */;
-INSERT INTO `teams` VALUES ('1LwZq','PHP','MNeCqLCc4y',NULL),('4TCgb','Ruby/Ruby on Rails','6kl9baxAUv',NULL),('5eMvD','Design','pJa4TkFAz8',NULL),('A91fa','Khác','wYC0nl3LqV',NULL),('FfI2V','Javascript','Pq2UWS3gJm',NULL),('G81cf','Leaders','wYC0nI3LqV',NULL),('Gg6sG','QA','Ucb07m5zgI',NULL),('kTW7B','PA','LzPq90f8bZ',NULL);
+INSERT INTO `teams` VALUES ('1LwZq','PHP','MNeCqLCc4y',NULL),('4TCgb','Ruby/Ruby on Rails','6kl9baxAUv',NULL),('5eMvD','Design','pJa4TkFAz8',NULL),('A91fa','Khác','wYC0nl3LqV',NULL),('FfI2V','Javascript','Pq2UWS3gJm',NULL),('G81cf','Leaders','wYC0nl3LqV',NULL),('Gg6sG','QA','Ucb07m5zgI',NULL),('kTW7B','PA','LzPq90f8bZ',NULL);
 /*!40000 ALTER TABLE `teams` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -294,16 +290,6 @@ INSERT INTO `users` VALUES ('5g3bqeTgu6','Nhan su','HR1','psS14','0123456789','A
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
-
-CREATE TABLE settings
-(
-  fName  VARCHAR(255) not null
-    primary key,
-  fValue VARCHAR(255) not null
-);
-
-INSERT INTO leavingForm.settings (fName, fValue) VALUES ('email', 'golden_owl@gmail.com');
-INSERT INTO leavingForm.settings (fName, fValue) VALUES ('password', 'password');
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
