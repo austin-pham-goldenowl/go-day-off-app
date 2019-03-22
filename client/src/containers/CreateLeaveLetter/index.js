@@ -18,11 +18,14 @@ import DashContainer from '../DashContainer';
 import ValidationSchema from './validationSchema';
 // const emailRegexPattern = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 
+//constants
+import { LeaveDurationOptions } from '../../constants/leaveDurationOptions';
+
 //helpers
 import { getAllLeaveTypes } from '../../helpers/leaveLetterHelper';
 
 //utilities
-import { calculateFullDayOff } from '../../utilities';
+import { calculateFullDayOff, compareDatesWithoutTime } from '../../utilities';
 
 // API calls
 import Axios from 'axios';
@@ -36,7 +39,7 @@ import {
 } from '../../redux/actions/notificationActions';
 import { NOTIF_ERROR, NOTIF_SUCCESS } from '../../constants/notification';
 import CircularUnderLoad from '../../components/Animation/CircularUnderLoad';
-import { red } from '@material-ui/core/colors';
+import DaySessionsRadio from '../../components/DaySessionsRadio';
 
 const mapDispatchToProps = dispatch => {
   return {
@@ -115,6 +118,15 @@ const styles = theme => ({
     color: 'red',
     fontSize: 12,
     fontWeight: 500
+  },
+  preload: {
+    marginTop: theme.spacing.unit * 3
+  },
+  preloadWrapper: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row'
   }
 });
 
@@ -193,7 +205,6 @@ class AbsenceLetterWithFormik extends React.Component {
       templateList: { leaveTypesList, informToList, approverList },
       otherReasonSelected
     } = this.state;
-
     return (
       <DashContainer>
         <main className={classes.layout}>
@@ -203,7 +214,6 @@ class AbsenceLetterWithFormik extends React.Component {
               validationSchema={ValidationSchema}
               onReset={(values, actions) => {
                 //Manually reset Reason detail content and set it hidden
-                console.log(`onReset triggered!`);
                 this.handleChangeReason();
               }}
               onSubmit={(values, actions) => {
@@ -233,6 +243,10 @@ class AbsenceLetterWithFormik extends React.Component {
                 ...formikProps
               }) => {
                 const { buttonClickable } = this.state;
+                const showEndDateOptions = compareDatesWithoutTime(
+                  values.startDate,
+                  values.endDate
+                );
                 return (
                   <Form>
                     {/* Top buttons */}
@@ -339,6 +353,7 @@ class AbsenceLetterWithFormik extends React.Component {
                                 //do something
                                 return (
                                   <TextFieldReadOnly
+                                    fullWidth
                                     label="Duration"
                                     defaultValue={`${dayOff} working day(s)`}
                                   />
@@ -364,12 +379,18 @@ class AbsenceLetterWithFormik extends React.Component {
                                   </div>
                                 )}
                               </ErrorMessage>
+                              <Field
+                                label="Option"
+                                name="fromOpt"
+                                component={DaySessionsRadio}
+                              />
                             </Grid>
                             <Grid item xs={6}>
                               <Field
                                 fullWidth
                                 label="To"
                                 name="endDate"
+                                minDate={values.startDate}
                                 component={DatePickerField}
                               />
                               <ErrorMessage name="endDate">
@@ -379,6 +400,12 @@ class AbsenceLetterWithFormik extends React.Component {
                                   </div>
                                 )}
                               </ErrorMessage>
+                              <Field
+                                label="Option"
+                                name="toOpt"
+                                component={DaySessionsRadio}
+                                disabled={showEndDateOptions === 0}
+                              />
                             </Grid>
                           </Grid>
                           {/* End - Date picker */}
@@ -487,7 +514,14 @@ class AbsenceLetterWithFormik extends React.Component {
                       {/* End - Form */}
                     </React.Fragment>
                     <React.Fragment>
-                      {isSubmitting ? <CircularUnderLoad /> : null}
+                      {isSubmitting ? (
+                        <div className={classes.preloadWrapper}>
+                          <CircularUnderLoad
+                            className={classes.preload}
+                            size={20}
+                          />
+                        </div>
+                      ) : null}
                     </React.Fragment>
                     <React.Fragment>
                       {/* Bottom buttons */}
@@ -534,13 +568,14 @@ class AbsenceLetterWithFormik extends React.Component {
 AbsenceLetterWithFormik.defaultProps = {
   initialValues: {
     leaveType: 1,
-    startDate: new Date(),
-    endDate: new Date(),
+    startDate: moment().add(1, 'days'),
+    endDate: moment().add(1, 'days'),
     approver: '',
-    informTo: [],
+    informTo: [], //must be an array
     reason: '',
-    otherReason: ''
-    // substitute: {}
+    otherReason: '',
+    fromOpt: LeaveDurationOptions.all,
+    toOpt: LeaveDurationOptions.all
   }
 };
 
