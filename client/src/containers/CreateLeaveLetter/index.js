@@ -15,11 +15,12 @@ import SelectWithChips from '../../components/SelectWithChips';
 import DashContainer from '../DashContainer';
 
 // Validation
-import ValidationSchema from './validationSchema';
+import { YupValidationSchema, CustomValidationSchema } from './validationSchema';
 // const emailRegexPattern = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 
 //constants
 import { LeaveDurationOptions } from '../../constants/leaveDurationOptions';
+import { mockupLeaveLetterReasons } from '../../constants/mockups';
 
 //helpers
 import { getAllLeaveTypes } from '../../helpers/leaveLetterHelper';
@@ -149,7 +150,7 @@ class AbsenceLetterWithFormik extends React.Component {
   };
 
   handleChangeReason = async (value = '') => {
-    if (value === mockup_Reason[mockup_Reason.length - 1].value) {
+    if (value === mockupLeaveLetterReasons[mockupLeaveLetterReasons.length - 1].value) {
       await this.setState(prevState => ({
         ...prevState,
         otherReasonSelected: true
@@ -211,7 +212,9 @@ class AbsenceLetterWithFormik extends React.Component {
           <Paper className={classes.paper}>
             <Formik
               initialValues={initialValues}
-              validationSchema={ValidationSchema}
+              validateOnBlur
+              validationSchema={YupValidationSchema}
+              validate={CustomValidationSchema}
               onReset={(values, actions) => {
                 //Manually reset Reason detail content and set it hidden
                 this.handleChangeReason();
@@ -235,18 +238,19 @@ class AbsenceLetterWithFormik extends React.Component {
               render={({
                 errors,
                 values,
+                touched,
                 handleReset,
                 handleSubmit,
                 isSubmitting,
                 setFieldValue,
-                handleChange,
-                ...formikProps
+                handleChange
               }) => {
                 const { buttonClickable } = this.state;
                 const showEndDateOptions = compareDatesWithoutTime(
                   values.startDate,
                   values.endDate
                 );
+                console.log(errors);
                 return (
                   <Form>
                     {/* Top buttons */}
@@ -461,7 +465,7 @@ class AbsenceLetterWithFormik extends React.Component {
                                   name="reason"
                                   label="Reason"
                                   value={values.reason}
-                                  options={mockup_Reason}
+                                  options={mockupLeaveLetterReasons}
                                   onChange={({ target: { name, value } }) => {
                                     setFieldValue(name, value);
                                     this.handleChangeReason(value);
@@ -585,27 +589,3 @@ export default withStyles(styles)(
     mapDispatchToProps
   )(AbsenceLetterWithFormik)
 );
-
-// Mockup data
-let mockup_Reason = [
-  {
-    value: 'Bị ốm',
-    label: 'Bị ốm'
-  },
-  {
-    value: 'Giải quyết việc gia đình',
-    label: 'Giải quyết việc gia đình'
-  },
-  {
-    value: 'Có lịch hẹn khám bệnh',
-    label: 'Có lịch hẹn khám bệnh'
-  },
-  {
-    value: 'Áp lực công việc',
-    label: 'Áp lực công việc'
-  },
-  {
-    value: 'Lý do khác',
-    label: 'Lý do khác'
-  }
-];

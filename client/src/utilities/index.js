@@ -1,5 +1,4 @@
 import moment from 'moment';
-import { instanceOf } from 'prop-types';
 
 export const compareJsonObjectValue = (obj1, obj2) => {
   return (
