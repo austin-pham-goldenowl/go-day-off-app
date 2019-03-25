@@ -189,4 +189,36 @@ Router.get('/team-leader', async (req, res) => {
   }
 });
 
+Router.get('/substitutes', async (req, res) => {
+  try {
+    console.log(`userController -> path '/subsitutes':`);
+    let userId = req.query.id;
+    if (!userId) {
+      userId = req.token_payload.userId;
+      if (!userId) throw { msg: "INVALID_QUERY" };
+    }
+    
+    //Find which team the user is belongs to 
+    const users = await userModel.loadAll(['fTeamId'], {
+      where: { fId: userId }
+    });
+    if (!users || users.length !== 1) throw { msg: 'USER_NOT_FOUND' };
+
+    //Find all user(s) in the same team with found team's Id
+    const { fTeamId } = users[0].get({ plain: true });
+    const substitutes = await userModel.loadAll(['fId', 'fFirstName', 'fLastName', 'fEmail'], {
+      where: { fTeamId: fTeamId }
+    });
+    if (!substitutes || substitutes.length < 1) throw { msg: 'SUBSTITUTES_NOT_FOUND' };
+
+    //Return `fFirstName`, `fLastName`, `fEmail`, `fId`
+    const mappedSubstitutes = substitutes.map(user => user.get({ plain: true }));
+    handleSuccess(res, { substitutes: mappedSubstitutes });
+  } 
+  catch(err) {
+    handleFailure(res, { err, route: req.originalUrl });
+  }
+});
+
+
 module.exports = Router;
