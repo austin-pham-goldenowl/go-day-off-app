@@ -26,7 +26,7 @@ import { mockupLeaveLetterReasons } from '../../constants/mockups';
 import { getAllLeaveTypes } from '../../helpers/leaveLetterHelper';
 
 //utilities
-import { calculateFullDayOff, compareDatesWithoutTime } from '../../utilities';
+import { calculateDayOffWithOption, compareDatesWithoutTime } from '../../utilities';
 
 // API calls
 import Axios from 'axios';
@@ -64,7 +64,11 @@ const styles = theme => ({
       minWidth: 600,
       marginLeft: 'auto',
       marginRight: 'auto'
-    }
+    },
+    display: 'flex',
+    flexFlow: 'column no-wrap',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   paper: {
     marginTop: theme.spacing.unit * 3,
@@ -74,10 +78,11 @@ const styles = theme => ({
       marginTop: theme.spacing.unit * 6,
       marginBottom: theme.spacing.unit * 6,
       padding: theme.spacing.unit * 3
-    }
+    },
+    maxWidth: '800px'
   },
-  stepper: {
-    padding: `${theme.spacing.unit * 3}px 0 ${theme.spacing.unit * 5}px`
+  rightSide: {
+
   },
   buttonGroupTop: {
     justifyContent: 'flex-start',
@@ -246,11 +251,8 @@ class AbsenceLetterWithFormik extends React.Component {
                 handleChange
               }) => {
                 const { buttonClickable } = this.state;
-                const showEndDateOptions = compareDatesWithoutTime(
-                  values.startDate,
-                  values.endDate
-                );
-                console.log(errors);
+                const showEndDateOptions = compareDatesWithoutTime(values.startDate, values.endDate) === 0;
+                console.log(`showEndDateOptions: `, showEndDateOptions);
                 return (
                   <Form>
                     {/* Top buttons */}
@@ -350,9 +352,11 @@ class AbsenceLetterWithFormik extends React.Component {
                             <Field
                               name="duration"
                               render={({ form }) => {
-                                const dayOff = calculateFullDayOff(
+                                const dayOff = calculateDayOffWithOption(
                                   moment(form.values.startDate),
-                                  moment(form.values.endDate)
+                                  moment(form.values.endDate),
+                                  values.fromOpt,
+                                  values.toOpt
                                 );
                                 //do something
                                 return (
@@ -387,6 +391,7 @@ class AbsenceLetterWithFormik extends React.Component {
                                 label="Option"
                                 name="fromOpt"
                                 component={DaySessionsRadio}
+                                disableMorning={!showEndDateOptions}
                               />
                             </Grid>
                             <Grid item xs={6}>
@@ -408,7 +413,8 @@ class AbsenceLetterWithFormik extends React.Component {
                                 label="Option"
                                 name="toOpt"
                                 component={DaySessionsRadio}
-                                disabled={showEndDateOptions === 0}
+                                disabled={showEndDateOptions}
+                                disableAfternoon={!showEndDateOptions}
                               />
                             </Grid>
                           </Grid>

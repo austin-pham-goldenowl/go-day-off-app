@@ -26,7 +26,15 @@ const styles = theme => ({
 
 class DaySessionsRadio extends React.Component {
   render() {
-    const { classes, label, disabled, form, field } = this.props;
+    const { 
+      field, 
+      form, 
+      label, 
+      classes,
+      disabled,
+      disableMorning,
+      disableAfternoon 
+    } = this.props;
     return disabled ? null : (
       <FormControl component="div" className={classes.formControl}>
         <FormLabel component="legend">{label ? label : `Options: `}</FormLabel>
@@ -42,23 +50,30 @@ class DaySessionsRadio extends React.Component {
             control={<Radio />}
             value={LeaveDurationOptions.all}
           />
-          <FormControlLabel
-            label="Morning"
-            control={<Radio />}
-            value={LeaveDurationOptions.am}
-          />
-          <FormControlLabel
-            label="Afternoon"
-            control={<Radio />}
-            value={LeaveDurationOptions.pm}
-          />
+          {disableMorning ? null 
+            :
+            <FormControlLabel
+              label="Morning"
+              control={<Radio />}
+              value={LeaveDurationOptions.am}
+            />
+          }
+          {disableAfternoon ? null 
+            :
+            <FormControlLabel
+              label="Afternoon"
+              control={<Radio />}
+              value={LeaveDurationOptions.pm}
+            />
+          }
         </RadioGroup>
       </FormControl>
     );
   }
 }
-export default withStyles(styles)(DaySessionsRadio);
 
 DaySessionsRadio.propTypes = {
   classes: PropTypes.object.isRequired
 };
+
+export default withStyles(styles)(DaySessionsRadio);
