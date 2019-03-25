@@ -18,9 +18,10 @@ const styles = theme => ({
     marginTop: theme.spacing.unit
   },
   group: {
-    display: 'flex',
-    flexDirection: 'row',
-    margin: 0
+  },
+  radioOpt: {
+    padding: '4px',
+    paddingLeft: '12px'
   }
 });
 
@@ -47,14 +48,14 @@ class DaySessionsRadio extends React.Component {
         >
           <FormControlLabel
             label="All day"
-            control={<Radio />}
+            control={<Radio className={classes.radioOpt}/>}
             value={LeaveDurationOptions.all}
           />
           {disableMorning ? null 
             :
             <FormControlLabel
               label="Morning"
-              control={<Radio />}
+              control={<Radio className={classes.radioOpt}/>}
               value={LeaveDurationOptions.am}
             />
           }
@@ -62,7 +63,7 @@ class DaySessionsRadio extends React.Component {
             :
             <FormControlLabel
               label="Afternoon"
-              control={<Radio />}
+              control={<Radio className={classes.radioOpt}/>}
               value={LeaveDurationOptions.pm}
             />
           }
