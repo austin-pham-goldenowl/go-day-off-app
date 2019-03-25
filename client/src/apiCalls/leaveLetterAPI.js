@@ -6,6 +6,7 @@ import { getCookie } from 'tiny-cookie';
  */
 import { SERVER_HOST_DEV } from '../constants/api';
 import { ACCESS_TOKEN_KEY } from '../constants/token';
+import { LEAVE_REQUEST_PENDING } from '../constants/requestStatusType';
 
 /**
  * Helpers
@@ -51,8 +52,8 @@ export const createLeaveLetter = letterEntity => {
       absenceType: letterEntity.leaveType,
       fromDT: letterEntity.startDate,
       toDT: letterEntity.endDate,
-      status: 1,
-      substituteId: 'i53FItHeMK',
+      status: LEAVE_REQUEST_PENDING, // This must be set on the server-side
+      substituteId: letterEntity.substituteId,
       userId: getUserId(),
       approver: letterEntity.approver,
       reason:

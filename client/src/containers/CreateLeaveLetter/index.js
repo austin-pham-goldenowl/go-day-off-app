@@ -30,7 +30,11 @@ import { calculateDayOffWithOption, compareDatesWithoutTime } from '../../utilit
 
 // API calls
 import Axios from 'axios';
-import { getAllApprover, getAllInformTo } from '../../apiCalls/supportingAPIs';
+import { 
+  getAllApprover,
+  getAllInformTo, 
+  getAllSubsitutes,  
+} from '../../apiCalls/userAPIs';
 import { createLeaveLetter } from '../../apiCalls/leaveLetterAPI';
 
 // Notification redux
@@ -136,7 +140,8 @@ class AbsenceLetterWithFormik extends React.Component {
     templateList: {
       leaveTypesList: [],
       informToList: [],
-      approverList: []
+      approverList: [],
+      substitutesList: [],
     },
     otherReasonSelected: false,
     buttonClickable: false
@@ -167,9 +172,9 @@ class AbsenceLetterWithFormik extends React.Component {
     const allLeaveTypes = getAllLeaveTypes();
     const { handleShowNotifNoHide } = this.props;
     // Call api request:
-    Axios.all([getAllInformTo(), getAllApprover()])
+    Axios.all([getAllInformTo(), getAllApprover(), getAllSubsitutes()])
       .then(
-        Axios.spread((first, second) => {
+        Axios.spread((first, second, third) => {
           let allApprover = second.data.approvers.map(item => ({
             value: item.fId,
             label: `${item.fFirstName} ${item.fLastName}`
@@ -183,12 +188,19 @@ class AbsenceLetterWithFormik extends React.Component {
               }`
             }
           ];
+          let allSubstitutes = third.data.substitutes.map(item => ({
+            additionInfo: item.fEmail,
+            value: item.fId,
+            label: `${item.fFirstName} ${item.fLastName}`
+          }));
+
           this.setState(prevState => ({
             ...prevState,
             templateList: {
               leaveTypesList: allLeaveTypes,
               informToList: allInformTo,
-              approverList: allApprover
+              approverList: allApprover,
+              substitutesList: allSubstitutes
             },
             buttonClickable: true
           }));
@@ -203,7 +215,7 @@ class AbsenceLetterWithFormik extends React.Component {
   render() {
     const { classes, initialValues, handleShowNotif } = this.props;
     const {
-      templateList: { leaveTypesList, informToList, approverList },
+      templateList: { leaveTypesList, informToList, approverList, substitutesList },
       otherReasonSelected
     } = this.state;
     return (
@@ -266,8 +278,8 @@ class AbsenceLetterWithFormik extends React.Component {
                             <Button
                               className={classes.button}
                               size="small"
-                              variant="contained"
                               color="primary"
+                              variant="contained"
                               onClick={handleSubmit}
                               disabled={isSubmitting || !buttonClickable}
                             >
@@ -462,6 +474,29 @@ class AbsenceLetterWithFormik extends React.Component {
                             </ErrorMessage>
                           </Grid>
                           <Grid item xs={12}>
+                            {/* Substitute Selection  */}
+                            <Field
+                              render={({ field, form }) => (
+                                <SelectCustom
+                                  name="substituteId"
+                                  label="Substitute"
+                                  value={values.substituteId}
+                                  options={substitutesList}
+                                  onChange={({ target: { name, value } }) => {
+                                    setFieldValue(name, value);
+                                  }}
+                                />
+                              )}
+                            />
+                            <ErrorMessage name="substituteId">
+                              {msg => (
+                                <div className={classes.errorMessage}>
+                                  {msg}
+                                </div>
+                              )}
+                            </ErrorMessage>
+                          </Grid>
+                          <Grid item xs={12}>
                             {/* Reason Selection  */}
                             <Field
                               render={({ field, form }) => (
@@ -580,6 +615,7 @@ AbsenceLetterWithFormik.defaultProps = {
     endDate: moment().add(1, 'days'),
     approver: '',
     informTo: [], //must be an array
+    substituteId: '', //Temporarily mockup
     reason: '',
     otherReason: '',
     fromOpt: LeaveDurationOptions.all,
