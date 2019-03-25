@@ -22,9 +22,10 @@ class DatePickerField extends React.Component {
       enablePast,
       minDate,
       classes,
+      showHelperText,
       ...otherProps
     } = this.props;
-    const currentError = form.errors[field.name];
+    const currentError = showHelperText && form.errors[field.name];
     return (
       <MuiPickersUtilsProvider utils={MomentUtils} moment={moment}>
         <DatePicker
