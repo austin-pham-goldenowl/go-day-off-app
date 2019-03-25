@@ -23,14 +23,14 @@ export const getLeaveLetterDetails = id =>
     }
   });
 
-export const getAllLeaveLetters = (page = 1, size = 10) =>
+export const getAllLeaveLetters = (size = 10, page = 1) =>
   axios.get(`${SERVER_HOST_DEV}/leaveLetter?page=${page}&size=${size}`, {
     headers: {
       'x-access-token': getCookie(ACCESS_TOKEN_KEY)
     }
   });
 
-export const getMyLeaveLetters = (page = 1, size = 10, demandUserId = getUserId()) =>
+export const getMyLeaveLetters = (size = 10, page = 1, demandUserId = getUserId()) =>
   axios.get(`${SERVER_HOST_DEV}/leaveLetter/my-letters?userId=${demandUserId}&page=${page}&size=${size}`, {
     headers: {
       'x-access-token': getCookie(ACCESS_TOKEN_KEY)

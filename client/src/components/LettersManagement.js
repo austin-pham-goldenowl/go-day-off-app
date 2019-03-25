@@ -1,15 +1,25 @@
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import { Typography, Button, withStyles } from '@material-ui/core';
-import MUIDataTable from 'mui-datatables';
 import moment from 'moment';
+import { Link } from 'react-router-dom';
+import React, { Component } from 'react';
+import MUIDataTable from 'mui-datatables';
+import ExcelExporter from './ExcelExporter';
+import { Typography, Button, withStyles, Icon } from '@material-ui/core';
 
 /**
  * Constants
  */
-import * as requestStatusType  from '../constants/requestStatusType';
+import { getUserId } from '../helpers/authHelpers';
+import { letterColors, letterStatusText, dayOfWeek, defaultColumns, HRColumns, defaultExportColumns, HRExportColumns } from "../constants/letter";
+
+/**
+ * Helpers 
+ */
+import { formatRow } from "../helpers/excelFormatter";
 
 const styles = theme => ({
+  btnLink: {
+    textDecoration: 'none',
+  },
   paper: {
     padding: theme.spacing.unit * 5,
   },
@@ -18,28 +28,9 @@ const styles = theme => ({
     marginTop: theme.spacing.unit * 3,
     marginBottom: theme.spacing.unit * 3,
   },
-  btnLink: {
-    textDecoration: 'none',
-  }
 });
 
-/**
- * Local helpers
- */
-const letterColors = {
-  [requestStatusType.LEAVE_REQUEST_PENDING]: '#ffe43a',
-  [requestStatusType.LEAVE_REQUEST_APPROVED]: '#0eba25',
-  [requestStatusType.LEAVE_REQUEST_REJECTED]: '#2A2A2E',
-};
-
-const letterStatusText = {
-  [requestStatusType.LEAVE_REQUEST_PENDING]: 'PENDING',
-  [requestStatusType.LEAVE_REQUEST_APPROVED]: 'APPROVED',
-  [requestStatusType.LEAVE_REQUEST_REJECTED]: 'REJECTED',
-};
-
-const dayOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-const getDate = (rawDate = "") => {
+const getDate = (rawDate = '') => {
   const date = moment(rawDate);
   return !date.isValid() ?
     'Invalid date' :
@@ -48,12 +39,17 @@ const getDate = (rawDate = "") => {
 };
 
 class LetterManagement extends Component {
-  state = {
-    page: 1,
-    count: 0,
-    size: 10,
-    letters: [],
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      page: 1,
+      size: 10,
+      count: 0,
+      letters: [],
+      exports: [],
+    };
+    this.downloadTriggerRef = React.createRef();
+  }
 
   componentDidMount = async () => {
     try {
@@ -65,71 +61,60 @@ class LetterManagement extends Component {
     }
   };
 
-  changePage = (page, size) => {
-    this.props.api(page, size)
+  handleExport = async () => {
+    try {
+      const { data: { success, leaveLetters: exports }
+      } = await this.props.api(0); // get all
+      if (success) this.setState({ exports }, () => {
+          this.downloadTriggerRef.current.click();
+          this.setState({ exports: [] }); // release memory
+        });
+    }
+    catch(err) {
+      console.log(err);
+    }
+  };
+
+  changePage = (size = 10, page = 1, demandUserId = this.props.userId || getUserId()) => {
+    this.props.api(size, page, demandUserId)
     .then(({ data: { success, leaveLetters: letters, count } }) => 
       success && this.setState({ letters, count, page, size }))
     .catch(error => console.log(error));
-  }
+  };
 
   render() {
-    const { letters } = this.state;
+    const { letters, exports } = this.state;
     const { classes, title, type } = this.props;
 
     const tableInfo = {
-      title: (
-        <Typography component='p' variant='h5' className={classes.title}>
-          {title}
-        </Typography>
-      ),
+      columns: type === 'hr' ? HRColumns : defaultColumns,
+      title: <Typography component='p' variant='h5' className={classes.title}> {title} </Typography>,
       data: Array.isArray(letters)
         ? letters.map(({ fUserFullName, fFromDT, fToDT, fStatus, fId, fRdt }) => {
-            if (type === 'hr')
-              return [
-                getDate(fRdt),
-                fUserFullName || 'Unknown',
-                getDate(fFromDT),
-                getDate(fToDT),
-                <span style={{ color: letterColors[fStatus] }} >
+          const dataSet = [
+            getDate(fRdt),
+            getDate(fFromDT),
+            getDate(fToDT),
+            <span style={{ color: letterColors[fStatus] }} >
                   { letterStatusText[fStatus] }
                 </span>,
-                <Link
-                  to={`/leave-request/details?id=${fId}`}
-                  className={classes.btnLink}
-                >
-                  <Button variant='contained' color='primary'>
-                    Details
-                  </Button>
-                </Link>
-              ];
-            else
-              return [
-                getDate(fRdt),
-                getDate(fFromDT),
-                getDate(fToDT),
-                <span
-                  style={{ color: letterColors[fStatus] }}
-                >
-                  { letterStatusText[fStatus] }
-                </span>,
-                <Link
-                  to={`/leave-request/details?id=${fId}`}
-                  className={classes.btnLink}
-                >
-                  <Button variant='contained' color='primary'>
-                    Details
-                  </Button>
-                </Link>
-              ];
-          })
-        : [],
-      columns:
-        type !== "hr"
-        ? ['When', 'From', 'To', 'Status', 'Actions']
-        : ['When', 'Name', 'From', 'To', 'Status', 'Actions'],
+            <Link
+              to={`/leave-request/details?id=${fId}`}
+              className={classes.btnLink}
+            >
+              <Button variant='contained' color='primary'>
+                Details
+              </Button>
+            </Link>
+          ];
+          if (type === 'hr') dataSet.unshift(fUserFullName || 'Unknown');
+          return dataSet;
+        }) : [],
       options: {
-        filter: true,
-        download: true,
+        print: false,
+        filter: false,
+        search: false,
+        download: false,
         serverSide: true,
         viewColumns: false,
         responsive: 'scroll',
@@ -138,18 +123,46 @@ class LetterManagement extends Component {
         rowsPerPage: this.state.size,
         rowsPerPageOptions: [5, 10, 15, 20],
         onChangeRowsPerPage: size => this.changePage(1, size),
-        onTableChange: (action, tableState) => action === 'changePage' && this.changePage(tableState.page + 1, tableState.rowsPerPage),
+        onTableChange: (action, tableState) => action === 'changePage' && this.changePage(tableState.rowsPerPage, tableState.page + 1),
+        customToolbar: () => <Button variant='contained' size='small' title='Export data' onClick={this.handleExport}><Icon>save</Icon></Button>,
       }
     };
 
+    const sheets =  [
+      {
+        dataSet: [{
+          columns:
+            type === 'hr'
+              ? HRExportColumns
+              : defaultExportColumns,
+          data: exports.map(({ fUserFullName, fApproverFullName,
+            fSubstituteFullName, fFromDT, fToDT, fFromOpt, fToOpt, fStatus, fRdt }) => {
+            const row = [
+              { value: getDate(fRdt) },
+              { value: `${getDate(fFromDT)} (${fFromOpt})` },
+              { value: `${getDate(fToDT)} (${fToOpt})` },
+              { value: fApproverFullName },
+              { value: fSubstituteFullName },
+              { value: letterStatusText[fStatus] },
+            ];
+            if(type === 'hr') row.unshift({ value: fUserFullName });
+            return formatRow(row);
+          })
+        }],
+      }
+    ];
+
     return (
-      <MUIDataTable
-        data={tableInfo.data}
-        title={tableInfo.title}
-        className={classes.paper}
-        columns={tableInfo.columns}
-        options={tableInfo.options}
-      />
+      <>
+        <MUIDataTable
+          data={tableInfo.data}
+          title={tableInfo.title}
+          className={classes.paper}
+          columns={tableInfo.columns}
+          options={tableInfo.options}
+        />
+        <ExcelExporter sheets={sheets} downloadTriggerRef={this.downloadTriggerRef}/>
+      </>
     );
   }
 }
