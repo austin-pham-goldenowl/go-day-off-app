@@ -65,10 +65,6 @@ const styles = theme => ({
       marginLeft: 'auto',
       marginRight: 'auto'
     },
-    display: 'flex',
-    flexFlow: 'column no-wrap',
-    justifyContent: 'center',
-    alignItems: 'center'
   },
   paper: {
     marginTop: theme.spacing.unit * 3,
@@ -78,8 +74,7 @@ const styles = theme => ({
       marginTop: theme.spacing.unit * 6,
       marginBottom: theme.spacing.unit * 6,
       padding: theme.spacing.unit * 3
-    },
-    maxWidth: '800px'
+    }
   },
   rightSide: {
 
@@ -225,6 +220,10 @@ class AbsenceLetterWithFormik extends React.Component {
                 this.handleChangeReason();
               }}
               onSubmit={(values, actions) => {
+                let submitValues = values;
+                if (compareDatesWithoutTime(values.startDate, values.endDate) === 0) {
+                  submitValues.toOpt = submitValues.fromOpt;
+                }
                 createLeaveLetter(values)
                   .then(res => {
                     handleShowNotif(
@@ -236,7 +235,7 @@ class AbsenceLetterWithFormik extends React.Component {
                     actions.setSubmitting(false);
                   })
                   .catch(err => {
-                    handleShowNotif(NOTIF_ERROR, `Can't create Leave request!`);
+                    handleShowNotif(NOTIF_ERROR, `Can't create Leave request! (${err.errorMessage})`);
                     actions.setSubmitting(false);
                   });
               }}
@@ -251,8 +250,7 @@ class AbsenceLetterWithFormik extends React.Component {
                 handleChange
               }) => {
                 const { buttonClickable } = this.state;
-                const showEndDateOptions = compareDatesWithoutTime(values.startDate, values.endDate) === 0;
-                console.log(`showEndDateOptions: `, showEndDateOptions);
+                const isSameDaySelected = compareDatesWithoutTime(values.startDate, values.endDate) === 0;
                 return (
                   <Form>
                     {/* Top buttons */}
@@ -331,7 +329,7 @@ class AbsenceLetterWithFormik extends React.Component {
                                     name="leaveType"
                                     label="Leave Types"
                                     value={values.leaveType}
-                                    options={leaveTypesList} //this will load after api request
+                                    options={leaveTypesList}
                                     onChange={({ target: { name, value } }) => {
                                       setFieldValue(name, value);
                                     }}
@@ -391,7 +389,7 @@ class AbsenceLetterWithFormik extends React.Component {
                                 label="Option"
                                 name="fromOpt"
                                 component={DaySessionsRadio}
-                                disableMorning={!showEndDateOptions}
+                                disableMorning={!isSameDaySelected}
                               />
                             </Grid>
                             <Grid item xs={6}>
@@ -413,8 +411,8 @@ class AbsenceLetterWithFormik extends React.Component {
                                 label="Option"
                                 name="toOpt"
                                 component={DaySessionsRadio}
-                                disabled={showEndDateOptions}
-                                disableAfternoon={!showEndDateOptions}
+                                disabled={isSameDaySelected}
+                                disableAfternoon={!isSameDaySelected}
                               />
                             </Grid>
                           </Grid>
