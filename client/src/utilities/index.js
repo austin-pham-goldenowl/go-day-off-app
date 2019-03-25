@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { LeaveDurationOptions } from '../constants/leaveDurationOptions'
 
 export const compareJsonObjectValue = (obj1, obj2) => {
   return (
@@ -26,7 +27,29 @@ export const calculateFullDayOff = (day1, day2) => {
     }
     date = date.subtract(1, 'days');
   }
-  return counter;
+  return counter + 1;
+};
+
+/**
+ * @todo
+ * Subtract two Date (except Saturday and Sunday) with selected Options
+ *
+ * @param {moment} day1
+ * @param {moment} day2
+ *
+ * @returns {number} totalday(s)
+ */
+export const calculateDayOffWithOption = (day1, day2, Opt1, Opt2) => {
+
+  if (compareDatesWithoutTime(day1, day2) === 0 
+    && (Opt1 !== LeaveDurationOptions.all)) 
+    return 0.5;
+
+  let fullDayOff = calculateFullDayOff(day1, day2);
+  if (Opt1 === LeaveDurationOptions.pm) fullDayOff -= 0.5;
+  if (Opt2 === LeaveDurationOptions.am) fullDayOff -= 0.5;
+
+  return fullDayOff;
 };
 
 /**
