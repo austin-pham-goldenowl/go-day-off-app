@@ -23,6 +23,7 @@ const SelectCustom = ({
   options,
   classes,
   onChange,
+  ...props,
 }) => {
   return (
     <FormControl className={classes.formControl}>
@@ -40,6 +41,7 @@ const SelectCustom = ({
       value={value}
       onChange={onChange}
       inputProps={{id: 'select-box'}}
+      {...props}
     >
       { options.map(item => (
         <MenuItem
