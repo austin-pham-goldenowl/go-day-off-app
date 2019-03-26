@@ -29,3 +29,6 @@ export const DEFAULT_PAGE_SIZE = 10;
 export const ALLOWED_PAGE_SIZE = [0, 5, 10, 15, 20]; // 0: all
 
 export const WEEKEND_ORDERS = [0, 6];
+
+export const ALLOWED_STATUS = [0, 1, 2, 3];
+export const DEFAULT_STATUS = 0;

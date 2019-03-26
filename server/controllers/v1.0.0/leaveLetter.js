@@ -42,7 +42,7 @@ const bodyMustNotEmpty = require('../../middlewares/bodyMustNotEmpty');
  * Constants
  */
 const { FROM_OPTION, TO_OPTION, DEFAULT_PAGE_ORDER, DEFAULT_PAGE_SIZE,
-  ALLOWED_PAGE_SIZE, WEEKEND_ORDERS } = require('../../configs/constants');
+  ALLOWED_PAGE_SIZE, WEEKEND_ORDERS, ALLOWED_STATUS, DEFAULT_STATUS } = require('../../configs/constants');
 
 Router.get('/details', async (req, res) => {
   try {
@@ -305,7 +305,7 @@ Router.get('/filter', async (req, res) => {
     // validating query params
     const currentYear = moment().get('year');
     let { userId, fromMonth = '01', toMonth = '12',
-      fromYear = currentYear, toYear = currentYear,
+      fromYear = currentYear, toYear = currentYear, status = 0,
       page = DEFAULT_PAGE_ORDER, size = DEFAULT_PAGE_SIZE } = req.query;
 
     if(!userId) throw { msg: 'INVALID_QUERY' };
@@ -314,6 +314,7 @@ Router.get('/filter', async (req, res) => {
     if(fromYear && (isNaN(fromYear) || fromYear > currentYear)) throw { msg: 'INVALID_QUERY' };
     if(toYear && (isNaN(toYear) || toYear < fromYear)) throw { msg: 'INVALID_QUERY' };
     if(toYear > currentYear) toYear = currentYear;
+    if(isNaN(status) || !ALLOWED_STATUS.includes(+status)) status = DEFAULT_STATUS;
     if(page < 1 || isNaN(page)) page = DEFAULT_PAGE_ORDER;
     if(!ALLOWED_PAGE_SIZE.includes(+size)) size = DEFAULT_PAGE_SIZE;
     if(size === 0) size = Number.MAX_SAFE_INTEGER;
@@ -322,11 +323,12 @@ Router.get('/filter', async (req, res) => {
     const fUserType = await getPermissionByToken(req.token_payload);
     if(fUserType !== 'HR' && userId !== getIdFromToken((req.token_payload))) throw { code: 401, msg: 'NO_PERMISSION' };
 
-    const fromDate = moment(`${fromMonth}/01/${fromYear}`),
-      toDate = moment(`${toMonth}/31/${toYear}`);
+    const fromDate = new Date(`${fromMonth}/01/${fromYear}`),
+      toDate = new Date(`${toMonth}/31/${toYear}`);
     const { rawLeaveLetters, count } = await leaveLetterModel.countAll([],
       { where: { fUserId: userId,
           fRdt: { [Op.between]: [fromDate, toDate] },
+          fStatus: +status === 0 ? { [Op.ne]: null } : +status,
       }},
       { offset: (page - 1) * size },
       { limit: +size },
