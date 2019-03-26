@@ -1,4 +1,4 @@
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { Link } from 'react-router-dom';
 import React, { Component } from 'react';
 import MUIDataTable from 'mui-datatables';
@@ -31,11 +31,10 @@ const styles = theme => ({
 });
 
 const getDate = (rawDate = '') => {
-  const date = moment(rawDate);
-  return !date.isValid() ?
+  const date = moment(rawDate).isValid() && moment.tz(rawDate, 'Asia/Bangkok');
+  return !date ?
     'Invalid date' :
-    dayOfWeek[date.day()] + ', ' +
-    date.locale('vi').format('DD/MM/YYYY');
+    dayOfWeek[date.day()] + ', ' + date.format('DD/MM/YYYY');
 };
 
 class LetterManagement extends Component {

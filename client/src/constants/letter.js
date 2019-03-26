@@ -34,4 +34,4 @@ export const HRExportColumns = formatColumns([
   { columnName: 'Status', columnWidth: 100, },
 ]);
 
-export const dayOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+export const dayOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
