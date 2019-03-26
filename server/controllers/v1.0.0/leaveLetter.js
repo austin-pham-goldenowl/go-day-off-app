@@ -4,14 +4,12 @@ const uid = require('rand-token').uid;
 const { Op } = require('sequelize');
 const moment = require('moment');
 const dateArray = require('moment-array-dates');
-
-import { sendLeaveRequestMail } from '../../helpers/mailingHelpers';
 /**
  * Models
  */
 const {
+  users: userModel,
   leaveLetters: leaveLetterModel,
-  users: userModel
 } = require('../../models');
 
 /**
@@ -20,23 +18,18 @@ const {
 const { LEAVING_FORM_ID_LEN } = require('../../configs/config');
 
 /**
- * Helpers
- */
-const {
-  handleSuccess,
-  handleFailure
-} = require('../../helpers/handleResponse');
-const { standardizeObj } = require('../../helpers/standardize');
-const {
-  getIdFromToken,
-  getPermissionByToken
-} = require('../../helpers/getUserInfo');
-
-/**
  * Middlewares
  */
 const userMustBeHR = require('../../middlewares/userMustBeHR');
 const bodyMustNotEmpty = require('../../middlewares/bodyMustNotEmpty');
+
+/**
+ * Helpers
+ */
+const { standardizeObj } = require('../../helpers/standardize');
+import { sendLeaveRequestMail } from '../../helpers/mailingHelpers';
+const { handleSuccess, handleFailure } = require('../../helpers/handleResponse');
+const { getIdFromToken, getPermissionByToken } = require('../../helpers/getUserInfo');
 
 /**
  * Constants
@@ -102,18 +95,16 @@ Router.get('/', userMustBeHR, async (req, res) => {
 
     const userId = getIdFromToken(req.token_payload);
     const { rawLeaveLetters, count } = await leaveLetterModel.countAll([],
-      {},
+      { where: { [Op.or]: [{ fUserId: userId }, { fApprover: userId }] } },
       { order: [['fStatus', 'ASC'], ['fRdt', 'ASC']] },
       { offset: (page - 1) * size },
       { limit: +size });
-    // load user fullName
+      
     const leaveLetters = [];
     await (async () => {
       for (let i = 0; i < rawLeaveLetters.length; i++) {
         const letter = rawLeaveLetters[i].get({ plain: true });
         const { fApprover, fUserId, fSubstituteId } = letter;
-        // only HR marked as approver in letter is able to view and approve it
-        if (userId !== fUserId && userId !== fApprover) continue;
         // user's fullName
         const users = await userModel.loadAll(['fFirstName', 'fLastName'], {
           where: { fId: fUserId }
@@ -252,7 +243,10 @@ Router.get('/my-letters', async (req, res) => {
     if(!ALLOWED_PAGE_SIZE.includes(+size)) size = DEFAULT_PAGE_SIZE;
 
     const { rawLeaveLetters, count } = await leaveLetterModel.countAll([],
-      { where: { fUserId: demandUserId }},
+      { where: { 
+        fUserId: demandUserId,
+        [Op.or]: [{ fUserId: userId }, { fApprover: userId }]
+      }},
       { order: [['fStatus', 'ASC'], ['fRdt', 'ASC']] },
       { offset: (page - 1) * size },
       { limit: +size });
@@ -262,9 +256,7 @@ Router.get('/my-letters', async (req, res) => {
       for (let i = 0; i < rawLeaveLetters.length; i++) {
         const letter = rawLeaveLetters[i].get({ plain: true });
         const { fApprover, fUserId, fSubstituteId } = letter;
-        // console.log(">>> ", letter.fId, userId, fUserId, fApprover);
-        // only oneself or HR marked as approver in letter is able to view it
-        if (userId !== fUserId && userId !== fApprover) continue;
+
         // user's fullName
         const users = await userModel.loadAll(["fFirstName", "fLastName"], {
           where: { fId: fUserId }
@@ -321,14 +313,16 @@ Router.get('/filter', async (req, res) => {
 
     // only HR can export all; others can export oneself's
     const fUserType = await getPermissionByToken(req.token_payload);
-    if(fUserType !== 'HR' && userId !== getIdFromToken((req.token_payload))) throw { code: 401, msg: 'NO_PERMISSION' };
+    if(fUserType !== 'HR' && userId !== getIdFromToken(req.token_payload)) throw { code: 401, msg: 'NO_PERMISSION' };
 
     const fromDate = new Date(`${fromMonth}/01/${fromYear}`),
       toDate = new Date(`${toMonth}/31/${toYear}`);
     const { rawLeaveLetters, count } = await leaveLetterModel.countAll([],
-      { where: { fUserId: userId,
+      { where: { 
+          fUserId: userId,
           fRdt: { [Op.between]: [fromDate, toDate] },
           fStatus: +status === 0 ? { [Op.ne]: null } : +status,
+          fApprover: (userId === getIdFromToken(req.token_payload)) ? { [Op.ne]: null } : getIdFromToken(req.token_payload),
       }},
       { offset: (page - 1) * size },
       { limit: +size },
@@ -341,33 +335,29 @@ Router.get('/filter', async (req, res) => {
         const letter = rawLeaveLetters[i].get({ plain: true });
         const { fUserId, fApprover, fSubstituteId } = letter;
         // user's fullName
-        const users = await userModel.loadAll(['fFirstName', 'fLastName'], {
-          where: { fId: fUserId }
-        });
+        const users = await userModel.loadAll(['fFirstName', 'fLastName'], 
+          { where: { fId: fUserId } });
         if (users.length) {
           const { fFirstName, fLastName } = users[0].get({ plain: true });
           letter.fUserFullName = fFirstName + ' ' + fLastName;
         }
         // approver's fullName
-        const arrpovers = await userModel.loadAll(['fFirstName', 'fLastName'], {
-          where: { fId: fApprover }
-        });
+        const arrpovers = await userModel.loadAll(['fFirstName', 'fLastName'], 
+          { where: { fId: fApprover } });
         if (arrpovers.length) {
           const { fFirstName, fLastName } = arrpovers[0].get({ plain: true });
           letter.fApproverFullName = fFirstName + ' ' + fLastName;
         }
         // substitute's fullName
-        const substitutes = await userModel.loadAll(['fFirstName', 'fLastName'],
-          {
-            where: { fId: fSubstituteId }
-          });
+        const substitutes = await userModel.loadAll(['fFirstName', 'fLastName'], 
+          { where: { fId: fSubstituteId } });
         if (substitutes.length) {
           const { fFirstName, fLastName } = substitutes[0].get({ plain: true });
           letter.fSubstituteFullName = fFirstName + ' ' + fLastName;
         }
         // add the customized letter to result
         leaveLetters.push(letter);
-
+        
         // count how many off days used
         const { fFromDT, fToDT, fFromOpt, fToOpt } = letter;
         if (fFromOpt === FROM_OPTION.AFTERNOON) {
@@ -381,9 +371,12 @@ Router.get('/filter', async (req, res) => {
         }
         // neither of above cases
         if (fFromOpt !== FROM_OPTION.AFTERNOON && fToOpt === TO_OPTION.ALLDAY)
-          numOffDays += moment(fToDT).diff(moment(fFromDT), 'days') + 1;
+        numOffDays += moment(fToDT).diff(moment(fFromDT), 'days') + 1;
+        // create an array of days to check for weekend
+        // if fFromDT is same as fToDT, dataArray can't handle
+        // so manually create an array containing 1 element (fFromDT)
+        const datesArray = moment(fFromDT).isSame(moment(fToDT)) ? [moment(fFromDT).format('MM/DD/YYYY')] : dateArray.range(fFromDT, fToDT, 'MM/DD/YYYY');
         // exclude weekend
-        const datesArray = dateArray.range(fFromDT, fToDT, 'MM/DD/YYYY');
         for (let j = 0; j < datesArray.length; j++) {
           const isWeekend = WEEKEND_ORDERS.includes(moment(datesArray[j]).day());
           if (isWeekend) {
