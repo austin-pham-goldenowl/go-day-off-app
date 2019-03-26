@@ -4,14 +4,16 @@ import { withStyles } from '@material-ui/core/styles';
 import {
   Chip,
   Select,
-  FormControl,
   Input,
   InputLabel,
+  FormControl,
   MenuItem
 } from '@material-ui/core';
 import Icon from '@material-ui/core/Icon';
 
 import shortid from 'shortid';
+
+import CreatableSelect from 'react-select/lib/Creatable';
 
 const styles = theme => ({
   formControl: {
@@ -27,11 +29,44 @@ const styles = theme => ({
   }
 });
 
+class CreatableSelectWithChips extends React.Component {
+  handleChange = (newValue, actionMeta) => {
+    console.group('Value Changed');
+    console.log(newValue);
+    console.log(`action: ${actionMeta.action}`);
+    console.groupEnd();
+  };
+  render() {
+    const {  
+      form,
+      field,
+      label,
+      classes,
+      multiple,
+      options,
+      ...otherProps
+    } = this.props;
+    console.log(`field: `, field);
+    console.log(`form : `, form);
+    return (
+      <CreatableSelect 
+        isMulti
+        value={field.value}
+        onChange={(newValue, actionMeta) => {
+          this.handleChange(newValue, actionMeta);
+          form.setFieldValue(field.name, newValue);
+        }}
+        options={options} 
+      />
+    )
+  }
+}
+
 const SelectWithChips = ({
-  field,
   form,
-  classes,
+  field,
   label,
+  classes,
   multiple,
   options,
   ...otherProps
@@ -83,4 +118,5 @@ SelectWithChips.propTypes = {
   options: PropTypes.array.isRequired
 };
 
+// export default withStyles(styles)(CreatableSelectWithChips);
 export default withStyles(styles)(SelectWithChips);
