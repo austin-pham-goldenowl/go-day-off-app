@@ -103,7 +103,7 @@ Router.get('/', userMustBeHR, async (req, res) => {
     const userId = getIdFromToken(req.token_payload);
     const { rawLeaveLetters, count } = await leaveLetterModel.countAll([],
       {},
-      { order: [['fRdt', 'ASC']] },
+      { order: [['fStatus', 'ASC'], ['fRdt', 'ASC']] },
       { offset: (page - 1) * size },
       { limit: +size });
     // load user fullName
@@ -253,6 +253,7 @@ Router.get('/my-letters', async (req, res) => {
 
     const { rawLeaveLetters, count } = await leaveLetterModel.countAll([],
       { where: { fUserId: demandUserId }},
+      { order: [['fStatus', 'ASC'], ['fRdt', 'ASC']] },
       { offset: (page - 1) * size },
       { limit: +size });
 
@@ -325,12 +326,11 @@ Router.get('/filter', async (req, res) => {
       toDate = moment(`${toMonth}/31/${toYear}`);
     const { rawLeaveLetters, count } = await leaveLetterModel.countAll([],
       { where: { fUserId: userId,
-          fFromDT: { [Op.gte]: fromDate },
-          fToDT: { [Op.lte]: toDate }
+          fRdt: { [Op.between]: [fromDate, toDate] },
       }},
       { offset: (page - 1) * size },
       { limit: +size },
-      { order: [['fRdt', 'ASC']] });
+      { order: [['fStatus', 'ASC'], ['fRdt', 'ASC']] });
 
     let numOffDays = 0;
     const leaveLetters = [];
