@@ -45,6 +45,7 @@ import {
 import { NOTIF_ERROR, NOTIF_SUCCESS } from '../../constants/notification';
 import CircularUnderLoad from '../../components/Animation/CircularUnderLoad';
 import DaySessionsRadio from '../../components/DaySessionsRadio';
+import CreatableSelectWithChips from '../../components/CreatableSelectWithChips';
 
 const mapDispatchToProps = dispatch => {
   return {
@@ -463,7 +464,7 @@ class AbsenceLetterWithFormik extends React.Component {
                               name="informTo"
                               label="Inform to"
                               options={informToList}
-                              component={SelectWithChips}
+                              component={CreatableSelectWithChips}
                             />
                             <ErrorMessage name="informTo">
                               {msg => (
