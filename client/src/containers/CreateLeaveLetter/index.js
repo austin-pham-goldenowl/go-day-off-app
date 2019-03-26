@@ -12,8 +12,8 @@ import SelectCustom from '../../components/CustomSelect';
 import TextFieldReadOnly from '../../components/ReadOnlyTextField';
 import DatePickerField from '../../components/DatePicker';
 import SelectWithChips from '../../components/SelectWithChips';
+import CreatableSelectWithChips from '../../components/CreatableSelectWithChips';
 import DashContainer from '../DashContainer';
-
 // Validation
 import { YupValidationSchema, CustomValidationSchema } from './validationSchema';
 // const emailRegexPattern = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
@@ -45,7 +45,6 @@ import {
 import { NOTIF_ERROR, NOTIF_SUCCESS } from '../../constants/notification';
 import CircularUnderLoad from '../../components/Animation/CircularUnderLoad';
 import DaySessionsRadio from '../../components/DaySessionsRadio';
-import CreatableSelectWithChips from '../../components/CreatableSelectWithChips';
 
 const mapDispatchToProps = dispatch => {
   return {
@@ -225,7 +224,7 @@ class AbsenceLetterWithFormik extends React.Component {
           <Paper className={classes.paper}>
             <Formik
               initialValues={initialValues}
-              validateOnBlur
+              // validateOnChange
               validationSchema={YupValidationSchema}
               validate={CustomValidationSchema}
               onReset={(values, actions) => {
@@ -260,8 +259,22 @@ class AbsenceLetterWithFormik extends React.Component {
                 handleSubmit,
                 isSubmitting,
                 setFieldValue,
-                handleChange
+                handleChange,
+                handleBlur,
+                setTouched,
+                setFieldTouched,
               }) => {
+                const onBlur = (e) => {
+                  handleBlur(e);
+                  const { target: { name } } = e;
+                  setFieldTouched(name, true);
+                };
+
+                const onChange = ({ target: { name, value } }) => {
+                  setFieldTouched(name, false);
+                  setFieldValue(name, value);
+                }
+
                 const { buttonClickable } = this.state;
                 const isSameDaySelected = compareDatesWithoutTime(values.startDate, values.endDate) === 0;
                 return (
@@ -441,11 +454,10 @@ class AbsenceLetterWithFormik extends React.Component {
                                 <SelectCustom
                                   name="approver"
                                   label="Approver"
+                                  onBlur={onBlur}
                                   value={values.approver}
                                   options={approverList}
-                                  onChange={({ target: { name, value } }) =>
-                                    setFieldValue(name, value)
-                                  }
+                                  onChange={onChange}
                                 />
                               )}
                             />
