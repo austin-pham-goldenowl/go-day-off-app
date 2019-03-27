@@ -1,8 +1,8 @@
+const moment = require('moment');
 const express = require('express');
 const Router = express.Router();
-const uid = require('rand-token').uid;
 const { Op } = require('sequelize');
-const moment = require('moment');
+const uid = require('rand-token').uid;
 const dateArray = require('moment-array-dates');
 /**
  * Models
@@ -34,8 +34,18 @@ const { getIdFromToken, getPermissionByToken } = require('../../helpers/getUserI
 /**
  * Constants
  */
-const { FROM_OPTION, TO_OPTION, DEFAULT_PAGE_ORDER, DEFAULT_PAGE_SIZE,
+const { FROM_OPTION, TO_OPTION, DEFAULT_PAGE_ORDER, DEFAULT_PAGE_SIZE, 
   ALLOWED_PAGE_SIZE, WEEKEND_ORDERS, ALLOWED_STATUS, DEFAULT_STATUS } = require('../../configs/constants');
+
+/**
+ *  Local helpers 
+ */
+const validatingQueryParams = ({ fromMonth, toMonth, fromYear, toYear }) => 
+  !(((toYear && (isNaN(toYear) || toYear < fromYear) || 
+    fromMonth && (isNaN(fromMonth) || fromMonth > 12)) || 
+    (fromYear && (isNaN(fromYear) || fromYear > moment().get('year'))) ||
+    (toMonth && (isNaN(toMonth) || toMonth > 12 || toMonth < fromMonth)))  
+  )
 
 Router.get('/details', async (req, res) => {
   try {
@@ -88,17 +98,30 @@ Router.get('/details', async (req, res) => {
 
 Router.get('/', userMustBeHR, async (req, res) => {
   try {
-    let { page = DEFAULT_PAGE_ORDER, size = DEFAULT_PAGE_SIZE } = req.query;
+    // validating query params
+    const currentYear = moment().get('year');
+    let { fromMonth = '01', toMonth = '12',
+    fromYear = currentYear, toYear = currentYear, 
+    status = 0, page = DEFAULT_PAGE_ORDER, size = DEFAULT_PAGE_SIZE } = req.query;
+
+    if(+size === 0) size = Number.MAX_SAFE_INTEGER;
     if(page < 1 || isNaN(page)) page = DEFAULT_PAGE_ORDER;
     if(!ALLOWED_PAGE_SIZE.includes(+size)) size = DEFAULT_PAGE_SIZE;
-    if(+size === 0) size = Number.MAX_SAFE_INTEGER;
+    if(isNaN(status) || !ALLOWED_STATUS.includes(+status)) status = DEFAULT_STATUS;
+    if(!validatingQueryParams({ fromMonth, toMonth, fromYear, toYear })) throw { msg: 'INVALID_QUERY' };
 
     const userId = getIdFromToken(req.token_payload);
+    const toDate = new Date(`${toMonth}/31/${toYear}`);
+    const fromDate = new Date(`${fromMonth}/01/${fromYear}`);
     const { rawLeaveLetters, count } = await leaveLetterModel.countAll([],
-      { where: { [Op.or]: [{ fUserId: userId }, { fApprover: userId }] } },
-      { order: [['fStatus', 'ASC'], ['fRdt', 'ASC']] },
+      { where: { 
+        fRdt: { [Op.between]: [fromDate, toDate] },
+        fStatus: +status === 0 ? { [Op.ne]: null } : +status, 
+        [Op.or]: [{ fUserId: userId }, { fApprover: userId }],
+      }},
+      { limit: +size },
       { offset: (page - 1) * size },
-      { limit: +size });
+      { order: [['fStatus', 'ASC'], ['fRdt', 'ASC']] });
       
     const leaveLetters = [];
     await (async () => {
@@ -106,25 +129,21 @@ Router.get('/', userMustBeHR, async (req, res) => {
         const letter = rawLeaveLetters[i].get({ plain: true });
         const { fApprover, fUserId, fSubstituteId } = letter;
         // user's fullName
-        const users = await userModel.loadAll(['fFirstName', 'fLastName'], {
-          where: { fId: fUserId }
-        });
+        const users = await userModel.loadAll(['fFirstName', 'fLastName'], { where: { fId: fUserId } });
         if (users.length) {
           const { fFirstName, fLastName } = users[0].get({ plain: true });
           letter.fUserFullName = fFirstName + ' ' + fLastName;
         }
         // approver's fullName
-        const arrpovers = await userModel.loadAll(['fFirstName', 'fLastName'], {
-          where: { fId: fApprover }
-        });
-        if (arrpovers.length) {
-          const { fFirstName, fLastName } = arrpovers[0].get({ plain: true });
+        const approvers = await userModel.loadAll(['fFirstName', 'fLastName'], 
+        { where: { fId: fApprover } });
+        if (approvers.length) {
+          const { fFirstName, fLastName } = approvers[0].get({ plain: true });
           letter.fApproverFullName = fFirstName + " " + fLastName;
         }
         // substitute's fullName
-        const substitutes = await userModel.loadAll(['fFirstName', 'fLastName'], {
-          where: { fId: fSubstituteId }
-        });
+        const substitutes = await userModel.loadAll(['fFirstName', 'fLastName'], 
+        { where: { fId: fSubstituteId } });
         if (substitutes.length) {
           const { fFirstName, fLastName } = substitutes[0].get({ plain: true });
           letter.fSubstituteFullName = fFirstName + " " + fLastName;
@@ -248,9 +267,9 @@ Router.get('/my-letters', async (req, res) => {
         fUserId: demandUserId,
         [Op.or]: [{ fUserId: userId }, { fApprover: userId }]
       }},
-      { order: [['fStatus', 'ASC'], ['fRdt', 'ASC']] },
+      { limit: +size },
       { offset: (page - 1) * size },
-      { limit: +size });
+      { order: [['fStatus', 'ASC'], ['fRdt', 'ASC']] });
 
     const leaveLetters = [];
     await (async () => {
@@ -267,11 +286,11 @@ Router.get('/my-letters', async (req, res) => {
           letter.fUserFullName = fFirstName + " " + fLastName;
         }
         // approver's fullName
-        const arrpovers = await userModel.loadAll(["fFirstName", "fLastName"], {
+        const approvers = await userModel.loadAll(["fFirstName", "fLastName"], {
           where: { fId: fApprover }
         });
-        if (arrpovers.length) {
-          const { fFirstName, fLastName } = arrpovers[0].get({ plain: true });
+        if (approvers.length) {
+          const { fFirstName, fLastName } = approvers[0].get({ plain: true });
           letter.fApproverFullName = fFirstName + " " + fLastName;
         }
         // substitute's fullName
@@ -301,23 +320,19 @@ Router.get('/filter', async (req, res) => {
       fromYear = currentYear, toYear = currentYear, status = 0,
       page = DEFAULT_PAGE_ORDER, size = DEFAULT_PAGE_SIZE } = req.query;
 
-    if(!userId) throw { msg: 'INVALID_QUERY' };
-    if(fromMonth && (isNaN(fromMonth) || fromMonth > 12)) throw { msg: 'INVALID_QUERY' };
-    if(toMonth && (isNaN(toMonth) || toMonth > 12 || toMonth < fromMonth)) throw { msg: 'INVALID_QUERY' };
-    if(fromYear && (isNaN(fromYear) || fromYear > currentYear)) throw { msg: 'INVALID_QUERY' };
-    if(toYear && (isNaN(toYear) || toYear < fromYear)) throw { msg: 'INVALID_QUERY' };
-    if(toYear > currentYear) toYear = currentYear;
-    if(isNaN(status) || !ALLOWED_STATUS.includes(+status)) status = DEFAULT_STATUS;
-    if(page < 1 || isNaN(page)) page = DEFAULT_PAGE_ORDER;
-    if(!ALLOWED_PAGE_SIZE.includes(+size)) size = DEFAULT_PAGE_SIZE;
-    if(+size === 0) size = Number.MAX_SAFE_INTEGER;
-
+      if(toYear > currentYear) toYear = currentYear;
+      if(+size === 0) size = Number.MAX_SAFE_INTEGER;
+      if(page < 1 || isNaN(page)) page = DEFAULT_PAGE_ORDER;
+      if(!ALLOWED_PAGE_SIZE.includes(+size)) size = DEFAULT_PAGE_SIZE;
+      if(isNaN(status) || !ALLOWED_STATUS.includes(+status)) status = DEFAULT_STATUS;
+    if(!validatingQueryParams({ fromMonth, toMonth, fromYear, toYear })) throw { msg: 'INVALID_QUERY' };
+      
     // only HR can export all; others can export oneself's
     const fUserType = await getPermissionByToken(req.token_payload);
     if(fUserType !== 'HR' && userId !== getIdFromToken(req.token_payload)) throw { code: 401, msg: 'NO_PERMISSION' };
 
-    const fromDate = new Date(`${fromMonth}/01/${fromYear}`),
-      toDate = new Date(`${toMonth}/31/${toYear}`);
+    const toDate = new Date(`${toMonth}/31/${toYear}`);
+    const fromDate = new Date(`${fromMonth}/01/${fromYear}`);
     const { rawLeaveLetters, count } = await leaveLetterModel.countAll([],
       { where: { 
           fUserId: userId,
@@ -343,10 +358,10 @@ Router.get('/filter', async (req, res) => {
           letter.fUserFullName = fFirstName + ' ' + fLastName;
         }
         // approver's fullName
-        const arrpovers = await userModel.loadAll(['fFirstName', 'fLastName'], 
+        const approvers = await userModel.loadAll(['fFirstName', 'fLastName'], 
           { where: { fId: fApprover } });
-        if (arrpovers.length) {
-          const { fFirstName, fLastName } = arrpovers[0].get({ plain: true });
+        if (approvers.length) {
+          const { fFirstName, fLastName } = approvers[0].get({ plain: true });
           letter.fApproverFullName = fFirstName + ' ' + fLastName;
         }
         // substitute's fullName
