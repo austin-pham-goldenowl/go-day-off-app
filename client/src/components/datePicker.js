@@ -8,9 +8,9 @@ import moment from 'moment';
 import 'moment/locale/vi';
 
 //Contants
-import { DATETIME_FORMAT_1, DATETIME_LOCALE_VI } from '../constants/form';
+import { DATETIME_FORMAT_1, DATETIME_LOCALE_EN } from '../constants/form';
 
-moment.locale(DATETIME_LOCALE_VI);
+moment.locale(DATETIME_LOCALE_EN);
 
 class DatePickerField extends React.Component {
   render() {
@@ -22,9 +22,10 @@ class DatePickerField extends React.Component {
       enablePast,
       minDate,
       classes,
+      showHelperText,
       ...otherProps
     } = this.props;
-    const currentError = form.errors[field.name];
+    const currentError = showHelperText && form.errors[field.name];
     return (
       <MuiPickersUtilsProvider utils={MomentUtils} moment={moment}>
         <DatePicker
