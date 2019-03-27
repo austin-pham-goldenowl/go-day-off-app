@@ -70,7 +70,6 @@ const styles = theme => ({
 });
 
 function DropdownIndicator (props) {
-  console.log(`DropdownIndicator -> classes.dropDownIndicator: `, props.selectProps.classes.dropDownIndicator);
   return (
     <RSelectComps.DropdownIndicator className={props.selectProps.classes.dropDownIndicatorWrapper}  {...props}>
       <ArrowDropdownIcon className={props.selectProps.classes.dropDownIndicatorIcon}/>
@@ -91,36 +90,25 @@ function NoOptionsMessage(props) {
 }
 
 function inputComponent({ inputRef, ...props }) {
-  console.log(`inputComponent -> props: `, props);
   return <div ref={inputRef} {...props} />;
 }
 
-class Control extends React.Component {
-  handleKeyPress = (event) => {
-    if (event.key === 'Enter') {
-      alert(`Key 'enter' was pressed...!`)
-    }
-  }
-
-  render() {
-    const props = this.props;
-    return (
-      <TextField
-        fullWidth 
-        InputProps={{
-          inputComponent,
-          inputProps: {
-            className: props.selectProps.classes.input,
-            inputRef: props.innerRef,
-            children: props.children,
-            onKeyDownCapture: props.onKeyDown,
-            ...props.innerProps,
-          },
-        }}
-        {...props.selectProps.textFieldProps}
-      />
-    );
-  }
+function Control (props) {
+  return (
+    <TextField
+      fullWidth 
+      InputProps={{
+        inputComponent,
+        inputProps: {
+          className: props.selectProps.classes.input,
+          inputRef: props.innerRef,
+          children: props.children,
+          ...props.innerProps,
+        },
+      }}
+      {...props.selectProps.textFieldProps}
+    />
+  );
 }
 
 function Option(props) {
@@ -194,20 +182,43 @@ const components = {
   Placeholder,
   SingleValue,
   ValueContainer,
+  DropdownIndicator,
 };
 
 class IntegrationReactSelect extends React.Component {
+  state = {
+    inputValue: '',
+  }
 
-  handleCustomInput = (e) => {
-    e.preventDefault();
-    console.log(`handle Custom Input: `, e.key);
-    if (e.key === 'Enter') {
-      alert('Enter pressed...')
+  handleChangeValue = (values, others) => {
+    const { field: { name }, form: { setFieldValue }} = this.props; //For Formik
+    /**
+     * `others`: 
+          "select-option",
+          "deselect-option",
+          "remove-value",
+          "pop-value",
+          "set-value",
+          "clear",
+          "create-option"
+     */
+    //
+    if (others.action !== 'create-option') {
+      setFieldValue(name, values);
+    }
+    else {
+      let newObject = values.find(o => o.__isNew__);
+      if (typeof(newObject) !== 'undefined' && EMAIL_PATTERN.test(newObject.value)) {
+        newObject.additionInfo = `${newObject.value}`
+        setFieldValue(name, values);
+      }
     }
   }
+  
   render() {
     const { label, classes, theme, options } = this.props;
-    const { field: { name, value }, form: { setFieldValue }} = this.props; //For Formik
+    const { field: { value, onBlur } } = this.props; //For Formik
+    console.log(this.props.field);
     const selectStyles = {
       input: base => ({
         ...base,
@@ -216,27 +227,48 @@ class IntegrationReactSelect extends React.Component {
           font: 'inherit',
         },
       }),
+      clearIndicator: base => ({
+        ...base,
+        display: 'none'
+      }),
+      indicatorSeparator: base => ({
+        ...base,
+        display: 'none'
+      })
     };
     return (
-          <Select
-            classes={classes}
-            styles={selectStyles}
-            textFieldProps={{
-              label: label,
-              InputLabelProps: {
-                shrink: true,
-              },
-            }}
-            
-            options={options}
-            components={components}
-            value={value}
-            onChange={(value) => {
-              setFieldValue(name, value);
-            }}
-            placeholder={null}
-            isMulti
-          />
+      <Creatable
+        classes={classes}
+        styles={selectStyles}
+        textFieldProps={{
+          label: label,
+          InputLabelProps: {
+            shrink: true,
+          }
+        }}
+        isMulti
+        value={value}
+        options={options}
+        placeholder={`Select or type...`}
+        components={components}
+        inputValue={this.state.inputValue}
+        onBlur={(e) => {
+          console.log(e.target);
+          //This `onBlur` event is issued by the `input` element, not the `Select`, we have to point to the `Select`
+          onBlur(e);
+        }}
+        onChange={this.handleChangeValue}
+        onKeyDown={(e => {
+          if (e.key === 'Enter' && !EMAIL_PATTERN.test(e.target.value)) {
+            e.preventDefault()
+          }
+        })}
+        onInputChange={(inputValue, actions) => {
+          if (actions.action !== 'input-blur' && actions.action !== 'menu-close') {
+            this.setState({ inputValue })
+          }
+        }}
+      />
     );
   }
 }
