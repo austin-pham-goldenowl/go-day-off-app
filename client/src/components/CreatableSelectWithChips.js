@@ -1,57 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import Select from 'react-select';
+import Creatable from 'react-select/lib/Creatable';
+import { components as RSelectComps } from 'react-select';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import NoSsr from '@material-ui/core/NoSsr';
 import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 import Chip from '@material-ui/core/Chip';
 import MenuItem from '@material-ui/core/MenuItem';
 import CancelIcon from '@material-ui/icons/Cancel';
+import ArrowDropdownIcon from '@material-ui/icons/ArrowDropDown';
 import { emphasize } from '@material-ui/core/styles/colorManipulator';
-import { formatMs } from '@material-ui/core/styles/transitions';
 
-const suggestions = [
-  { label: 'Afghanistan' },
-  { label: 'Aland Islands' },
-  { label: 'Albania' },
-  { label: 'Algeria' },
-  { label: 'American Samoa' },
-  { label: 'Andorra' },
-  { label: 'Angola' },
-  { label: 'Anguilla' },
-  { label: 'Antarctica' },
-  { label: 'Antigua and Barbuda' },
-  { label: 'Argentina' },
-  { label: 'Armenia' },
-  { label: 'Aruba' },
-  { label: 'Australia' },
-  { label: 'Austria' },
-  { label: 'Azerbaijan' },
-  { label: 'Bahamas' },
-  { label: 'Bahrain' },
-  { label: 'Bangladesh' },
-  { label: 'Barbados' },
-  { label: 'Belarus' },
-  { label: 'Belgium' },
-  { label: 'Belize' },
-  { label: 'Benin' },
-  { label: 'Bermuda' },
-  { label: 'Bhutan' },
-  { label: 'Bolivia, Plurinational State of' },
-  { label: 'Bonaire, Sint Eustatius and Saba' },
-  { label: 'Bosnia and Herzegovina' },
-  { label: 'Botswana' },
-  { label: 'Bouvet Island' },
-  { label: 'Brazil' },
-  { label: 'British Indian Ocean Territory' },
-  { label: 'Brunei Darussalam' },
-].map(suggestion => ({
-  value: suggestion.label,
-  label: suggestion.label,
-}));
+import { EMAIL_PATTERN } from '../constants/regexPatterns'
 
 const styles = theme => ({
   root: {
@@ -99,7 +61,22 @@ const styles = theme => ({
   divider: {
     height: theme.spacing.unit * 2,
   },
+  dropDownIndicatorWrapper: {
+    padding: '0!important',
+  },
+  dropDownIndicatorIcon: {
+    color: `rgb(0, 0, 0, 0.54)!important`,
+  }
 });
+
+function DropdownIndicator (props) {
+  console.log(`DropdownIndicator -> classes.dropDownIndicator: `, props.selectProps.classes.dropDownIndicator);
+  return (
+    <RSelectComps.DropdownIndicator className={props.selectProps.classes.dropDownIndicatorWrapper}  {...props}>
+      <ArrowDropdownIcon className={props.selectProps.classes.dropDownIndicatorIcon}/>
+    </RSelectComps.DropdownIndicator>
+  );
+}
 
 function NoOptionsMessage(props) {
   return (
