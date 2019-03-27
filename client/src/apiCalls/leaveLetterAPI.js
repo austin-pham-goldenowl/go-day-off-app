@@ -1,26 +1,8 @@
-import axios from 'axios';
-import { getCookie } from 'tiny-cookie';
-
-/**
- * Constants
- */
-import { SERVER_HOST_DEV } from '../constants/api';
-import { ACCESS_TOKEN_KEY } from '../constants/token';
-import { LEAVE_REQUEST_PENDING } from '../constants/requestStatusType';
-
-/**
- * Helpers
- */
-import { getUserId } from '../helpers/authHelpers';
-
-// General header params for some methods
-axios.defaults.headers.post['Content-Type'] = 'application/json';
-axios.defaults.headers.patch['Content-Type'] = 'application/json';
-
 import axios from 'axios'
 import { getCookie } from 'tiny-cookie'
 import { SERVER_HOST_DEV } from '../constants/api'
 import { ACCESS_TOKEN_KEY } from '../constants/token'
+import { LEAVE_REQUEST_PENDING } from '../constants/requestStatusType';
 
 import { getUserId } from '../helpers/authHelpers'
 
