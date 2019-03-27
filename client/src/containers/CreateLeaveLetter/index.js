@@ -11,7 +11,6 @@ import Icon from '@material-ui/core/Icon';
 import SelectCustom from '../../components/CustomSelect';
 import TextFieldReadOnly from '../../components/ReadOnlyTextField';
 import DatePickerField from '../../components/DatePicker';
-import SelectWithChips from '../../components/SelectWithChips';
 import CreatableSelectWithChips from '../../components/CreatableSelectWithChips';
 import DashContainer from '../DashContainer';
 // Validation
@@ -135,6 +134,12 @@ const styles = theme => ({
   }
 });
 
+// Option for no-select option
+const noSelectOption = {
+  label: '-- None --',
+  value: '',
+}
+
 class AbsenceLetterWithFormik extends React.Component {
   state = {
     templateList: {
@@ -200,7 +205,10 @@ class AbsenceLetterWithFormik extends React.Component {
               leaveTypesList: allLeaveTypes,
               informToList: allInformTo,
               approverList: allApprover,
-              substitutesList: allSubstitutes
+              substitutesList: [
+                noSelectOption,
+                ...allSubstitutes
+              ]
             },
             buttonClickable: true
           }));
@@ -232,16 +240,17 @@ class AbsenceLetterWithFormik extends React.Component {
                 this.handleChangeReason();
               }}
               onSubmit={(values, actions) => {
-                let submitValues = values;
+                // let submitValues = Object.assign(values);
+                let submitValues = JSON.parse(JSON.stringify(values));
+
                 if (compareDatesWithoutTime(values.startDate, values.endDate) === 0) {
                   submitValues.toOpt = submitValues.fromOpt;
                 }
-                createLeaveLetter(values)
+                console.log(`[Submitted Values]`, submitValues); //DEBUG only
+
+                createLeaveLetter(submitValues)
                   .then(res => {
-                    handleShowNotif(
-                      NOTIF_SUCCESS,
-                      `Leave request created successfully!`
-                    );
+                    handleShowNotif(NOTIF_SUCCESS, `Leave request created successfully!`);
                     this.handleChangeReason();
                     actions.resetForm();
                     actions.setSubmitting(false);
@@ -264,16 +273,16 @@ class AbsenceLetterWithFormik extends React.Component {
                 setTouched,
                 setFieldTouched,
               }) => {
-                const onBlur = (e) => {
-                  handleBlur(e);
-                  const { target: { name } } = e;
-                  setFieldTouched(name, true);
-                };
+                // const onBlur = (e) => {
+                //   handleBlur(e);
+                //   const { target: { name } } = e;
+                //   setFieldTouched(name, true);
+                // };
 
-                const onChange = ({ target: { name, value } }) => {
-                  setFieldTouched(name, false);
-                  setFieldValue(name, value);
-                }
+                // const onChange = ({ target: { name, value } }) => {
+                //   setFieldTouched(name, false);
+                //   setFieldValue(name, value);
+                // }
 
                 const { buttonClickable } = this.state;
                 const isSameDaySelected = compareDatesWithoutTime(values.startDate, values.endDate) === 0;
@@ -356,6 +365,7 @@ class AbsenceLetterWithFormik extends React.Component {
                                     label="Leave Types"
                                     value={values.leaveType}
                                     options={leaveTypesList}
+                                    onBlur={handleBlur} //not handled
                                     onChange={({ target: { name, value } }) => {
                                       setFieldValue(name, value);
                                     }}
@@ -403,6 +413,7 @@ class AbsenceLetterWithFormik extends React.Component {
                                 label="From"
                                 name="startDate"
                                 component={DatePickerField}
+                                onBlurCapture={handleBlur}
                               />
                               <ErrorMessage name="startDate">
                                 {msg => (
@@ -453,11 +464,11 @@ class AbsenceLetterWithFormik extends React.Component {
                               render={({ field, form }) => (
                                 <SelectCustom
                                   name="approver"
-                                  label="Approver"
-                                  onBlur={onBlur}
+                                  label="Approver*"
+                                  onBlur={handleBlur}
                                   value={values.approver}
                                   options={approverList}
-                                  onChange={onChange}
+                                  onChange={handleChange}
                                 />
                               )}
                             />
@@ -475,6 +486,7 @@ class AbsenceLetterWithFormik extends React.Component {
                               multiple
                               name="informTo"
                               label="Inform to"
+                              onBlur={handleBlur}
                               options={informToList}
                               component={CreatableSelectWithChips}
                             />
@@ -495,9 +507,8 @@ class AbsenceLetterWithFormik extends React.Component {
                                   label="Substitute"
                                   value={values.substituteId}
                                   options={substitutesList}
-                                  onChange={({ target: { name, value } }) => {
-                                    setFieldValue(name, value);
-                                  }}
+                                  onBlur={handleBlur}
+                                  onChange={handleChange}
                                 />
                               )}
                             />
@@ -515,9 +526,10 @@ class AbsenceLetterWithFormik extends React.Component {
                               render={({ field, form }) => (
                                 <SelectCustom
                                   name="reason"
-                                  label="Reason"
+                                  label="Reason*"
                                   value={values.reason}
                                   options={mockupLeaveLetterReasons}
+                                  onBlur={handleBlur}
                                   onChange={({ target: { name, value } }) => {
                                     setFieldValue(name, value);
                                     this.handleChangeReason(value);
@@ -547,6 +559,7 @@ class AbsenceLetterWithFormik extends React.Component {
                                       id="otherReason"
                                       name="otherReason"
                                       label="Reason detail"
+                                      onBlur={handleBlur}
                                       onChange={({ target: { name, value } }) =>
                                         setFieldValue(name, value)
                                       }
