@@ -28,14 +28,16 @@ const bodyMustNotEmpty = require('../../middlewares/bodyMustNotEmpty');
  */
 const { standardizeObj } = require('../../helpers/standardize');
 import { sendLeaveRequestMail } from '../../helpers/mailingHelpers';
+import { LEAVING_LETTER_STATUS } from '../../configs/constants';
 const { handleSuccess, handleFailure } = require('../../helpers/handleResponse');
 const { getIdFromToken, getPermissionByToken } = require('../../helpers/getUserInfo');
 
 /**
  * Constants
  */
-const { FROM_OPTION, TO_OPTION, DEFAULT_PAGE_ORDER, DEFAULT_PAGE_SIZE, 
-  ALLOWED_PAGE_SIZE, WEEKEND_ORDERS, ALLOWED_STATUS, DEFAULT_STATUS } = require('../../configs/constants');
+const { FROM_OPTION, DEFAULT_PAGE_ORDER, 
+  DEFAULT_PAGE_SIZE, ALLOWED_PAGE_SIZE, WEEKEND_ORDERS, 
+  ALLOWED_STATUS, DEFAULT_STATUS } = require('../../configs/constants');
 
 /**
  *  Local helpers 
@@ -49,42 +51,32 @@ const validatingQueryParams = ({ fromMonth, toMonth, fromYear, toYear }) =>
 
 Router.get('/details', async (req, res) => {
   try {
-    // validate if userPermission is permitted
-    const fUserType = await getPermissionByToken(req.token_payload);
-    if (!fUserType) throw { code: 401, msg: 'NO_PERMISSION' };
-
     // others can view oneself's
     const fId = req.query.id;
     if (!fId) throw { msg: 'INVALID_QUERY' };
 
-    const letters = await leaveLetterModel.loadAll(['fUserId'], {
-      where: { fId }
-    });
-    if (!letters || letters.length !== 1) throw { msg: 'LETTER_NOT_FOUND' };
-    const { fUserId } = letters[0].get({ plain: true });
+    // validate if userPermission is permitted
+    const fUserType = await getPermissionByToken(req.token_payload);
+    if (!fUserType) throw { code: 401, msg: 'NO_PERMISSION' };
 
+    const letters = await leaveLetterModel.loadAll(['fUserId'], { where: { fId } });
+    if (!letters || letters.length !== 1) throw { msg: 'LETTER_NOT_FOUND' };
+  
     const userId = getIdFromToken(req.token_payload);
-    if (fUserType !== 'HR' && userId !== fUserId)
-      throw { code: 401, msg: 'NO_PERMISSION' };
+    const { fUserId } = letters[0].get({ plain: true });
+    if (fUserType !== 'HR' && userId !== fUserId) throw { code: 401, msg: 'NO_PERMISSION' };
 
     // only HR can view everyone's
-    const leaveLetters = await leaveLetterModel.loadAll([], {
-      where: { fId }
-    });
-    if (!leaveLetters || leaveLetters.length !== 1)
-      throw { msg: 'LETTER_NOT_FOUND' };
+    const leaveLetters = await leaveLetterModel.loadAll([], { where: { fId } });
+    if (!leaveLetters || leaveLetters.length !== 1) throw { msg: 'LETTER_NOT_FOUND' };
 
     // load substitute fullName
     const letter = leaveLetters[0].get({ plain: true });
-    const { fApprover } = letter;
+    const { fApprover, fSubstituteId } = letter;
     // only HR marked as approver in letter is able to view and approve it
-    if (fUserType === 'HR' && fApprover !== userId && fUserId !== userId)
-      throw { code: 401, msg: 'NO_PERMISSION' };
+    if (fUserType === 'HR' && fApprover !== userId && fUserId !== userId) throw { code: 401, msg: 'NO_PERMISSION' };
 
-    const { fSubstituteId } = letter;
-    const users = await userModel.loadAll(['fFirstName', 'fLastName'], {
-      where: { fId: fSubstituteId }
-    });
+    const users = await userModel.loadAll(['fFirstName', 'fLastName'], { where: { fId: fSubstituteId } });
     if (users.length) {
       const { fFirstName, fLastName } = users[0].get({ plain: true });
       letter.fFullName = fFirstName + ' ' + fLastName;
@@ -128,22 +120,23 @@ Router.get('/', userMustBeHR, async (req, res) => {
       for (let i = 0; i < rawLeaveLetters.length; i++) {
         const letter = rawLeaveLetters[i].get({ plain: true });
         const { fApprover, fUserId, fSubstituteId } = letter;
+
         // user's fullName
         const users = await userModel.loadAll(['fFirstName', 'fLastName'], { where: { fId: fUserId } });
         if (users.length) {
           const { fFirstName, fLastName } = users[0].get({ plain: true });
           letter.fUserFullName = fFirstName + ' ' + fLastName;
         }
+
         // approver's fullName
-        const approvers = await userModel.loadAll(['fFirstName', 'fLastName'], 
-        { where: { fId: fApprover } });
+        const approvers = await userModel.loadAll(['fFirstName', 'fLastName'], { where: { fId: fApprover } });
         if (approvers.length) {
           const { fFirstName, fLastName } = approvers[0].get({ plain: true });
           letter.fApproverFullName = fFirstName + " " + fLastName;
         }
+        
         // substitute's fullName
-        const substitutes = await userModel.loadAll(['fFirstName', 'fLastName'], 
-        { where: { fId: fSubstituteId } });
+        const substitutes = await userModel.loadAll(['fFirstName', 'fLastName'], { where: { fId: fSubstituteId } });
         if (substitutes.length) {
           const { fFirstName, fLastName } = substitutes[0].get({ plain: true });
           letter.fSubstituteFullName = fFirstName + " " + fLastName;
@@ -163,8 +156,8 @@ Router.post('/', bodyMustNotEmpty, async (req, res) => {
   try {
     const id = uid(LEAVING_FORM_ID_LEN);
     const entity = standardizeObj({ ...req.body, id });
-
     const { fStatus, fFromDT, fToDT } = entity;
+
     // validate status value
     if (
       (fStatus || 3) &&
@@ -173,18 +166,16 @@ Router.post('/', bodyMustNotEmpty, async (req, res) => {
       throw { msg: 'INVALID_VALUES' };
 
     // validate whether fromDT <= toDT
-    if (fFromDT && fToDT && new Date(fFromDT) > new Date(fToDT))
-      throw { msg: 'INVALID_VALUES' };
+    if (fFromDT && fToDT && 
+      new Date(fFromDT) > new Date(fToDT)) throw { msg: 'INVALID_VALUES' };
 
     // add foreign keys
     const { fUserId, fAbsenceType, fApprover } = entity;
-    entity.absenceTypes_fId = fAbsenceType;
     entity.users_fId = fUserId;
     entity.users_fId1 = fUserId;
     entity.approver_fId = fApprover;
+    entity.absenceTypes_fId = fAbsenceType;
     const leaveLetter = await leaveLetterModel.add(entity);
-
-    console.log(`leaveLetter submiting responses: `, leaveLetter);
 
     //Send email
     sendLeaveRequestMail(entity, (success, data) => {
@@ -212,17 +203,16 @@ Router.patch('/', bodyMustNotEmpty, async (req, res) => {
     // validate if userPermission is permitted
     const fUserType = await getPermissionByToken(req.token_payload);
     if (!fUserType) throw { code: 401, msg: 'NO_PERMISSION' };
+
     // others can update oneself's
     const entity = standardizeObj(req.body.info);
-    const userId = getIdFromToken(req.token_payload);
     const { fUserId } = entity;
-    if (fUserType !== 'HR' && userId !== fUserId)
-      throw { code: 401, msg: 'NO_PERMISSION' };
-
+    const userId = getIdFromToken(req.token_payload);
     // only HR can update everyone's
+    if (fUserType !== 'HR' && userId !== fUserId) throw { code: 401, msg: 'NO_PERMISSION' };
+
     const fId = req.body.id;
-    if (!entity || Object.keys(entity).length < 1 || !fId)
-      throw { msg: 'INVALID_VALUES' };
+    if (!entity || Object.keys(entity).length < 1 || !fId) throw { msg: 'INVALID_VALUES' };
 
     const { fStatus, fFromDT, fToDT } = entity;
     // validate status value
@@ -233,13 +223,11 @@ Router.patch('/', bodyMustNotEmpty, async (req, res) => {
       throw { msg: 'INVALID_VALUES' };
 
     // validate whether fromDT <= toDT
-    if (fFromDT && fToDT && new Date(fFromDT) > new Date(fToDT))
-      throw { msg: 'INVALID_VALUES' };
+    if (fFromDT && fToDT && 
+      new Date(fFromDT) > new Date(fToDT)) throw { msg: 'INVALID_VALUES' };
 
-    const affected = await leaveLetterModel.modify(entity, {
-      where: { fId, fUserId }
-    });
-    if (affected[0] < 1) throw { msg: 'LETTER_NOT_FOUND' };
+    const affected = await leaveLetterModel.modify(entity, { where: { fId, fUserId } });
+    if (affected[0] < 1) throw { msg: 'LETTER_NOT_UPDATED' };
 
     handleSuccess(res, { leaveLetter: entity });
   } catch (err) {
@@ -320,11 +308,11 @@ Router.get('/filter', async (req, res) => {
       fromYear = currentYear, toYear = currentYear, status = 0,
       page = DEFAULT_PAGE_ORDER, size = DEFAULT_PAGE_SIZE } = req.query;
 
-      if(toYear > currentYear) toYear = currentYear;
-      if(+size === 0) size = Number.MAX_SAFE_INTEGER;
-      if(page < 1 || isNaN(page)) page = DEFAULT_PAGE_ORDER;
-      if(!ALLOWED_PAGE_SIZE.includes(+size)) size = DEFAULT_PAGE_SIZE;
-      if(isNaN(status) || !ALLOWED_STATUS.includes(+status)) status = DEFAULT_STATUS;
+    if(toYear > currentYear) toYear = currentYear;
+    if(+size === 0) size = Number.MAX_SAFE_INTEGER;
+    if(page < 1 || isNaN(page)) page = DEFAULT_PAGE_ORDER;
+    if(!ALLOWED_PAGE_SIZE.includes(+size)) size = DEFAULT_PAGE_SIZE;
+    if(isNaN(status) || !ALLOWED_STATUS.includes(+status)) status = DEFAULT_STATUS;
     if(!validatingQueryParams({ fromMonth, toMonth, fromYear, toYear })) throw { msg: 'INVALID_QUERY' };
       
     // only HR can export all; others can export oneself's
@@ -333,81 +321,18 @@ Router.get('/filter', async (req, res) => {
 
     const toDate = new Date(`${toMonth}/31/${toYear}`);
     const fromDate = new Date(`${fromMonth}/01/${fromYear}`);
-    const { rawLeaveLetters, count } = await leaveLetterModel.countAll([],
+    const { rawLeaveLetters: leaveLetters, count } = await leaveLetterModel.countAll([],
       { where: { 
           fUserId: userId,
           fRdt: { [Op.between]: [fromDate, toDate] },
           fStatus: +status === 0 ? { [Op.ne]: null } : +status,
           fApprover: (userId === getIdFromToken(req.token_payload)) ? { [Op.ne]: null } : getIdFromToken(req.token_payload),
       }},
-      { offset: (page - 1) * size },
       { limit: +size },
+      { offset: (page - 1) * size },
       { order: [['fStatus', 'ASC'], ['fRdt', 'ASC']] });
 
-    let numOffDays = 0;
-    const leaveLetters = [];
-    await (async () => {
-      for (let i = 0; i < rawLeaveLetters.length; i++) {
-        const letter = rawLeaveLetters[i].get({ plain: true });
-        const { fUserId, fApprover, fSubstituteId } = letter;
-        // user's fullName
-        const users = await userModel.loadAll(['fFirstName', 'fLastName'], 
-          { where: { fId: fUserId } });
-        if (users.length) {
-          const { fFirstName, fLastName } = users[0].get({ plain: true });
-          letter.fUserFullName = fFirstName + ' ' + fLastName;
-        }
-        // approver's fullName
-        const approvers = await userModel.loadAll(['fFirstName', 'fLastName'], 
-          { where: { fId: fApprover } });
-        if (approvers.length) {
-          const { fFirstName, fLastName } = approvers[0].get({ plain: true });
-          letter.fApproverFullName = fFirstName + ' ' + fLastName;
-        }
-        // substitute's fullName
-        const substitutes = await userModel.loadAll(['fFirstName', 'fLastName'], 
-          { where: { fId: fSubstituteId } });
-        if (substitutes.length) {
-          const { fFirstName, fLastName } = substitutes[0].get({ plain: true });
-          letter.fSubstituteFullName = fFirstName + ' ' + fLastName;
-        }
-        // add the customized letter to result
-        leaveLetters.push(letter);
-        
-        // count how many off days used
-        const { fFromDT, fToDT, fFromOpt, fToOpt } = letter;
-        if (fFromOpt === FROM_OPTION.AFTERNOON) {
-          numOffDays += 0.5;
-          numOffDays += moment(fToDT).diff(moment(fFromDT), 'days');
-        }
-        // not duplicated at all
-        if (fToOpt !== TO_OPTION.ALLDAY) {
-          numOffDays += 0.5;
-          numOffDays += moment(fToDT).diff(moment(fFromDT), 'days');
-        }
-        // neither of above cases
-        if (fFromOpt !== FROM_OPTION.AFTERNOON && fToOpt === TO_OPTION.ALLDAY)
-        numOffDays += moment(fToDT).diff(moment(fFromDT), 'days') + 1;
-        // create an array of days to check for weekend
-        // if fFromDT is same as fToDT, dataArray can't handle
-        // so manually create an array containing 1 element (fFromDT)
-        const datesArray = moment(fFromDT).isSame(moment(fToDT)) ? [moment(fFromDT).format('MM/DD/YYYY')] : dateArray.range(fFromDT, fToDT, 'MM/DD/YYYY');
-        // exclude weekend
-        for (let j = 0; j < datesArray.length; j++) {
-          const isWeekend = WEEKEND_ORDERS.includes(moment(datesArray[j]).day());
-          if (isWeekend) {
-            // if the date was same as fFromDT, check if half day
-            if (fFromOpt === FROM_OPTION.AFTERNOON) numOffDays -= 0.5;
-            // if the date was same as fToDT, check if half day
-            else if (fToOpt !== TO_OPTION.ALLDAY) numOffDays -= 0.5;
-            // other than that simply subtract 1 day
-            else numOffDays -= 1;
-          }
-        }
-      }
-    })();
-
-    handleSuccess(res, { leaveLetters, numOffDays, count: leaveLetters.length && count || 0 });
+    handleSuccess(res, { leaveLetters, count: leaveLetters.length && count || 0 });
   } catch(err) {
     handleFailure(res, { err, route: req.originalUrl });
   }
@@ -438,5 +363,63 @@ Router.post('/send-email', async (req, res) => {
     handleFailure(res, { err, route: req.originalUrl });
   }
 });
+
+Router.get('/used-off-days', async (req, res) => {
+  try {
+    // only HR can view all; others can view oneself's
+    const fUserType = await getPermissionByToken(req.token_payload);
+    if(fUserType !== 'HR' && userId !== getIdFromToken(req.token_payload)) throw { code: 401, msg: 'NO_PERMISSION' };
+
+    const { userId, month, year } = req.query;
+    if(!userId || 
+      (await getPermissionByToken(req.token_payload) !== 'HR' && 
+      userId !== getIdFromToken(req.token_payload))) throw { msg: 'INVALID_QUERY' };
+    if(isNaN(month) || ![...Array(12).keys()].includes(+month - 1)) month = 12;
+    if(isNaN(year) || (year > moment().get('year') || year < 2000)) year = moment().get('year');
+    
+    // counting used off days
+    let numOffDays = 0;
+    const endMonthDayOfFromDate = moment(`${month}-02-${year}`).endOf('month').format('DD');
+    let fromDate = new Date(`01/01/${year}`);
+    let toDate = new Date(`${month}/${endMonthDayOfFromDate}/${year}`);
+    const { rawLeaveLetters } = await leaveLetterModel.countAll({},
+      { where: { 
+        fUserId: userId,
+        fFromDT: { [Op.between]: [fromDate, toDate] },
+        fStatus: LEAVING_LETTER_STATUS.APPROVED
+      } });
+    
+    for(let i = 0; i < rawLeaveLetters.length; i++) {
+      let { fFromDT, fToDT, fFromOpt } = rawLeaveLetters[i].get({ plain: true });
+      // check if out of range
+      if(fFromDT < fromDate) {
+        fFromDT = fromDate
+        fFromOpt = FROM_OPTION.ALLDAY;
+      }
+      if(fToDT > toDate) fToDT = toDate;
+      // count all even weekends
+      if(fFromOpt !== FROM_OPTION.ALLDAY) numOffDays += 0.5;
+      else numOffDays += moment(fToDT).startOf('day').diff(moment(fFromDT).startOf('day'), 'days') + 1;
+      
+      // create an array of days to check for weekend
+      // if fFromDT is same as fToDT, dataArray can't handle
+      // so manually create an array containing 1 element (fFromDT)
+      const datesArray = moment(fFromDT).startOf('day').isSame(moment(fToDT).startOf('day')) ? [moment(fFromDT).format('MM-DD-YYYY')] : dateArray.range(fFromDT, fToDT, 'MM-DD-YYYY');
+      // exclude weekend & fFromDT & fToDT (already subtract above)
+      for (let j = 0; j < datesArray.length; j++) {
+        if (WEEKEND_ORDERS
+          .includes(moment(datesArray[j]).day())) {
+          numOffDays -= 1;
+          datesArray.splice(j--, 1); // splice that day from array then update index j
+        }
+      }
+    }
+
+    handleSuccess(res, { numOffDays });
+  }
+  catch(err) {
+    handleFailure(res, { err, route: req.originalUrl });
+  }
+})
 
 module.exports = Router;
