@@ -39,12 +39,17 @@ import { getLeaveLetterDetails } from '../../apiCalls/leaveLetterAPI';
 import { getProfile } from '../../apiCalls/userAPIs';
 import { updateLetterStatus } from '../../apiCalls/leaveLetterAPI';
 
+// Constants
 import {
   // LEAVE_REQUEST_REJECTED,
   LEAVE_REQUEST_APPROVED,
   LEAVE_REQUEST_PENDING,
   LEAVE_REQUEST_REJECTED
 } from '../../constants/requestStatusType';
+
+import {
+  DaySessionOptions
+} from '../../constants/leaveDurationOptions';
 
 import { responseUserPermission } from '../../constants/permission';
 
@@ -184,6 +189,8 @@ class LeaveRequestDetail extends React.Component {
   };
 
   render() {
+    console.log(`leaveLetter: `, this.state.leaveLetter);
+
     const { history, classes, initialValues, handleShowNotif } = this.props;
     const { userInfo, leaveLetter } = this.state;
     return (
@@ -362,18 +369,14 @@ class LeaveRequestDetail extends React.Component {
                         <Grid item xs={6} className={classes.fieldWrapper}>
                           <div className={classes.fieldTitle}>
                             From:
-                            <span className={classes.fieldValue}>{` ${moment(
-                              leaveLetter.fFromDT
-                            ).format('MM/DD/YYYY')}`}</span>
+                            <span className={classes.fieldValue}>{` ${moment(leaveLetter.fFromDT).format('MM/DD/YYYY')} (${DaySessionOptions[leaveLetter.fFromOpt]})`}</span>
                           </div>
                         </Grid>
                         {/** ToDT */}
                         <Grid item xs={6} className={classes.fieldWrapper}>
                           <div className={classes.fieldTitle}>
                             To:
-                            <span className={classes.fieldValue}>{` ${moment(
-                              leaveLetter.fToDT
-                            ).format('MM/DD/YYYY')}`}</span>
+                            <span className={classes.fieldValue}>{` ${moment(leaveLetter.fToDT).format('MM/DD/YYYY')} (${DaySessionOptions[leaveLetter.fToOpt]})`}</span>
                           </div>
                         </Grid>
                         {/** Reason */}

@@ -3,3 +3,9 @@ export const LeaveDurationOptions = {
   am: 'morning',
   pm: 'afternoon'
 };
+
+export const DaySessionOptions = {
+  allday: 'All day',
+  morning: 'Morning',
+  afternoon: 'Afternoon',
+};

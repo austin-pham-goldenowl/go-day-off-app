@@ -12,6 +12,8 @@ import {
 } from "../constants/leaveTypes";
 
 import PropTypes from "prop-types";
+
+//Constants
 const leaveTypesDescription = {
   [LEAVE_TYPE_PERSONNEL]: "Việc cá nhân",
   [LEAVE_TYPE_SICKNESS]: "Nghỉ ốm",
@@ -24,6 +26,7 @@ const leaveReqStatusDescription = {
   [LEAVE_REQUEST_REJECTED]: "Rejected"
 };
 
+//Functions
 export const getLeaveType = typeCode => {
   return leaveTypesDescription[typeCode];
 };
@@ -45,6 +48,7 @@ export const getAllLeaveTypes = () => {
   return leaveTypeArr;
 };
 
+//PropTypes
 getLeaveType.propTypes = {
   typeCode: PropTypes.number.isRequired
 };
