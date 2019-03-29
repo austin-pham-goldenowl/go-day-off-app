@@ -1,6 +1,7 @@
 import { uid } from 'rand-token';
 import Email from 'email-templates';
 import moment from 'moment';
+import { DAY_SESSION_OPTIONS, FROM_OPTION_VALUES, TO_OPTION_VALUES} from '../../configs/constants';
 
 const {
   users: userModel,
@@ -37,81 +38,91 @@ const email = new Email({
 /**
  * 
  * 
-letterEntity:  { 
-  fAbsenceType: '4',
-  fFromDT: '2019-04-10T16:29:56.000Z',
-  fStatus: 1,
-  fSubstituteId: 'i53FItHeMK',
-  fToDT: '2019-04-17T16:29:56.000Z',
-  fUserId: 'H8UIAdsy7T',
-  fApprover: 'H8UIAdsy7T',
-  fFromOpt: 'morning',
+letterEntity:  
+{ 
+  fFromOpt: 'allday',
   fToOpt: 'allday',
-  fId: 'EkT5hCwTU4',
-  fReason: 'Bla bla',
-  absenceTypes_fId: '4',
-  users_fId: 'H8UIAdsy7T',
-  users_fId1: 'H8UIAdsy7T',
-  approver_fId: 'H8UIAdsy7T',
-  fRdt: '2019-03-19 10:25:02' 
+  fAbsenceType: 1,
+  fFromDT: 2019-03-30T02:41:38.697Z,
+  fToDT: 2019-03-30T02:41:38.699Z,
+  fStatus: 1,
+  fSubstituteId: 'LzPq90f8bZ',
+  fUserId: 'LzPq90f8bZ',
+  fApprover: 'wYC0nI3LqV',
+  fReason: 'a',
+  fId: 'D1KbIWg4zh',
+  absenceTypes_fId: 1,
+  users_fId: 'LzPq90f8bZ',
+  users_fId1: 'LzPq90f8bZ',
+  approver_fId: 'wYC0nI3LqV',
+  fRdt: 2019-03-29T02:43:55.000Z 
 }
  */
+
 export const sendLeaveRequestMail = async (letterEntity, cb) => {
   console.log(`mailingHelpers -> send LeaveRequestMail -> letterEntity: `,
     letterEntity);
   //Parsing no-need-to-query fields
   let {
-    fReason,
-    fAbsenceType,
-    fFromDT,
-    fToDT,
-    fRdt,
-    fUserId,
-    fSubstituteId
+    leaveLetter: {
+      fFromOpt,
+      fToOpt,
+      fAbsenceType,
+      fFromDT,
+      fToDT,
+      fSubstituteId,
+      fUserId,
+      fApprover,
+      fReason,
+      fRdt,
+    },
+    fInformTo
   } = letterEntity;
 
-  //Todo
-  /**
-   * 1. getUserProfile for (fullName, positionName, phoneNumber, userEmail, position, teamId) with given fUserId
-   * 2. getSubstituteName for (substituteName) with given fSubstituteId
-   * 3. getApproverName for for (approverName) with given fApprover
-   */
-  // Implementations
   // 1.  getUserProfile
   const user = await getUserProfile(fUserId);
   if (!user) return;
   const { fPositionName, fPhone, fLastName, fFirstName, fEmail } = user;
-  // End - getUserProfile
 
   //2. getSubstituteName
+  let substituteName = 'Không có';
   const substitute = await getSubstituteProfile(fSubstituteId);
-  if (!substitute) return;
-  const substituteName = `${substitute.fFirstName} ${substitute.fLastName}`;
-  // End - getSubstituteName
+  if (substitute) {
+    substituteName = `${substitute.fFirstName} ${substitute.fLastName}`;
+  }
 
   //3. getApproverName
-
-  let approverName = 'Bộ phận Nhân sự'; //Hard code to `Bo phan nhan su`
-
-  // End- getApproverName
+  let approverName = 'Bộ phận Nhân sự';
+  const approver = await getApproverProfile(fApprover);
+  if(approver) {
+    approverName = `${approver.fFirstName} ${approver.fLastName}`;
+  }
+  //Parsing Date
   let momentRdt = moment(fRdt),
     momentFromDT = moment(fFromDT),
     momentToDT = moment(fToDT);
 
+  const fromTimeText = FROM_OPTION_VALUES.includes(fFromOpt) ? DAY_SESSION_OPTIONS[fFromOpt] : '';
+  const toTimeText  = TO_OPTION_VALUES.includes(fToOpt) ? DAY_SESSION_OPTIONS[fToOpt] : '';
+  
+  //Extract `fInformTo` emails
+  let informToEmails = fInformTo.map(item => {
+    return item.value
+  });
   //Send mail
   email
     .send({
       template: 'sendLeaveLetter',
       message: {
         to: clientInfo.email,
-        cc: [fEmail]
+        cc: [fEmail, substitute.fEmail, ...informToEmails]
       },
       locals: {
         fullName: `${fFirstName} ${fLastName}`,
         position: fPositionName,
-        fromTime: momentFromDT.format(timeFormat).toString(),
+        fromTime: fromTimeText,
         fromDate: momentFromDT.format(dateFormat).toString(),
-        toTime: momentToDT.format(timeFormat).toString(),
+        toTime: toTimeText,
         toDate: momentToDT.format(dateFormat).toString(),
         reason: fReason,
         leaveType: +fAbsenceType,
@@ -119,7 +130,7 @@ export const sendLeaveRequestMail = async (letterEntity, cb) => {
         phone: fPhone,
         createDateTime: {
           date: momentRdt.date(),
-          month: momentRdt.month(),
+          month: momentRdt.month() + 1,
           year: momentRdt.year()
         },
         approver: approverName, //not handled
@@ -168,24 +179,33 @@ const getUserProfile = async fUserId => {
 
     return user;
   } catch (err) {
-    console.log(`[ERR] -> mailingHelper -> getUserProfile -> Error: `, err);
+    console.log(`mailingHelper -> getUserProfile -> Error: `, err);
     return null;
   }
 };
 
 const getSubstituteProfile = async fSubstituteId => {
+  const attributes = ['fEmail', 'fFirstName', 'fLastName'];
+  const users = await userModel.loadAll(attributes, {
+    where: { fId: fSubstituteId }
+  });
+  if (!users || users.length < 1) return null;
+  //extract info
+  const substitute = users[0].get({ plain: true });
+  return substitute;
+};
+
+const getApproverProfile = async fApproverId => {
   try {
-    const attributes = ['fEmail', 'fFirstName', 'fLastName'];
-    const users = await userModel.loadAll(attributes, {
-      where: { fId: fSubstituteId }
-    });
-    if (!users || users.length !== 1) throw { msg: 'USER_NOT_FOUND' };
+    const attributes = ['fFirstName', 'fLastName'];
+    const users = await userModel.loadAll(attributes, { where: { fId: fApproverId }});
+    if(!users || users.length < 1) throw { msg: `USER_NOT_FOUND` };
     //extract info
-    const user = users[0].get({ plain: true });
-    return user;
-  } catch (err) {
-    console.log(`[ERR] -> mailingHelper -> getSubstituteProfile -> Error: `,
-      err);
+    const approver = users[0].get({ plain: true });
+    return approver;
+  }
+  catch (err) {
+    console.log(`mailingHelper -> getApproverProfile -> Error:`,err);
     return null;
   }
-};
+}

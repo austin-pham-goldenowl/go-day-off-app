@@ -152,40 +152,37 @@ Router.get('/team-leader', async (req, res) => {
       where: { fId: userId }
     });
     if (!users || users.length !== 1) throw { msg: 'USER_NOT_FOUND' };
-    console.log(`[PASS] 1`);
 
     // find which user is the team leader
     const { fTeamId } = users[0].get({ plain: true });
     const teams = await teamModel.loadAll(['fTeamLead'], {
       where: { fId: fTeamId }
     });
-    console.log(`-> teams: `, teams);
-    console.log(`-> teams.length: `, teams.length);
-    if (!teams || teams.length !== 1) throw { msg: 'USER_NOT_FOUND' };
-    console.log(`[PASS] 2`);
+    if (!teams || teams.length !== 1) throw { msg: 'TEAM_NOT_FOUND' };
 
     // find the team leader name
     const { fTeamLead } = teams[0].get({ plain: true });
-    console.log(`-> fTeamLead: `, fTeamLead);
-    const leaders = await userModel.loadAll(['fFirstName', 'fLastName', 'fEmail'],
-      {
-        where: { fId: fTeamLead }
-      });
-    console.log(`-> leaders: `, leaders);
-    console.log(`-> leaders.length: `, leaders.length);
-    if (!leaders || leaders.length !== 1) throw { msg: 'LEADERS_NOT_FOUND' };
-    console.log(`[PASS] 3`);
+    const leaders = await userModel.loadAll(['fFirstName', 'fLastName', 'fEmail'], { where: { fId: fTeamLead }});
 
-    const { fFirstName, fLastName, fEmail } = leaders[0].get({ plain: true });
-    const teamLeader = {
-      fId: fTeamLead,
-      fFirstName,
-      fLastName,
-      fEmail
-    };
-
-    handleSuccess(res, { teamLeader });
-  } catch (err) {
+    if (!leaders || leaders.length !== 1) {
+      handleSuccess(res, 
+        {
+          msg: 'LEADERS_NOT_FOUND',
+          teamLeader: {}
+        })
+    }
+    else {
+      const { fFirstName, fLastName, fEmail } = leaders[0].get({ plain: true });
+      const teamLeader = {
+        fId: fTeamLead,
+        fFirstName,
+        fLastName,
+        fEmail
+      };
+      handleSuccess(res, { teamLeader });
+    }
+  } 
+  catch (err) {
     handleFailure(res, { err, route: req.originalUrl });
   }
 });
@@ -210,11 +207,19 @@ Router.get('/substitutes', async (req, res) => {
     const substitutes = await userModel.loadAll(['fId', 'fFirstName', 'fLastName', 'fEmail'], {
       where: { fTeamId: fTeamId }
     });
-    if (!substitutes || substitutes.length < 1) throw { msg: 'SUBSTITUTES_NOT_FOUND' };
-
+    
+    if (!substitutes || substitutes.length < 1) {
+      handleSuccess(res, 
+        { 
+          msg: 'SUBSTITUTES_NOT_FOUND', 
+          substitutes: []
+        });
+    }
+    else {
     //Return `fFirstName`, `fLastName`, `fEmail`, `fId`
-    const mappedSubstitutes = substitutes.map(user => user.get({ plain: true }));
-    handleSuccess(res, { substitutes: mappedSubstitutes });
+      const mappedSubstitutes = substitutes.map(user => user.get({ plain: true }));
+      handleSuccess(res, { substitutes: mappedSubstitutes });
+    }
   } 
   catch(err) {
     handleFailure(res, { err, route: req.originalUrl });

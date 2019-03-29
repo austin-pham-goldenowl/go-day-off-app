@@ -194,8 +194,7 @@ class AbsenceLetterWithFormik extends React.Component {
           } else {
             allInformTo = [
               {
-                additionInfo: second.data.teamLeader.fEmail,
-                value: second.data.teamLeader.fId,
+                value: second.data.teamLeader.fEmail,
                 label: `${second.data.teamLeader.fFirstName} ${
                   second.data.teamLeader.fLastName
                 }`
@@ -278,9 +277,7 @@ class AbsenceLetterWithFormik extends React.Component {
                   });
               }}
               render={({
-                errors,
                 values,
-                touched,
                 handleReset,
                 handleSubmit,
                 isSubmitting,

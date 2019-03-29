@@ -164,6 +164,8 @@ Router.post('/', bodyMustNotEmpty, async (req, res) => {
     const id = uid(LEAVING_FORM_ID_LEN);
     const entity = standardizeObj({ ...req.body, id });
 
+    console.log(`request body: `, req.body);
+
     const { fStatus, fFromDT, fToDT } = entity;
     // validate status value
     if (
@@ -182,12 +184,14 @@ Router.post('/', bodyMustNotEmpty, async (req, res) => {
     entity.users_fId = fUserId;
     entity.users_fId1 = fUserId;
     entity.approver_fId = fApprover;
-    const leaveLetter = await leaveLetterModel.add(entity);
+    const { leaveLetter } = await leaveLetterModel.add(entity);
 
     console.log(`leaveLetter submiting responses: `, leaveLetter);
 
     //Send email
-    sendLeaveRequestMail(entity, (success, data) => {
+    let { fInformTo } = entity;
+    console.log(`LeaveLetter Controller -> req Entities`, entity);
+    sendLeaveRequestMail({ leaveLetter, fInformTo }, (success, data) => {
       if (success) {
         const { accepted, rejected, response, messageId } = data;
         console.log(`[SUCCESS] - Email has been sent.`);

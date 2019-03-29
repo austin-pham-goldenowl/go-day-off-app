@@ -49,6 +49,7 @@ export const createLeaveLetter = letterEntity => {
       substituteId: letterEntity.substituteId,
       userId: getUserId(),
       approver: letterEntity.approver,
+      informTo:letterEntity.informTo,
       reason:
         letterEntity.otherReason !== ''
           ? letterEntity.otherReason
