@@ -1,13 +1,10 @@
 import axios from 'axios';
 import { SERVER_HOST_DEV } from '../constants/api';
-import { getRefToken, signOut } from '../helpers/authHelpers';
-//Global general configurations
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 
 //
 export const login = (payload) => {
-  let link = `${SERVER_HOST_DEV}/auth/login`;
   return axios.post(`${SERVER_HOST_DEV}/auth/login`, 
     {
       'username': payload.username,

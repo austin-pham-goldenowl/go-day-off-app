@@ -10,7 +10,7 @@ import Icon from "@material-ui/core/Icon";
 import DashContainer from '../DashContainer';
 
 // Validation
-import ValidationSchema from "./validationSchema";
+// import ValidationSchema from "./validationSchema";
 
 /**
  * APIs
@@ -115,7 +115,7 @@ class Setting extends React.Component {
                     return ({ [key]: values.key });
                   })
                   const { status } = await settingAPIs.saveSettings(pairs);
-                  if(status !== 201) throw new Error;
+                  if(status !== 201) throw new Error();
                   handleShowNotif(
                     NOTIF_SUCCESS,
                     `Settings saved successfully!`
