@@ -1,7 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
 import { Chip, Avatar } from '@material-ui/core';
-import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import {
   AccessTime as PendingIcon,
@@ -84,10 +83,6 @@ const RequestStatus = props => {
         </Avatar>
       );
   }
-};
-
-RequestStatus.propTypes = {
-  statusType: PropTypes.number.isRequired
 };
 
 export default withStyles(styles)(RequestStatus);
