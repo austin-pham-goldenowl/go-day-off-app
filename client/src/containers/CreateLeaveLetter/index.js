@@ -177,28 +177,44 @@ class AbsenceLetterWithFormik extends React.Component {
     const allLeaveTypes = getAllLeaveTypes();
     const { handleShowNotifNoHide } = this.props;
     // Call api request:
-    Axios.all([getAllInformTo(), getAllApprover(), getAllSubsitutes()])
+
+    Axios.all([ getAllApprover(), getAllInformTo(), getAllSubsitutes() ])
       .then(
         Axios.spread((first, second, third) => {
-          let allApprover = second.data.approvers.map(item => ({
+          //approvers must be existed
+          let allApprover = first.data.approvers.map(item => ({
             value: item.fId,
             label: `${item.fFirstName} ${item.fLastName}`
           }));
-          let allInformTo = [
-            {
-              additionInfo: first.data.teamLeader.fEmail,
-              value: first.data.teamLeader.fId,
-              label: `${first.data.teamLeader.fFirstName} ${
-                first.data.teamLeader.fLastName
-              }`
-            }
-          ];
-          let allSubstitutes = third.data.substitutes.map(item => ({
-            additionInfo: item.fEmail,
-            value: item.fId,
-            label: `${item.fFirstName} ${item.fLastName}`
-          }));
+          // "informTo" is optional, need to check
+          let allInformTo = null;
+          if (second.data.msg && second.data.msg === 'LEADERS_NOT_FOUND' )
+          {
+            allInformTo = [];
+          } else {
+            allInformTo = [
+              {
+                additionInfo: second.data.teamLeader.fEmail,
+                value: second.data.teamLeader.fId,
+                label: `${second.data.teamLeader.fFirstName} ${
+                  second.data.teamLeader.fLastName
+                }`
+              }
+            ];
+          }
+          // "informTo" is optional, need to check
 
+          let allSubstitutes = null;
+          if (third.data.msg && third.data.msg === 'SUBSTITUTES_NOT_FOUND') {
+            allSubstitutes = [];
+          }
+          else {
+            allSubstitutes = third.data.substitutes.map(item => ({
+              additionInfo: item.fEmail,
+              value: item.fId,
+              label: `${item.fFirstName} ${item.fLastName}`
+            }));
+          }
           this.setState(prevState => ({
             ...prevState,
             templateList: {
@@ -215,6 +231,7 @@ class AbsenceLetterWithFormik extends React.Component {
         })
       )
       .catch(err => {
+        console.log(err);
         handleShowNotifNoHide(NOTIF_ERROR, `${err.message}`);
         this.switchButtonCtrl(false);
       });

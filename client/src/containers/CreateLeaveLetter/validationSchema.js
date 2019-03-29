@@ -17,7 +17,7 @@ export const YupValidationSchema = Yup.object().shape({
   approver: Yup.string()
     .min(1)
     .required(`'Approver' is required.`),
-  informTo: Yup.array().required(`'Inform to' is required.`),
+  informTo: Yup.array(),
   reason: Yup.string().required(`'Reason' is required.`)
 });
 

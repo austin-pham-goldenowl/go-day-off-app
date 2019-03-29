@@ -218,7 +218,6 @@ class IntegrationReactSelect extends React.Component {
   render() {
     const { label, classes, theme, options } = this.props;
     const { field: { value, onBlur } } = this.props; //For Formik
-    console.log(this.props.field);
     const selectStyles = {
       input: base => ({
         ...base,
