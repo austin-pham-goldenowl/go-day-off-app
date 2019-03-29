@@ -143,6 +143,9 @@ const styles = theme => ({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: theme.spacing.unit * 3
+  },
+  email: {
+    wordBreak: 'break-all'
   }
 });
 
@@ -244,7 +247,6 @@ class LeaveRequestDetail extends React.Component {
               handleReset,
               handleSubmit,
               handleChange,
-              ...formikProps
             }) => {
               return (
                 <Form className={classes.form}>
@@ -322,7 +324,7 @@ class LeaveRequestDetail extends React.Component {
                         >
                           <div className={classes.fieldTitle}>
                             Email:
-                            <span className={classes.fieldValue}>{` ${
+                            <span className={classNames(classes.fieldValue, classes.email)}>{` ${
                               userInfo.fEmail
                             }`}</span>
                           </div>
