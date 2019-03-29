@@ -109,9 +109,9 @@ class LoginWithFormik extends React.Component {
               // showPreloading
               login(values)
                 .then(res => {
-                  let { success, access_token, refresh_token } = res.data;
+                  let { success, access_token, refresh_token, user } = res.data;
                   if (success) {
-                    authHelper.signIn(access_token, refresh_token);
+                    authHelper.signIn(access_token, refresh_token, user);
                     if (authHelper.checkAuth()) {
                       handleShowNotif(NOTIF_SUCCESS, "Login successfully!");
                       setTimeout(() => history.push("/dashboard"), 500); //Timeout will make it smoothier
