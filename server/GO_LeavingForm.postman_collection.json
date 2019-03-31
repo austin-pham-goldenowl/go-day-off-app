@@ -82,7 +82,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"username\" : \"hr1\",\n\t\"rawPwd\" : \"password\"\n}"
+							"raw": "{\n\t\"username\" : \"nhansu1\",\n\t\"rawPwd\" : \"password\"\n}"
 						},
 						"url": {
 							"raw": "localhost:3001/api/v1.0.0/auth/login",
@@ -246,7 +246,7 @@
 						"header": [
 							{
 								"key": "x-access-token",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlS211WnFZenptIiwidXNlclR5cGUiOiJociIsImlhdCI6MTU1MzE1NzMzMiwiZXhwIjoxNTUzMjE3MzMyfQ.SGU1Sou4vn7ph-d2TiYwpGsjI89bSZ0OGq9RVIDgIE8",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlS211WnFZenptIiwidXNlclR5cGUiOiJociIsImlhdCI6MTU1MzQ5NjUyMSwiZXhwIjoxNTUzNTU2NTIxfQ.uk2PV6wBdMf2nrTJQGrXj4F6LaDX1VAQwEx6BwzOVBY",
 								"type": "text"
 							}
 						],
@@ -255,7 +255,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "localhost:3001/api/v1.0.0/leaveletter?size=5&page=1",
+							"raw": "localhost:3001/api/v1.0.0/leaveletter?size=0&page=1",
 							"host": [
 								"localhost"
 							],
@@ -268,7 +268,7 @@
 							"query": [
 								{
 									"key": "size",
-									"value": "5"
+									"value": "0"
 								},
 								{
 									"key": "page",
@@ -360,7 +360,7 @@
 						"header": [
 							{
 								"key": "x-access-token",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlS211WnFZenptIiwidXNlclR5cGUiOiJociIsImlhdCI6MTU1MzE1NzMzMiwiZXhwIjoxNTUzMjE3MzMyfQ.SGU1Sou4vn7ph-d2TiYwpGsjI89bSZ0OGq9RVIDgIE8",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZzNicWVUZ3U2IiwidXNlclR5cGUiOiJociIsImlhdCI6MTU1Mzc0MjQ1MCwiZXhwIjoxNTUzODAyNDUwfQ.v07oPgODkUcnbUZaq80wM0tvMmFpCyhkulXq_3AZww0",
 								"type": "text"
 							},
 							{
@@ -371,7 +371,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"absenceType\": 1,\n\t\"fromDT\": \"2019-04-23T16:29:56.000Z\",\n\t\"status\": 1,\n\t\"substituteId\": \"i53FItHeMK\",\n\t\"toDT\": \"2019-04-25T16:29:56.000Z\",\n\t\"userId\": \"eKmuZqYzzm\",\n\t\"approver\": \"H8UIAdsy7T\",\n\t\"fromOpt\": \"allday\",\n\t\"toOpt\": \"morning\"\n}"
+							"raw": "{\n\t\"absenceType\": 1,\n\t\"fromDT\": \"2019-03-25T16:29:56.000Z\",\n\t\"status\": 2,\n\t\"substituteId\": \"i53FItHeMK\",\n\t\"toDT\": \"2019-03-25T16:29:56.000Z\",\n\t\"userId\": \"MNeCqLCc4y\",\n\t\"approver\": \"5g3bqeTgu6\",\n\t\"fromOpt\": \"morning\",\n\t\"toOpt\": \"allday\"\n}"
 						},
 						"url": {
 							"raw": "localhost:3001/api/v1.0.0/leaveletter/",
@@ -780,7 +780,7 @@
 						"header": [
 							{
 								"key": "x-access-token",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJIOFVJQWRzeTdUIiwidXNlclR5cGUiOiJociIsImlhdCI6MTU1MzE1NjQwMSwiZXhwIjoxNTUzMjE2NDAxfQ.v7x3vYRjzIQMGVR0BBUuqhcG-Sh0iTDs2cLTEOkPQ-k",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlS211WnFZenptIiwidXNlclR5cGUiOiJociIsImlhdCI6MTU1MzU3MDE2NywiZXhwIjoxNTUzNjMwMTY3fQ.XjCM9LP9wQm2QnbFWo3SGYXAxtHazP7wfbYncN5iZD0",
 								"type": "text"
 							}
 						],
@@ -789,7 +789,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "localhost:3001/api/v1.0.0/leaveletter/filter?userId=H8UIAdsy7T&fromMonth=01&toMonth=04&fromYear=2019&toYear=2019&page=1&size=5",
+							"raw": "localhost:3001/api/v1.0.0/leaveletter/filter?userId=eKmuZqYzzm&fromMonth=01&toMonth=04&fromYear=2019&toYear=2019&page=1&size=20&status=0",
 							"host": [
 								"localhost"
 							],
@@ -803,7 +803,7 @@
 							"query": [
 								{
 									"key": "userId",
-									"value": "H8UIAdsy7T"
+									"value": "eKmuZqYzzm"
 								},
 								{
 									"key": "fromMonth",
@@ -827,7 +827,11 @@
 								},
 								{
 									"key": "size",
-									"value": "5"
+									"value": "20"
+								},
+								{
+									"key": "status",
+									"value": "0"
 								}
 							]
 						}
@@ -878,7 +882,7 @@
 						"header": [
 							{
 								"key": "x-access-token",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlS211WnFZenptIiwidXNlclR5cGUiOiJociIsImlhdCI6MTU1MzE1NjMyOCwiZXhwIjoxNTUzMjE2MzI4fQ.jbiMqMOfwe4H9JdJ4hmTAEwzpRlFM1W9KUex088XqjQ",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJMelBxOTBmOGJaIiwidXNlclR5cGUiOiJwZXJzb25uZWwiLCJpYXQiOjE1NTMyMjMxNTQsImV4cCI6MTU1MzI4MzE1NH0.e6QAKsW4WtaVKGtCJwe3KZUZP7zc0pDwYn0589FwMXA",
 								"type": "text"
 							}
 						],
@@ -897,6 +901,51 @@
 								"v1.0.0",
 								"setting",
 								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get used off days",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZzNicWVUZ3U2IiwidXNlclR5cGUiOiJociIsImlhdCI6MTU1Mzc0MjQ1MCwiZXhwIjoxNTUzODAyNDUwfQ.v07oPgODkUcnbUZaq80wM0tvMmFpCyhkulXq_3AZww0",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "localhost:3001/api/v1.0.0/leaveletter/used-off-days?userId=MNeCqLCc4y&month=6&year=2019",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"api",
+								"v1.0.0",
+								"leaveletter",
+								"used-off-days"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "MNeCqLCc4y"
+								},
+								{
+									"key": "month",
+									"value": "6"
+								},
+								{
+									"key": "year",
+									"value": "2019"
+								}
 							]
 						}
 					},
