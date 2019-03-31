@@ -1,11 +1,14 @@
 import { getCookie, setCookie, removeCookie } from 'tiny-cookie';
 import jwt_decode from 'jwt-decode';
+
+//constants
 import { 
   ACCESS_TOKEN_KEY, 
   REFRESH_TOKEN_KEY,
   USER_INFO_KEY,
 } from '../constants/token';
 
+// functions
 export const checkAuth = () => {
   const accessToken = getCookie(ACCESS_TOKEN_KEY);
   if (!accessToken) return false;
@@ -21,13 +24,20 @@ export const checkAuth = () => {
   return false;
 }
 
-export const signIn = async (accessToken, refToken) => {
-  const { exp, user } = jwt_decode(accessToken);
+export const signIn = async (accessToken, refToken, userBasicInfo) => {
+  const { exp, iat, ...userInfo } = jwt_decode(accessToken);
+  console.log(`authHelpers -> signIn -> jwt_decode(ACCESS_TOKEN): `, jwt_decode(accessToken));
+  console.log(`userBasic info: `, userBasicInfo);
   if(!exp || Date.now() < exp) return false;
   const expires = new Date(exp * 1000);
   await (accessToken && setCookie(ACCESS_TOKEN_KEY, accessToken, {expires}));
   await (refToken && setCookie(REFRESH_TOKEN_KEY, refToken, { expires }));
-  await (user && setCookie(USER_INFO_KEY, user, { expires }));
+
+  const user = {
+    ...userInfo,
+    ...userBasicInfo
+  }
+  await (user && setCookie(USER_INFO_KEY, JSON.stringify(user), { expires }));
 }
 
 export const signOut = cb => {
@@ -48,7 +58,8 @@ export const getAccessToken = () => {
 }
 
 export const getUserEntity = () => {
-  return (getCookie(USER_INFO_KEY) && JSON.parse(getCookie(USER_INFO_KEY))) || '';
+  const cookie = getCookie(USER_INFO_KEY);
+  return (cookie && JSON.parse(cookie)) || '';
 }
 
 export const getUserInfo = info => {
