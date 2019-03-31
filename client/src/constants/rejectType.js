@@ -1,0 +1,1 @@
+export const REJECT_TYPE = { BY_APPROVER: 1, BY_SELF: 2 };
