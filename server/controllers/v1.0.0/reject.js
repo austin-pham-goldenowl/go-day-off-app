@@ -1,6 +1,13 @@
 const express = require('express');
 const Router = express.Router();
 
+
+//constants
+import { 
+  LEAVING_LETTER_STATUS,
+  REJECT_TYPE,
+} from '../../configs/constants';
+
 /**
  * Helpers
  */
@@ -50,7 +57,7 @@ Router.post('/', bodyMustNotEmpty, async (req, res) => {
     const entity = standardizeObj(req.body);
     // validate rejectType value
     if (
-      (entity.fRejectType || 1) &&
+      (entity.fRejectType || REJECT_TYPE.BY_APPROVER) &&
       !rejectModel.rawAttributes.fRejectType.values.includes(entity.fRejectType)
     )
       throw { msg: 'INVALID_VALUES' };
@@ -61,7 +68,7 @@ Router.post('/', bodyMustNotEmpty, async (req, res) => {
     });
 
     // update leave letter status
-    await leaveLetterModel.modify({ fStatus: 3 },
+    await leaveLetterModel.modify({ fStatus: LEAVING_LETTER_STATUS.REJECTED },
       { where: { fId: entity.fLetterId } });
     handleSuccess(res, { rejection: entity });
   } catch (err) {
