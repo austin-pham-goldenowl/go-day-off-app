@@ -109,7 +109,8 @@ class LoginWithFormik extends React.Component {
               // showPreloading
               login(values)
                 .then(res => {
-                  let { success, access_token, refresh_token, user } = res.data;
+                  const { success, access_token, refresh_token, user } = res.data;
+                  console.log(`login response data -> user: `, user);
                   if (success) {
                     authHelper.signIn(access_token, refresh_token, user);
                     if (authHelper.checkAuth()) {
