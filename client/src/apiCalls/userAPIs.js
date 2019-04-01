@@ -95,3 +95,10 @@ export const getAllSubsitutesByUserId = userId => {
     }
   });
 };
+
+export const getUsersList = (size = 10, page = 1) => 
+  axios.get(`${SERVER_HOST_DEV}/user?page=${page}&size=${size}`, {
+    headers: {
+      'x-access-token': getCookie(ACCESS_TOKEN_KEY)
+    }
+});

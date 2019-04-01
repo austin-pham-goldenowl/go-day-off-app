@@ -1,20 +1,19 @@
 import React from 'react';
 
-import NotFound from '../components/NotFound';
 import Home from '../containers/Home';
 import SignIn from '../containers/SignIn';
 import SignOut from '../containers/SignOut';
-
-import AbsenceLetterCreate from '../containers/CreateLeaveLetter';
-import EditAccountInfo from '../containers/EditAccountInfo';
-import CreateNewUserAccout from '../containers/CreateNewUserAccount';
+import NotFound from '../components/NotFound';
+import Settings from '../containers/Settings';
 import Dashboard from '../containers/Dashboard';
-import AllLettersManagement from '../containers/AllLettersManagement';
-import LeaveRequestDetail from '../containers/LeaveRequestDetail';
 import MyLetters from '../containers/MyLetters';
-import Settings from '../containers/Settings'
-
-// import EditAccountInfo from '../containers/EditAccountInfo/container';
+import EditAccountInfo from '../containers/EditAccountInfo';
+import UsersManagement from '../containers/UsersManagement';
+// import EditAccountInfo from '../containers/EditAccountInfo';
+import LeaveRequestDetail from '../containers/LeaveRequestDetail';
+import AbsenceLetterCreate from '../containers/CreateLeaveLetter';
+import CreateNewUserAccout from '../containers/CreateNewUserAccount';
+import AllLettersManagement from '../containers/AllLettersManagement';
 
 const routes = [
   {
@@ -82,6 +81,12 @@ const routes = [
     isPrivate: true,
     exact: true,
     comp: props => <Settings {...props} />
+  },
+  {
+    path: '/users-management',
+    isPrivate: true,
+    exact: true,
+    comp: props => <UsersManagement {...props}/>
   },
   {
     path: '',
