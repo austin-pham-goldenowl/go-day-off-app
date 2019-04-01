@@ -5,7 +5,6 @@ import { Formik, Form, Field } from 'formik';
 import { withRouter } from 'react-router-dom';
 import {
   Paper,
-  TextField,
   CssBaseline,
   Typography,
   Button,
@@ -24,9 +23,16 @@ import {
   DoneOutlined as DoneIcon,
   RemoveCircleOutline as RemoveCircleIcon
 } from '@material-ui/icons';
+
+//validationSChema
+import { RejectDialogValidationSchema } from './validationSchema';
+
+//components
+import LetterCancelingDialog from '../../components/Dialogs/LetterCancelingDialog';
+
 // Helper
 import { getLeaveType } from '../../helpers/leaveLetterHelper';
-
+import { getUserId } from '../../helpers/authHelpers';
 // Notification redux
 import {
   showNotification,
@@ -37,7 +43,10 @@ import { NOTIF_ERROR, NOTIF_SUCCESS } from '../../constants/notification';
 // API
 import { getLeaveLetterDetails } from '../../apiCalls/leaveLetterAPI';
 import { getProfile } from '../../apiCalls/userAPIs';
-import { updateLetterStatus } from '../../apiCalls/leaveLetterAPI';
+import { 
+  approveLeaveLetterRequest, 
+  rejectLeaveLetterRequest
+} from '../../apiCalls/leaveLetterAPI';
 
 // Constants
 import {
@@ -159,8 +168,68 @@ class LeaveRequestDetail extends React.Component {
     super();
     this.state = {
       leaveLetter: {},
-      userInfo: {}
+      userInfo: {},
+      demandUser: null,
+      rejectDialogOpen: false,
     };
+  }
+
+  handleToggleRejectDialog = async (value = true) => {
+    await this.setState(prevState => ({
+      ...prevState,
+      rejectDialogOpen: value
+    }));
+  }
+
+  // Handle approving
+  handleApprove = ({setSubmitting, resetForm }) => {
+    const { history, handleShowNotif } = this.props;
+    const { leaveLetter: { fUserId } } = this.state;
+    //call api
+    approveLeaveLetterRequest(
+      queryString.parse(history.location.search).id,
+      fUserId,
+      LEAVE_REQUEST_APPROVED
+    )
+      .then(res => {
+        handleShowNotif(
+          NOTIF_SUCCESS,
+          `Leave request updated successfully!`
+        );
+        this.loadData();
+        resetForm();
+      })
+      .catch(err => {
+        handleShowNotif(
+          NOTIF_ERROR,
+          `Action failed (${err.message})`
+        );
+        setSubmitting(false);
+      });
+  }
+
+  //Handle rejecting 
+  handleReject = ({setSubmitting, resetForm, errors, values: {rejectReason}}) => {
+    if (errors && Object.keys(errors).length === 0) {
+      const { history, handleShowNotif } = this.props;
+      // call update status api
+      rejectLeaveLetterRequest(queryString.parse(history.location.search).id, rejectReason)
+        .then(res => {
+          handleShowNotif(
+            NOTIF_SUCCESS,
+            `Leave request updated successfully!`
+          );
+          resetForm();
+          this.loadData();
+        })
+        .catch(err => {
+          handleShowNotif(
+            NOTIF_ERROR,
+            `Action failed! (${err.message})`
+          );
+          setSubmitting(false);
+        });
+    }
   }
 
   loadData = async () => {
@@ -180,7 +249,14 @@ class LeaveRequestDetail extends React.Component {
     } = response;
     if (statusUser !== 200 || successUser !== true || !userInfo) return;
 
-    this.setState({ leaveLetter, userInfo });
+    response = await getProfile(getUserId());
+    let {
+      status: statusDemandUser,
+      data: { success: successDemandUser, user: demandInfo }
+    } = response;
+    if(statusDemandUser !== 200 || successDemandUser !== true || !demandInfo) return;
+
+    this.setState({ leaveLetter, userInfo, demandUser: demandInfo });
   };
 
   componentDidMount = async () => {
@@ -189,80 +265,37 @@ class LeaveRequestDetail extends React.Component {
   };
 
   render() {
-    console.log(`leaveLetter: `, this.state.leaveLetter);
-
-    const { history, classes, initialValues, handleShowNotif } = this.props;
-    const { userInfo, leaveLetter } = this.state;
+    const { history, classes, initialValues } = this.props;
+    const { userInfo, leaveLetter, demandUser, rejectDialogOpen } = this.state;
+    console.log(`demandUser: `, demandUser);
     return (
       <DashContainer>
         <Paper className={classes.paper}>
           <CssBaseline />
           <Formik
-            initialValues={initialValues}
+            validate={(values) => {
+              let errors = {};
+              if (rejectDialogOpen && values.rejectReason.length < 5 ) {
+                errors.rejectReason = `'Reject reason' can't be less than 50 characters`;
+              }
+              console.log('errors ', errors);
+              return errors;
+            }}
             validateOnBlur={true}
-            onReset={(values, actions) => {
-              //call api
-              updateLetterStatus(
-                queryString.parse(history.location.search).id,
-                leaveLetter.fUserId,
-                LEAVE_REQUEST_REJECTED
-              )
-                .then(res => {
-                  handleShowNotif(
-                    NOTIF_SUCCESS,
-                    `Leave request updated successfully!`
-                  );
-                  //Re call get
-                  this.loadData();
-                })
-                .catch(err => {
-                  handleShowNotif(
-                    NOTIF_ERROR,
-                    `Action failed (${err.message})`
-                  );
-                  actions.setSubmitting(false);
-                });
-            }}
-            onSubmit={(values, actions) => {
-              //call api
-              updateLetterStatus(
-                queryString.parse(history.location.search).id,
-                leaveLetter.fUserId,
-                LEAVE_REQUEST_APPROVED
-              )
-                .then(res => {
-                  handleShowNotif(
-                    NOTIF_SUCCESS,
-                    `Leave request updated successfully!`
-                  );
-                  //Re call get
-                  this.loadData();
-                })
-                .catch(err => {
-                  handleShowNotif(
-                    NOTIF_ERROR,
-                    `Action failed (${err.message})`
-                  );
-                  actions.setSubmitting(false);
-                });
-            }}
+            initialValues={initialValues}
           >
             {({
-              errors,
-              values,
-              isSubmitting,
               handleReset,
-              handleSubmit,
-              handleChange,
+              isSubmitting,
             }) => {
               return (
                 <Form className={classes.form}>
                   <Grid item container xs={12} className={classes.topInfo}>
                     <Button
-                      className={classes.button}
                       size="small"
-                      variant="contained"
                       color="default"
+                      variant="contained"
+                      className={classes.button}
                       onClick={() => history.goBack()}
                     >
                       <ArrowBackIcon className={classes.leftIcon} />
@@ -271,7 +304,7 @@ class LeaveRequestDetail extends React.Component {
                     <RequestStatusPill statusType={leaveLetter.fStatus} />
                   </Grid>
                   {/* Form title */}
-                  <Typography component="h1" variant="h4">
+                  <Typography component="h1" variant="h5">
                     Request detail
                   </Typography>
                   {/* End - Form title */}
@@ -393,55 +426,106 @@ class LeaveRequestDetail extends React.Component {
                     </Grid>
                   </React.Fragment>
                   {/* Bottom buttons */}
-                  {leaveLetter.fStatus === LEAVE_REQUEST_PENDING &&
-                  userInfo.fTypeId === responseUserPermission['HR'] ? (
-                    <React.Fragment>
-                      <Grid
-                        item
-                        container
-                        xs={12}
-                        className={classes.buttonGroupBottom}
-                        spacing={8}
-                      >
-                        <Field
-                          render={({ field, form }) => (
-                            <Button
-                              className={classNames(
-                                classes.button,
-                                classes.btnApprove
-                              )}
-                              size="small"
-                              variant="contained"
-                              color="primary"
-                              onClick={handleSubmit}
-                              disabled={isSubmitting}
-                            >
-                              <DoneIcon />
-                              Approve
-                            </Button>
-                          )}
-                        />
-                        <Field
+
+                  {/**
+                    if (letter status = pending)
+                    then 
+                          if (User type = HR)
+                          then 
+                              _Show button group: [Accept] [Reject]
+                          else 
+                              _Show button [Cancel]
+                    else 
+                        _Don't show any button to interact with
+                   */}
+                  {leaveLetter.fStatus === LEAVE_REQUEST_PENDING
+                    ? (
+                      <React.Fragment>
+                        <Grid
+                          item
+                          container
+                          xs={12}
+                          spacing={8}
+                          className={classes.buttonGroupBottom}
+                        >
+                        {demandUser.fTypeId === responseUserPermission['HR'] ? (
+                          <React.Fragment>
+                            <Field
+                            render={({ field, form }) => (
+                              <Button
+                                className={classNames(
+                                  classes.button,
+                                  classes.btnApprove
+                                )}
+                                size="small"
+                                variant="contained"
+                                color="primary"
+                                onClick={() => this.handleApprove(form)}
+                                disabled={isSubmitting}
+                              >
+                                <DoneIcon />
+                                Approve
+                              </Button>
+                            )}
+                          />
+                          <Field
+                            render={({ field, form }) => (
+                              <Button
+                                className={classes.button}
+                                size="small"
+                                color="secondary"
+                                variant="contained"
+                                disabled={isSubmitting}
+                                onClick={() => this.handleToggleRejectDialog(true)}
+                              >
+                                <RemoveCircleIcon className={classes.leftIcon} />
+                                Reject
+                              </Button>
+                            )}
+                          />
+                          </React.Fragment>
+                        ) : (
+                          <Field
                           render={({ field, form }) => (
                             <Button
                               className={classes.button}
                               size="small"
-                              variant="contained"
                               color="secondary"
-                              onClick={() => {
-                                handleReset();
-                              }}
+                              variant="contained"
                               disabled={isSubmitting}
+                              onClick={() => this.handleToggleRejectDialog(true)}
                             >
                               <RemoveCircleIcon className={classes.leftIcon} />
-                              Reject
+                              Cancel
                             </Button>
                           )}
-                        />
-                      </Grid>
-                    </React.Fragment>
-                  ) : null}
+                          />
+                        )}
+
+                        </Grid>
+                      </React.Fragment>
+                    ) : null
+                  }
                   {/* End - Top buttons */}
+                  {/** Reject/Cancel Dialog */}
+                  <React.Fragment>
+                      <Field 
+                        name='rejectReason'
+                        open={rejectDialogOpen}
+                        component={LetterCancelingDialog}
+                        title={demandUser && demandUser.fTypeId === responseUserPermission['HR'] ? 'Reject' : 'Cancel'}
+                        onConfirm={async (form) => {
+                          await this.handleReject(form);
+                          this.handleToggleRejectDialog(false);
+                          handleReset();
+                        }}
+                        onClose={() => {
+                          this.handleToggleRejectDialog(false);
+                          handleReset();
+                        }}
+                      />
+                  </React.Fragment>
+                  {/** End - Reject/Cancel Dialog */}
                 </Form>
               );
             }}
@@ -454,7 +538,7 @@ class LeaveRequestDetail extends React.Component {
 
 LeaveRequestDetail.defaultProps = {
   initialValues: {
-    reason: ''
+    rejectReason: ''
   }
 };
 
