@@ -319,7 +319,7 @@ class LeaveRequestDetail extends React.Component {
                         <Grid item xs={12} className={classes.fieldWrapper}>
                           <div className={classes.fieldTitle}>
                             Creator:
-                            <span className={classes.fieldValue}>{` ${
+                            <span className={classes.fieldValue}>{ (!userInfo.fFirstName && !userInfo.fLastName) ? null : ` ${
                               userInfo.fFirstName
                             } ${userInfo.fLastName}`}</span>
                           </div>
@@ -333,7 +333,7 @@ class LeaveRequestDetail extends React.Component {
                         >
                           <div className={classes.fieldTitle}>
                             Position:
-                            <span className={classes.fieldValue}>{` ${
+                            <span className={classes.fieldValue}>{ !userInfo.fPositionName ? null :` ${
                               userInfo.fPositionName
                             }`}</span>
                           </div>
@@ -347,7 +347,7 @@ class LeaveRequestDetail extends React.Component {
                         >
                           <div className={classes.fieldTitle}>
                             Team:
-                            <span className={classes.fieldValue}>{` ${
+                            <span className={classes.fieldValue}>{!userInfo.fTeamName ? null :` ${
                               userInfo.fTeamName
                             }`}</span>
                           </div>
@@ -361,7 +361,7 @@ class LeaveRequestDetail extends React.Component {
                         >
                           <div className={classes.fieldTitle}>
                             Email:
-                            <span className={classNames(classes.fieldValue, classes.email)}>{` ${
+                            <span className={classNames(classes.fieldValue, classes.email)}>{!userInfo.fEmail ? null :` ${
                               userInfo.fEmail
                             }`}</span>
                           </div>
@@ -375,7 +375,7 @@ class LeaveRequestDetail extends React.Component {
                         >
                           <div className={classes.fieldTitle}>
                             Phone:
-                            <span className={classes.fieldValue}>{` ${
+                            <span className={classes.fieldValue}>{!userInfo.fPhone ? null :` ${
                               userInfo.fPhone
                             }`}</span>
                           </div>
@@ -390,7 +390,7 @@ class LeaveRequestDetail extends React.Component {
                             Leave Type:
                             <span
                               className={classes.fieldValue}
-                            >{` ${getLeaveType(
+                            >{!leaveLetter.fAbsenceType ? null :` ${getLeaveType(
                               leaveLetter.fAbsenceType
                             )}`}</span>
                           </div>
@@ -399,21 +399,21 @@ class LeaveRequestDetail extends React.Component {
                         <Grid item xs={6} className={classes.fieldWrapper}>
                           <div className={classes.fieldTitle}>
                             From:
-                            <span className={classes.fieldValue}>{` ${moment(leaveLetter.fFromDT).format('MM/DD/YYYY')} (${DaySessionOptions[leaveLetter.fFromOpt]})`}</span>
+                            <span className={classes.fieldValue}>{!leaveLetter.fFromDT ? null :` ${moment(leaveLetter.fFromDT).format('MM/DD/YYYY')} (${DaySessionOptions[leaveLetter.fFromOpt]})`}</span>
                           </div>
                         </Grid>
                         {/** ToDT */}
                         <Grid item xs={6} className={classes.fieldWrapper}>
                           <div className={classes.fieldTitle}>
                             To:
-                            <span className={classes.fieldValue}>{` ${moment(leaveLetter.fToDT).format('MM/DD/YYYY')} (${DaySessionOptions[leaveLetter.fToOpt]})`}</span>
+                            <span className={classes.fieldValue}>{!leaveLetter.fToDT ? null :` ${moment(leaveLetter.fToDT).format('MM/DD/YYYY')} (${DaySessionOptions[leaveLetter.fToOpt]})`}</span>
                           </div>
                         </Grid>
                         {/** Reason */}
                         <Grid item xs={12} className={classes.fieldWrapper}>
                           <div className={classes.fieldTitle}>
                             Reason:
-                            <span className={classes.fieldValue}>{` ${
+                            <span className={classes.fieldValue}>{!leaveLetter.fReason ? null :` ${
                               leaveLetter.fReason
                             }`}</span>
                           </div>
