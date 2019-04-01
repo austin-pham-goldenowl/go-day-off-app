@@ -62,7 +62,7 @@ class UsersManagement extends React.Component {
     
     const tableInfo = {
       columns: ['Name', 'Status', 'Team', 'Email', 'Actions'],
-      title: <Typography component="h1" variant="h4" className={classes.title}>All users</Typography>,
+      title: <Typography component="span" variant="h4" className={classes.title}>All users</Typography>,
       data: Array.isArray(users) ? (
         users.map(({ fId, fFirstName, fLastName, fEmail, fTeamName, fAvailable }) => [
             `${fFirstName} ${fLastName}`,
@@ -70,7 +70,12 @@ class UsersManagement extends React.Component {
             fTeamName,
             fEmail,
             <Link
-              to={`/leave-request/profile?id=${fId}`}
+              to={{
+                pathname: `/account/info`,
+                state: {
+                  demandUserId: fId
+                }
+              }}
               className={classes.btnLink}
             >
               <Button variant='contained' color='primary'>
@@ -92,7 +97,7 @@ class UsersManagement extends React.Component {
         responsive: 'scroll',
         selectableRows: false,
         rowsPerPageOptions: [5, 10, 15, 20],
-        onChangeRowsPerPage: size => this.changePage(1, size),
+        onChangeRowsPerPage: size => this.changePage(size, 1),
         onTableChange: (action, tableState) => action === 'changePage' && this.changePage(tableState.rowsPerPage, tableState.page + 1),
       }
     }
