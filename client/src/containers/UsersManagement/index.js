@@ -49,7 +49,7 @@ class UsersManagement extends React.Component {
   changePage = async (size = 10, page = 1) => {
     try {
       const { data: { success, users, count } } = await getUsersList(size, page);
-      if(success) this.setState({ users, count });
+      if(success) this.setState({ users, count, size });
     }
     catch(err) {
       console.log(err);
