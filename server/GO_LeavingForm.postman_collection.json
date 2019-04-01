@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "facf7726-e03b-4a42-8f76-deae98ef5b6e",
+		"_postman_id": "b0c306ee-ebe2-411b-b77a-7d44ed904951",
 		"name": "GO_LeavingForm",
 		"description": "Golden Owl - Leaving Form",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -945,6 +945,46 @@
 								{
 									"key": "year",
 									"value": "2019"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get users list",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZzNicWVUZ3U2IiwidXNlclR5cGUiOiJociIsImlhdCI6MTU1NDA4OTAyMSwiZXhwIjoxNTU0MTQ5MDIxfQ.G8BejApnd2PsTO79Z0x1gUZbTUFUGrE7t9-lNC7G4CY",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "localhost:3001/api/v1.0.0/user?page=1&size=10",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"api",
+								"v1.0.0",
+								"user"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "10"
 								}
 							]
 						}

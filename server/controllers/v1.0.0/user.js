@@ -1,13 +1,15 @@
 const express = require('express');
 const Router = express.Router();
+const { Op } = require('sequelize');
 
 /**
  * Models
  */
 const {
   users: userModel,
-  positions: positionModel,
   teams: teamModel,
+  positions: positionModel,
+  leaveLetters: leaveLetterModel,
   userPermission: permissionModel
 } = require('../../models');
 
@@ -23,6 +25,13 @@ const {
   getIdFromToken,
   getPermissionByUserId
 } = require('../../helpers/getUserInfo');
+
+
+/**
+ * Constants
+ */
+const { DEFAULT_PAGE_ORDER, DEFAULT_PAGE_SIZE, 
+  ALLOWED_PAGE_SIZE, LEAVING_LETTER_STATUS } = require('../../configs/constants');
 
 /**
  * Middlewares
@@ -145,7 +154,6 @@ Router.get('/approver', async (req, res) => {
 
 Router.get('/team-leader', async (req, res) => {
   try {
-    console.log(`userController -> path '/team-leader':`);
     const { userId } = req.token_payload;
     // find which team the user belongs to
     const users = await userModel.loadAll(['fTeamId'], {
@@ -155,9 +163,7 @@ Router.get('/team-leader', async (req, res) => {
 
     // find which user is the team leader
     const { fTeamId } = users[0].get({ plain: true });
-    const teams = await teamModel.loadAll(['fTeamLead'], {
-      where: { fId: fTeamId }
-    });
+    const teams = await teamModel.loadAll(['fTeamLead'], { where: { fId: fTeamId } });
     if (!teams || teams.length !== 1) throw { msg: 'TEAM_NOT_FOUND' };
 
     // find the team leader name
@@ -226,5 +232,52 @@ Router.get('/substitutes', async (req, res) => {
   }
 });
 
+Router.get("/", userMustBeHR, async (req, res) => {
+  try {
+    let { page = DEFAULT_PAGE_ORDER, size = DEFAULT_PAGE_SIZE } = req.query;
+    if(isNaN(page) || page < 1) page = DEFAULT_PAGE_ORDER;
+    if(isNaN(size) || !ALLOWED_PAGE_SIZE.includes(+size)) size = DEFAULT_PAGE_SIZE;
+    if(+size === 0) size = Number.MAX_SAFE_INTEGER;
+
+    const { rawUsers, count } = await userModel.countAll(
+      ['fId', 'fFirstName', 'fLastName', 'fTeamId', 'fEmail'],
+      {},
+      { limit: +size },
+      { offset: (page - 1) * size },
+      { order: [['fFirstName', 'ASC'], ['fLastName', 'ASC']] });
+
+    const users = [];
+    await (async () => {
+        for (let i = 0; i < rawUsers.length; i++) {
+          const user = rawUsers[i].get({ plain: true });
+          const { fId, fTeamId } = user;
+
+          // get team name
+          const teams = await teamModel.loadAll(['fTeamName'], { where: { fId: fTeamId } });
+          if(teams.length > 0) {
+            user.fTeamName = teams[0].get({ plain: true }).fTeamName;
+          }
+
+          // get available status
+          // get all approved letters of the user with now - 3days < fToDT < now
+          const now = new Date();
+          const { count } = await leaveLetterModel.countAll([], 
+            { where: { 
+                fUserId: fId, 
+                fStatus: LEAVING_LETTER_STATUS.APPROVED,
+                fToDT: { [Op.between]: [now, now.setTime(now.getTime() - 3*24*60*60*1000)] }
+            }});
+          user.fAvailable = !count;
+
+          users.push(user);
+        }
+      })();
+
+    handleSuccess(res, { users, count: users.length > 0 && count || 0 });
+  }
+  catch(err) {
+    handleFailure(res, { err, route: req.originalUrl });
+  }
+});
 
 module.exports = Router;
