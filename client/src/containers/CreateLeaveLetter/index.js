@@ -230,7 +230,6 @@ class AbsenceLetterWithFormik extends React.Component {
         })
       )
       .catch(err => {
-        console.log(err);
         handleShowNotifNoHide(NOTIF_ERROR, `${err.message}`);
         this.switchButtonCtrl(false);
       });
@@ -262,7 +261,6 @@ class AbsenceLetterWithFormik extends React.Component {
                 if (compareDatesWithoutTime(values.startDate, values.endDate) === 0) {
                   submitValues.toOpt = submitValues.fromOpt;
                 }
-                console.log(`[Submitted Values]`, submitValues); //DEBUG only
 
                 createLeaveLetter(submitValues)
                   .then(res => {
