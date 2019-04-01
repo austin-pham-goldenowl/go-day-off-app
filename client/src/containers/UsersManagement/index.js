@@ -12,7 +12,7 @@ import { getUsersList } from "../../apiCalls/userAPIs";
 /**
  * Constants
  */
-import { availableStatusColor, availableStatusText } from "../../constants/user";
+// import { availableStatusColor, availableStatusText } from "../../constants/user";
 
 const styles = theme => ({
   btnLink: {
@@ -61,21 +61,16 @@ class UsersManagement extends React.Component {
     const { users, count, size } = this.state;
     
     const tableInfo = {
-      columns: ['Name', 'Status', 'Team', 'Email', 'Actions'],
+      columns: ['Name', /*'Status',*/ 'Team', 'Email', 'Actions'],
       title: <Typography component="span" variant="h4" className={classes.title}>All users</Typography>,
       data: Array.isArray(users) ? (
         users.map(({ fId, fFirstName, fLastName, fEmail, fTeamName, fAvailable }) => [
             `${fFirstName} ${fLastName}`,
-            <span style={{ color: availableStatusColor[fAvailable] }}>{ availableStatusText[fAvailable] }</span>,
+            // <span style={{ color: availableStatusColor[fAvailable] }}>{ availableStatusText[fAvailable] }</span>,
             fTeamName,
             fEmail,
             <Link
-              to={{
-                pathname: `/account/info`,
-                state: {
-                  demandUserId: fId
-                }
-              }}
+              to={`/account/info?demandUserId=${fId}`}
               className={classes.btnLink}
             >
               <Button variant='contained' color='primary'>
