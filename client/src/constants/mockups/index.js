@@ -22,3 +22,19 @@ export const mockupLeaveLetterReasons = [
     label: 'Lý do khác'
   }
 ];
+
+
+export const mockupGender = [
+  {
+    value: 0,
+    label: 'Female'
+  },
+  {
+    value: 1,
+    label: 'Male'
+  },
+  {
+    value: 2,
+    label: 'Others'
+  }
+];

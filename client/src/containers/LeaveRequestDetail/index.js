@@ -306,7 +306,7 @@ class LeaveRequestDetail extends React.Component {
                   </Typography>
                   {/* End - Form title */}
                   {/* Request Id */}
-                  {leaveLetter.fId && <div>{`ID: #${leaveLetter.fId}`}</div>}
+                  {leaveLetter.fId && <div>{`ID: #${leaveLetter.fId}`.toLocaleUpperCase()}</div>}
                   {/* End - Request Id */}
                   <Divider />
                   {/* End - Form title */}
