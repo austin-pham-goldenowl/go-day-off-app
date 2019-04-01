@@ -21,6 +21,8 @@ import Icon from '@material-ui/core/Icon';
 import SelectCustom from '../../components/CustomSelect';
 import DashContainer from '../DashContainer';
 
+import CircularUnderLoad from '../../components/Animation/CircularUnderLoad'
+
 //Icons
 import EditIcon from '@material-ui/icons/Edit';
 
@@ -132,7 +134,14 @@ const styles = theme => ({
     justifyContent: 'flex-end',
     alighItems: 'center',
     marginBottom: theme.spacing.unit
-  }
+  },
+  preloadWrapper: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "column",
+    marginBottom: theme.spacing.unit,
+  },
 });
 
 const mapDispatchToProps = dispatch => {
@@ -238,12 +247,15 @@ class EditAccountInfo extends React.Component {
           {compareJsonObjectValue(user, initialValues)
             ? 
               <React.Fragment>
-                <Typography 
-                  component="h3" 
-                  variant="h5"
-                >
+                <div className={classes.preloadWrapper}>
+                  <Typography 
+                    component="h3" 
+                    variant="h5"
+                  >
                   User not found! (ID: {queryString.parse(history.location.search).id})
-                </Typography>
+                  </Typography>
+                  <CircularUnderLoad size={20} /> 
+                </div>
                 <Divider/>
               </React.Fragment>
             : 
