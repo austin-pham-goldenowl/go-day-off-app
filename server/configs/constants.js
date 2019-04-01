@@ -21,6 +21,12 @@ export const TO_OPTION = {
 
 export const TO_OPTION_VALUES = ["allday", "morning"];
 
+export const DAY_SESSION_OPTIONS = { //Jun added this object
+  allday: "",
+  morning: "09h00",
+  afternoon: "13h30"
+}
+
 export const API_VERSIONS = ["v1.0.0"];
 export const DEFAULT_API_VERSION = "v1.0.0";
 

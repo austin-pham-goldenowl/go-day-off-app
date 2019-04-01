@@ -21,12 +21,12 @@ const styles = theme => ({
     textDecoration: 'none',
   },
   paper: {
-    padding: theme.spacing.unit * 5,
+    padding: theme.spacing.unit * 5
   },
   title: {
     textAlign: 'left',
     marginTop: theme.spacing.unit * 3,
-    marginBottom: theme.spacing.unit * 3,
+    marginBottom: theme.spacing.unit * 3
   },
 });
 
@@ -52,7 +52,8 @@ class LetterManagement extends Component {
 
   componentDidMount = async () => {
     try {
-      const { data: { success, leaveLetters: letters, count }
+      const {
+        data: { success, leaveLetters: letters, count }
       } = await this.props.api();
       if (success) this.setState({ letters, count });
     } catch (err) {

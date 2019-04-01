@@ -57,3 +57,41 @@ export const updateProfile = profileEntity => {
     }
   );
 };
+
+//
+export const getAllApprover = () => {
+  return axios.get(`${SERVER_HOST_DEV}/user/approver`, {
+    headers: {
+      'x-access-token': getCookie(ACCESS_TOKEN_KEY)
+    }
+  });
+};
+
+export const getAllInformTo = () => {
+  return axios.get(`${SERVER_HOST_DEV}/user/team-leader`, {
+    headers: {
+      'x-access-token': getCookie(ACCESS_TOKEN_KEY)
+    }
+  });
+};
+
+export const getAllSubsitutes = () => {
+  let id = getUserId();
+  console.log(`[UserAPIs] -> getAllSubsitutes: `);
+  console.log(`-> userId: ${id}}`);
+  return axios.get(`${SERVER_HOST_DEV}/user/substitutes`, {
+    headers: {
+      'x-access-token': getCookie(ACCESS_TOKEN_KEY)
+    }
+  });
+};
+
+export const getAllSubsitutesByUserId = userId => {
+  console.log(`[UserAPIs] -> getAllSubsitutes: `);
+  console.log(`-> userId: ${userId}}`);
+  return axios.get(`${SERVER_HOST_DEV}/user/substitutes?id=${userId}`, {
+    headers: {
+      'x-access-token': getCookie(ACCESS_TOKEN_KEY)
+    }
+  });
+};

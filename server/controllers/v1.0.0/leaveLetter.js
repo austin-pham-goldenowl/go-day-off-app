@@ -178,7 +178,9 @@ Router.post('/', bodyMustNotEmpty, async (req, res) => {
     const leaveLetter = await leaveLetterModel.add(entity);
 
     //Send email
-    sendLeaveRequestMail(entity, (success, data) => {
+    let { fInformTo } = entity;
+    console.log(`LeaveLetter Controller -> req Entities`, entity);
+    sendLeaveRequestMail({ leaveLetter, fInformTo }, (success, data) => {
       if (success) {
         const { accepted, rejected, response, messageId } = data;
         console.log(`[SUCCESS] - Email has been sent.`);

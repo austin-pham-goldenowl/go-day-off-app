@@ -1,4 +1,13 @@
 import sha256 from "sha256";
+
+/**
+ * Helpers
+ */
+import arrToObj from "../helpers/arrayToObject";
+
+/**
+ * Constants
+ */
 import { USER_GENDER_VALUES } from "../configs/constants";
 
 export default (sequelize, DataTypes) => {
@@ -153,6 +162,31 @@ export default (sequelize, DataTypes) => {
           }
         });
         resolve(user);
+      } catch (err) {
+        err.code = 500;
+        err.msg = "DB_QUERY_ERROR";
+        reject(err);
+      }
+    });
+
+  User.countAll = (attributes = [], queryWhere = {}, ...options) =>
+    new Promise(async (resolve, reject) => {
+      try {
+        let result = null;
+        if (attributes.length < 1)
+          result = await User.findAndCountAll({
+            ...queryWhere,
+            ...arrToObj(options)
+          });
+        else
+          result = await User.findAndCountAll({
+            attributes,
+            ...queryWhere,
+            ...arrToObj(options)
+          });
+
+        const { rows: rawUsers, count } = result;
+        resolve({ rawUsers, count });
       } catch (err) {
         err.code = 500;
         err.msg = "DB_QUERY_ERROR";

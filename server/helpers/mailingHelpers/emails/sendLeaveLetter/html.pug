@@ -1,3 +1,5 @@
+- var isSameDay = (fromDate === toDate)
+- var daySessionText = (fromTime === '09h00' ? 'Buổi Sáng' : (fromTime === '13h30' ? 'Buổi Chiều' : 'Cả ngày'))
 doctype html
 html
   head
@@ -23,15 +25,21 @@ html
         span(class="fieldTitle") Chức danh: 
         span #{position}
       p Tôi làm đơn này kính đề nghị Công ty cho tôi được nghỉ phép
-      p 
-        span(class="fieldTitle") Từ:
-        span #{fromTime} 
-        span(class="fieldTitle") ngày 
-        span #{fromDate} 
-        span(class="fieldTitle") Đến: 
-        span #{toTime} 
-        span(class="fieldTitle") ngày 
-        span #{toDate}
+      p
+      #isSameDay
+        if isSameDay
+          span(class="fieldTitle") Ngày: 
+          span #{fromDate}
+          span - #{daySessionText}
+        else 
+          span(class="fieldTitle") Từ:
+          span #{fromTime} 
+          span(class="fieldTitle") ngày 
+          span #{fromDate} 
+          span(class="fieldTitle") Đến: 
+          span #{toTime} 
+          span(class="fieldTitle") ngày 
+          span #{toDate}
       p 
         span(class="fieldTitle") Lý do: 
         span #{reason}.
