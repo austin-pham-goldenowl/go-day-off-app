@@ -24,9 +24,6 @@ import {
   RemoveCircleOutline as RemoveCircleIcon
 } from '@material-ui/icons';
 
-//validationSChema
-import { RejectDialogValidationSchema } from './validationSchema';
-
 //components
 import LetterCancelingDialog from '../../components/Dialogs/LetterCancelingDialog';
 
