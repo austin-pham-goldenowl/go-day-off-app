@@ -8,7 +8,6 @@ import { Typography, Button, withStyles, Icon } from '@material-ui/core';
 /**
  * Constants
  */
-import { getUserId } from '../helpers/authHelpers';
 import { letterColors, letterStatusText, dayOfWeek, defaultColumns, HRColumns, defaultExportColumns, HRExportColumns } from "../constants/letter";
 
 /**

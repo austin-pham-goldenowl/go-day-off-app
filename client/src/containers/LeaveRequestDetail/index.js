@@ -47,10 +47,8 @@ import {
 
 // Constants
 import {
-  // LEAVE_REQUEST_REJECTED,
   LEAVE_REQUEST_APPROVED,
   LEAVE_REQUEST_PENDING,
-  LEAVE_REQUEST_REJECTED
 } from '../../constants/requestStatusType';
 
 import {

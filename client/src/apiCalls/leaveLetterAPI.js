@@ -1,5 +1,4 @@
 import axios from 'axios'
-import PropTypes from 'prop-types'
 import { getCookie } from 'tiny-cookie'
 
 //constants
