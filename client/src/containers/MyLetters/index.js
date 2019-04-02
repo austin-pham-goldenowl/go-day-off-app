@@ -9,7 +9,7 @@ import { getMyLeaveLetters } from '../../apiCalls/leaveLetterAPI';
 /**
  * Helpers
  */
-import { getUserId } from '../../helpers/authHelpers';
+// import { getUserId } from '../../helpers/authHelpers';
 
 const styles = theme => ({
   calendarContainer: { marginBottom: '2em' },

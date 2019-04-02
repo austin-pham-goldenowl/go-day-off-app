@@ -26,7 +26,7 @@ import SignOutIcon from '@material-ui/icons/Input';
 
 import { PersonnelList, HRList } from './listItems';
 
-import userTypes from '../../constants/permission';
+import { userTypes } from '../../constants/permission';
 
 import { getUserTypeFromCookie } from '../../helpers/getUserInfo';
 

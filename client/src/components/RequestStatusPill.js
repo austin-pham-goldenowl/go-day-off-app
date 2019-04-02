@@ -57,7 +57,7 @@ const RequestStatus = props => {
         <Chip
           label={getLeaveReqStatus(statusType)}
           className={classNames(classes.pending, classes.pendingColor)}
-          avatar={<PendingIcon className={classes.pendingColor} />}
+          icon={<PendingIcon className={classes.pendingColor} />}
         />
       );
     case ReqStatusType.LEAVE_REQUEST_APPROVED:
@@ -65,7 +65,7 @@ const RequestStatus = props => {
         <Chip
           label="Approved"
           className={classNames(classes.approved, classes.approvedColor)}
-          avatar={<ApprovedIcon className={classes.approvedColor} />}
+          icon={<ApprovedIcon className={classes.approvedColor} />}
         />
       );
     case ReqStatusType.LEAVE_REQUEST_REJECTED:
@@ -73,7 +73,7 @@ const RequestStatus = props => {
         <Chip
           label="Rejected"
           className={classNames(classes.rejected, classes.rejectedColor)}
-          avatar={<RejectIcon className={classes.rejectedColor} />}
+          icon={<RejectIcon className={classes.rejectedColor} />}
         />
       );
     default:
