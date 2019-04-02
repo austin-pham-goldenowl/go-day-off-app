@@ -46,7 +46,7 @@ const routes = [
     comp: props => <AbsenceLetterCreate {...props} />
   },
   {
-    path: '/account/info',
+    path: '/account/info/:id',
     isPrivate: true,
     exact: true,
     comp: props => <EditAccountInfo {...props} />

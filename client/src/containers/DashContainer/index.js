@@ -217,7 +217,7 @@ class Dashboard extends React.Component {
                       open={accountMenuOpen}
                       onClose={this.handleCloseAccountMenu}
                     >
-                      <Link to={{ pathname: `/account/info`, search: `?id=${userId}` }} className={classes.link}>
+                      <Link to={`/account/info/${userId}`} className={classes.link}>
                         <MenuItem
                           className={classes.menuItem}
                         >

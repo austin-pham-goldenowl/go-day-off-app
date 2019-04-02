@@ -41,7 +41,7 @@ import { getGenderName } from '../../helpers/userHelpers';
 import { compareJsonObjectValue } from '../../utilities';
 
 //API
-import Axios from 'axios';
+import Axios, { CancelToken } from 'axios';
 import { getAllTeams, getAllPositions } from '../../apiCalls/supportingAPIs';
 import { getProfile, updateProfile } from '../../apiCalls/userAPIs';
 import { getMyLeaveLetters } from "../../apiCalls/leaveLetterAPI";
@@ -49,6 +49,8 @@ import { getMyLeaveLetters } from "../../apiCalls/leaveLetterAPI";
 //Notif redux
 import { NOTIF_ERROR, NOTIF_SUCCESS } from '../../constants/notification';
 import { showNotification } from '../../redux/actions/notificationActions';
+
+
 const styles = theme => ({
   layout: {
     width: 'auto',
@@ -182,9 +184,10 @@ class EditAccountInfo extends React.Component {
     }));
   };
 
-  loadDemandId = (history) => {
+  loadDemandId = () => {
     const { userId, userType } = getUserEntity();
-    const queryUserId = queryString.parse(history.location.search).id;
+    const queryUserId = this.props.match.params.id;
+
     console.log(`queryUserId: `, queryUserId);
     console.log(`userID: `, userId);
     let demandUserId = userId;
@@ -199,7 +202,9 @@ class EditAccountInfo extends React.Component {
   }
 
   loadData = async () => {
-    await this.loadDemandId(this.props.history); //must await this 
+    //For axios' requests cancellation
+    this.cancelSoure = CancelToken.source(); 
+    await this.loadDemandId(); //must await this 
     let response = await getProfile(this.state.demandUserId);
     let { status: reqStatusProfile, data: reqDataProfile } = response;
 
@@ -209,43 +214,45 @@ class EditAccountInfo extends React.Component {
         user: reqDataProfile.user,
       }));
 
-      Axios.all([getAllTeams(), getAllPositions()])
+
+      Axios.all([getAllTeams(this.cancelSoure.token), getAllPositions(this.cancelSoure.token)])
       .then(
         Axios.spread((allTeamResponse, allPositionResponse) => {
           let allTeams = allTeamResponse.data.teams.map(item => ({
             value: item.fId,
             label: item.fTeamName
           }));
-
+          
           let allPositions = allPositionResponse.data.positions.map(item => ({
             value: item.fId,
             label: item.fPosName
           }));
-
+          
           this.setState(prevState => ({
             ...prevState,
             allTeams,
             allPositions
           }));
         })
-      )
-      .catch(err => {
-        console.log('error -> ', err);
-      });
+        )
+        .catch(err => {
+				  console.log(`TCL: EditAccountInfo -> loadData -> Axios.all -> err`, err)
+        });
     } else {
       console.log(`err: `, response);
     }
   };
 
   componentDidMount = () => {
+    this.loadData();
     this.unlistenRouteChange = this.props.history.listen((location, action) => {
       this.loadData()
     });
-    this.loadData();
   };
 
   componentWillUnmount = () => {
-    this.unlistenRouteChange()
+    this.cancelSoure.cancel('User suddenly left Page');
+    this.unlistenRouteChange();
   }
 
   render() {
@@ -256,7 +263,7 @@ class EditAccountInfo extends React.Component {
 
     const isCurrentLoggedInUser = (userId === demandUserId);
     const isHrSession = userTypes.MODE_HR === userType;
-    const isShowLetterList = (isHrSession && !isCurrentLoggedInUser);
+    const isShowLetterList = (isHrSession && !isCurrentLoggedInUser && typeof(demandUserId) !== 'undefined');
 
     return (
       <DashContainer className={classes.layout}>
