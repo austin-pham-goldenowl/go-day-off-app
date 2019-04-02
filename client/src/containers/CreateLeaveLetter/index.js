@@ -161,12 +161,12 @@ class AbsenceLetterWithFormik extends React.Component {
 
   handleChangeReason = async (value = '') => {
     if (value === mockupLeaveLetterReasons[mockupLeaveLetterReasons.length - 1].value) {
-      await this.setState(prevState => ({
+      this.setState(prevState => ({
         ...prevState,
         otherReasonSelected: true
       }));
     } else {
-      await this.setState(prevState => ({
+      this.setState(prevState => ({
         ...prevState,
         otherReasonSelected: false
       }));

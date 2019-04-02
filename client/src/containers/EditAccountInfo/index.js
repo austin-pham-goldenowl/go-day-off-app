@@ -20,6 +20,7 @@ import Icon from '@material-ui/core/Icon';
 //components
 import SelectCustom from '../../components/CustomSelect';
 import DashContainer from '../DashContainer';
+import LettersManagement from '../../components/LettersManagement';
 
 import CircularUnderLoad from '../../components/Animation/CircularUnderLoad'
 
@@ -43,6 +44,7 @@ import { compareJsonObjectValue } from '../../utilities';
 import Axios from 'axios';
 import { getAllTeams, getAllPositions } from '../../apiCalls/supportingAPIs';
 import { getProfile, updateProfile } from '../../apiCalls/userAPIs';
+import { getMyLeaveLetters } from "../../apiCalls/leaveLetterAPI";
 
 //Notif redux
 import { NOTIF_ERROR, NOTIF_SUCCESS } from '../../constants/notification';
@@ -170,7 +172,7 @@ class EditAccountInfo extends React.Component {
     editMode: false,
     allTeams: [],
     allPositions: [],
-    demandUserId: '',
+    demandUserId: undefined,
   };
 
   handleEnableEditMode = enable => {
@@ -180,27 +182,35 @@ class EditAccountInfo extends React.Component {
     }));
   };
 
-  loadData = async () => {
-    const { history } = this.props;
-    const { userType, userId, ...others } = getUserEntity();
+  //history: event onChange
 
-    let demandUserId = '';
+  loadDemandId = (history) => {
+    const { userId, userType } = getUserEntity();
     const queryUserId = queryString.parse(history.location.search).id;
+    console.log(`queryUserId: `, queryUserId);
+    console.log(`userID: `, userId);
+    let demandUserId = userId;
 
     if (userType === userTypes.MODE_HR && typeof(queryUserId) !== 'undefined') {
       demandUserId = queryUserId;
-    } else {
-      demandUserId = userId;
     }
+    this.setState(prevState => ({
+      ...prevState,
+      demandUserId
+    }));
+  }
 
-    let response = await getProfile(demandUserId);
+  loadData = async () => {
+    const { history } = this.props;
+    await this.loadDemandId(history);
+    
+
+    let response = await getProfile(this.state.demandUserId);
     let { status: reqStatusProfile, data: reqDataProfile } = response;
 
     if (reqStatusProfile === 200) {
-      console.log(`reqDataProfile: `, reqDataProfile);
-      await this.setState(prevState => ({
+      this.setState(prevState => ({
         ...prevState,
-        demandUserId,
         user: reqDataProfile.user,
       }));
 
@@ -240,13 +250,18 @@ class EditAccountInfo extends React.Component {
   render() {
     const { classes, history, handleShowNotif } = this.props;
     const { user, editMode, allTeams, allPositions, demandUserId } = this.state;
+    const { userId, userType } = getUserEntity();
+
+    const isCurrentLoggedInUser = (userId === demandUserId);
+    const isHrSession = userTypes.MODE_HR === userType;
+    const isShowLetterList = (isHrSession && !isCurrentLoggedInUser && typeof(demandUserId) !== 'undefined');
+
     return (
       <DashContainer className={classes.layout}>
-        <Paper className={classes.paper}>
           <CssBaseline />
           {compareJsonObjectValue(user, initialValues)
             ? 
-              <React.Fragment>
+            <Paper className={classes.paper}>
                 <div className={classes.preloadWrapper}>
                   <Typography 
                     component="h3" 
@@ -257,9 +272,10 @@ class EditAccountInfo extends React.Component {
                   <CircularUnderLoad size={20} /> 
                 </div>
                 <Divider/>
-              </React.Fragment>
+            </Paper>
             : 
-              (editMode && responseUserPermission['HR'] === user.fTypeId ? (
+            <Paper className={classes.paper}>
+              {editMode && isHrSession ? (
                 <Formik
                   initialValues={user}
                   onSubmit={(values, actions) => {
@@ -272,8 +288,8 @@ class EditAccountInfo extends React.Component {
                           NOTIF_SUCCESS,
                           `Updated profile successfully!`
                         );
-                        this.handleEnableEditMode(false);
                         this.loadData();
+                        this.handleEnableEditMode(false);
                         actions.setSubmitting(false);
                       })
                       .catch(err => {
@@ -374,7 +390,7 @@ class EditAccountInfo extends React.Component {
                             variant="h5"
                             align="center"
                           >
-                            Edit profile
+                            Edit {isCurrentLoggedInUser ? ' My ' : ` ${user.fFirstName} `} Profile
                           </Typography>
                         </React.Fragment>
                         <React.Fragment>
@@ -464,8 +480,7 @@ class EditAccountInfo extends React.Component {
                                 }}
                               />
                             </Grid>
-                            {responseUserPermission['HR'] !==
-                            user.fTypeId ? null : (
+                            {!isHrSession ? null : (
                               <React.Fragment>
                                 {/** fTeamName name */}
                                 <Grid item xs={12} sm={6}>
@@ -562,13 +577,13 @@ class EditAccountInfo extends React.Component {
                 </Formik>
               ) : (
                 <React.Fragment>
-                  {responseUserPermission['HR'] === user.fTypeId ? (
+                  {isHrSession ? (
                     <div className={classes.topInfo}>
                       <Button
                         className={classes.button}
                         size="small"
-                        variant="contained"
                         color="default"
+                        variant="contained"
                         onClick={() => this.handleEnableEditMode(true)}
                       >
                         <EditIcon className={classes.leftIcon} />
@@ -579,7 +594,7 @@ class EditAccountInfo extends React.Component {
     
                   {/* Title */}
                   <Typography component="h1" variant="h4">
-                    Profile
+                    {isCurrentLoggedInUser ? 'My Profile' : `${user.fFirstName}'s Profile`}
                   </Typography>
                   {/** End - Title */}
                   {/* User ID */}
@@ -655,10 +670,22 @@ class EditAccountInfo extends React.Component {
                     </Grid>
                   </Grid>
                 </React.Fragment>
-              )
-              )
+              )}
+            </Paper>
           }
-        </Paper>
+        { isShowLetterList ? 
+          (
+            <React.Fragment>
+              <Typography component="h1" variant="h4">
+                Request letters
+              </Typography>
+              <LettersManagement 
+                api={getMyLeaveLetters}
+                demandUserId={demandUserId}
+              />
+            </React.Fragment>
+          ) : null
+        }
       </DashContainer>
     );
   }

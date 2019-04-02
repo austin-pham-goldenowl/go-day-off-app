@@ -1,5 +1,5 @@
 import React from 'react';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import Media from 'react-media';
@@ -24,11 +24,16 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
 import SignOutIcon from '@material-ui/icons/Input';
 
+// components
 import { PersonnelList, HRList } from './listItems';
 
+// constants
 import { userTypes } from '../../constants/permission';
 
+// Helpers
 import { getUserTypeFromCookie } from '../../helpers/getUserInfo';
+import { getUserEntity } from '../../helpers/authHelpers';
+
 
 const drawerWidth = 240;
 
@@ -121,6 +126,10 @@ const styles = theme => ({
     justifyContent: 'space-evenly',
     alignItems: 'center',
     minWidth: 100
+  },
+  link: {
+    textDecoration: 'none',
+    outline: 'none'
   }
 });
 
@@ -147,6 +156,7 @@ class Dashboard extends React.Component {
     const { sidebarToggle, accountMenuAnchorEl } = this.state;
     const accountMenuOpen = Boolean(accountMenuAnchorEl);
     const userType = getUserTypeFromCookie();
+    const { userId } = getUserEntity();
 
     return (
       <div className={classes.root}>
@@ -208,25 +218,27 @@ class Dashboard extends React.Component {
                       open={accountMenuOpen}
                       onClose={this.handleCloseAccountMenu}
                     >
-                      <MenuItem
-                        className={classes.menuItem}
-                        onClick={() => history.push('/account/info')}
-                      >
-                        <AssignmentIndIcon className={classes.leftIcon} />
-                        <div>Profile</div>
-                      </MenuItem>
-                      <MenuItem
-                        className={classes.menuItem}
-                        onClick={() => this.props.history.push('/logout')}
-                      >
-                        <SignOutIcon
-                          className={classNames(
-                            classes.rightIcon,
-                            classes.signOutIcon
-                          )}
-                        />
-                        <div>Log out</div>
-                      </MenuItem>
+                      <Link to={{ pathname: `/account/info`, search: `?id=${userId}` }} className={classes.link}>
+                        <MenuItem
+                          className={classes.menuItem}
+                        >
+                          <AssignmentIndIcon className={classes.leftIcon} />
+                          <div>Profile</div>
+                        </MenuItem>
+                      </Link>
+                      <Link to={`/logout`} className={classes.link}>
+                        <MenuItem
+                          className={classes.menuItem}
+                        >
+                          <SignOutIcon
+                            className={classNames(
+                              classes.rightIcon,
+                              classes.signOutIcon
+                            )}
+                          />
+                          <div>Log out</div>
+                        </MenuItem>
+                      </Link>
                     </Menu>
                   </div>
                 </Toolbar>

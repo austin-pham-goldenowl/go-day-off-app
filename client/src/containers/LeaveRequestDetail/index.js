@@ -172,7 +172,7 @@ class LeaveRequestDetail extends React.Component {
   }
 
   handleToggleRejectDialog = async (value = true) => {
-    await this.setState(prevState => ({
+    this.setState(prevState => ({
       ...prevState,
       rejectDialogOpen: value
     }));
