@@ -27,7 +27,7 @@ export const getLeaveLetterDetails = id =>
     }
   });
 
-export const getAllLeaveLetters = (size = 10, page = 1) =>
+export const getAllLeaveLetters = (page = 1, size = 10) =>
   axios.get(`${SERVER_HOST_DEV}/leaveLetter?page=${page}&size=${size}`, {
     headers: {
       'x-access-token': getCookie(ACCESS_TOKEN_KEY)

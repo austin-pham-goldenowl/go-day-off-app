@@ -11,7 +11,7 @@ function AllLettersManagement() {
         All request letters
       </Typography>
       <br />
-      <LettersManagement api={getAllLeaveLetters} type="hr" />
+      <LettersManagement api={getAllLeaveLetters} type="hr"  />
     </DashContainer>
   );
 }

@@ -50,15 +50,21 @@ class LetterManagement extends Component {
     this.downloadTriggerRef = React.createRef();
   }
 
-  componentDidMount = async () => {
+  loadData = async () => {
+    const { demandUserId } = this.props;
     try {
       const {
         data: { success, leaveLetters: letters, count }
-      } = await this.props.api();
+      } = await this.props.api(1, 10, demandUserId);
+
       if (success) this.setState({ letters, count });
     } catch (err) {
       console.log(err);
     }
+  }
+
+  componentDidMount = () => {
+    this.loadData();
   };
 
   handleExport = async () => {
@@ -75,8 +81,8 @@ class LetterManagement extends Component {
     }
   };
 
-  changePage = (size = 10, page = 1, demandUserId = this.props.userId || getUserId()) => {
-    this.props.api(size, page, demandUserId)
+  changePage = (size = 10, page = 1, demandUserId) => {
+    this.props.api(page, size, demandUserId)
     .then(({ data: { success, leaveLetters: letters, count } }) => 
       success && this.setState({ letters, count, page, size }))
     .catch(error => console.log(error));
@@ -84,8 +90,8 @@ class LetterManagement extends Component {
 
   render() {
     const { letters, exports } = this.state;
-    const { classes, title, type } = this.props;
-
+    const { classes, title, type, demandUserId } = this.props;
+  
     const tableInfo = {
       columns: type === 'hr' ? HRColumns : defaultColumns,
       title: <Typography component='p' variant='h5' className={classes.title}> {title} </Typography>,
@@ -122,8 +128,8 @@ class LetterManagement extends Component {
         count: this.state.count,
         rowsPerPage: this.state.size,
         rowsPerPageOptions: [5, 10, 15, 20],
-        onChangeRowsPerPage: size => this.changePage(1, size),
-        onTableChange: (action, tableState) => action === 'changePage' && this.changePage(tableState.rowsPerPage, tableState.page + 1),
+        onChangeRowsPerPage: size => this.changePage(size, 1, demandUserId),
+        onTableChange: (action, tableState) => action === 'changePage' && this.changePage(tableState.rowsPerPage, tableState.page + 1, demandUserId),
         customToolbar: () => <Button variant='contained' size='small' title='Export data' onClick={this.handleExport}><Icon>save</Icon></Button>,
       }
     };
