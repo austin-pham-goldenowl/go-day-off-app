@@ -70,7 +70,7 @@ class UsersManagement extends React.Component {
             fTeamName,
             fEmail,
             <Link
-              to={`/account/info?demandUserId=${fId}`}
+              to={`/account/info?id=${fId}`}
               className={classes.btnLink}
             >
               <Button variant='contained' color='primary'>
