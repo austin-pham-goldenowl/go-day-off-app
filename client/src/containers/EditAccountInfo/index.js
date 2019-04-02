@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Formik, Form, Field } from 'formik';
-import { withRouter } from 'react-router-dom';
 import queryString from 'query-string';
+import { Formik, Form, Field } from 'formik';
 
+//material-ui
 import {
   Paper,
   Button,
@@ -14,8 +14,8 @@ import {
   Divider
 } from '@material-ui/core';
 
-import { withStyles } from '@material-ui/core/styles';
 import Icon from '@material-ui/core/Icon';
+import { withStyles } from '@material-ui/core/styles';
 
 //components
 import SelectCustom from '../../components/CustomSelect';
@@ -31,7 +31,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import { mockupGender } from '../../constants/mockups';
 
 //constants
-import { responseUserPermission, userTypes } from '../../constants/permission';
+import { userTypes } from '../../constants/permission';
 
 //Helpers
 import { getUserEntity } from '../../helpers/authHelpers';
@@ -139,9 +139,9 @@ const styles = theme => ({
   },
   preloadWrapper: {
     display: "flex",
-    justifyContent: "center",
     alignItems: "center",
     flexDirection: "column",
+    justifyContent: "center",
     marginBottom: theme.spacing.unit,
   },
 });
@@ -182,8 +182,6 @@ class EditAccountInfo extends React.Component {
     }));
   };
 
-  //history: event onChange
-
   loadDemandId = (history) => {
     const { userId, userType } = getUserEntity();
     const queryUserId = queryString.parse(history.location.search).id;
@@ -201,10 +199,7 @@ class EditAccountInfo extends React.Component {
   }
 
   loadData = async () => {
-    const { history } = this.props;
-    await this.loadDemandId(history);
-    
-
+    await this.loadDemandId(this.props.history); //must await this 
     let response = await getProfile(this.state.demandUserId);
     let { status: reqStatusProfile, data: reqDataProfile } = response;
 
@@ -240,21 +235,28 @@ class EditAccountInfo extends React.Component {
     } else {
       console.log(`err: `, response);
     }
-
   };
 
   componentDidMount = () => {
+    this.unlistenRouteChange = this.props.history.listen((location, action) => {
+      this.loadData()
+    });
     this.loadData();
   };
 
+  componentWillUnmount = () => {
+    this.unlistenRouteChange()
+  }
+
   render() {
     const { classes, history, handleShowNotif } = this.props;
+
     const { user, editMode, allTeams, allPositions, demandUserId } = this.state;
     const { userId, userType } = getUserEntity();
 
     const isCurrentLoggedInUser = (userId === demandUserId);
     const isHrSession = userTypes.MODE_HR === userType;
-    const isShowLetterList = (isHrSession && !isCurrentLoggedInUser && typeof(demandUserId) !== 'undefined');
+    const isShowLetterList = (isHrSession && !isCurrentLoggedInUser);
 
     return (
       <DashContainer className={classes.layout}>
@@ -692,5 +694,5 @@ class EditAccountInfo extends React.Component {
 }
 
 export default withStyles(styles)(
-  withRouter(connect(null, mapDispatchToProps)(EditAccountInfo))
+  connect(null, mapDispatchToProps)(EditAccountInfo)
 );

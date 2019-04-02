@@ -1,8 +1,8 @@
 import React from 'react';
-import { withRouter, Link } from 'react-router-dom';
+import Media from 'react-media';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import Media from 'react-media';
+import { withRouter, Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 
 import {
@@ -13,16 +13,15 @@ import {
   Typography,
   Divider,
   IconButton,
-  // Badge,
   Menu,
   MenuItem
 } from '@material-ui/core';
 
 import MenuIcon from '@material-ui/icons/Menu';
+import SignOutIcon from '@material-ui/icons/Input';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
-import SignOutIcon from '@material-ui/icons/Input';
 
 // components
 import { PersonnelList, HRList } from './listItems';
@@ -31,8 +30,8 @@ import { PersonnelList, HRList } from './listItems';
 import { userTypes } from '../../constants/permission';
 
 // Helpers
-import { getUserTypeFromCookie } from '../../helpers/getUserInfo';
 import { getUserEntity } from '../../helpers/authHelpers';
+import { getUserTypeFromCookie } from '../../helpers/getUserInfo';
 
 
 const drawerWidth = 240;
@@ -152,7 +151,7 @@ class Dashboard extends React.Component {
   };
 
   render() {
-    const { classes, children, history } = this.props;
+    const { classes, children } = this.props;
     const { sidebarToggle, accountMenuAnchorEl } = this.state;
     const accountMenuOpen = Boolean(accountMenuAnchorEl);
     const userType = getUserTypeFromCookie();
@@ -197,8 +196,8 @@ class Dashboard extends React.Component {
                   </Typography>
                   <div>
                     <IconButton
-                      aria-owns={accountMenuOpen ? 'menu-appbar' : undefined}
                       aria-haspopup="true"
+                      aria-owns={accountMenuOpen ? 'menu-appbar' : undefined}
                       onClick={this.handleOpenAccountMenu}
                       color="inherit"
                     >
