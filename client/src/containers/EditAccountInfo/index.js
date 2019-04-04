@@ -1,6 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import queryString from 'query-string';
 import { Formik, Form, Field } from 'formik';
 
 //material-ui
@@ -38,7 +37,7 @@ import { getUserEntity } from '../../helpers/authHelpers';
 import { getGenderName } from '../../helpers/userHelpers';
 
 //Utilities
-import { compareJsonObjectValue } from '../../utilities';
+import { compareJsonObjectValue, parseUrlLastSegment } from '../../utilities';
 
 //API
 import Axios, { CancelToken } from 'axios';
@@ -184,27 +183,28 @@ class EditAccountInfo extends React.Component {
     }));
   };
 
-  loadDemandId = () => {
+  loadDemandId = (id) => {
     const { userId, userType } = getUserEntity();
-    const queryUserId = this.props.match.params.id;
-
-    console.log(`queryUserId: `, queryUserId);
-    console.log(`userID: `, userId);
+    const queryUserId = id && typeof(id) !== 'undefined' ? id : this.props.match.params.id;
+    
     let demandUserId = userId;
 
     if (userType === userTypes.MODE_HR && typeof(queryUserId) !== 'undefined') {
       demandUserId = queryUserId;
     }
-    this.setState(prevState => ({
-      ...prevState,
-      demandUserId
-    }));
+    if (queryUserId !== this.demandUserId) {
+      this.setState(prevState => ({
+        ...prevState,
+        demandUserId
+      }));
+    }
   }
 
-  loadData = async () => {
+  loadData = async (demandId) => {
     //For axios' requests cancellation
-    this.cancelSoure = CancelToken.source(); 
-    await this.loadDemandId(); //must await this 
+    this.cancelSoure = CancelToken.source();
+
+    await this.loadDemandId(demandId); //must await this 
     let response = await getProfile(this.state.demandUserId);
     let { status: reqStatusProfile, data: reqDataProfile } = response;
 
@@ -234,20 +234,23 @@ class EditAccountInfo extends React.Component {
             allPositions
           }));
         })
-        )
-        .catch(err => {
-				  console.log(`TCL: EditAccountInfo -> loadData -> Axios.all -> err`, err)
-        });
+      )
+      .catch(err => {
+			  console.log(`TCL: EditAccountInfo -> loadData -> Axios.all -> err`, err)
+      });
     } else {
       console.log(`err: `, response);
     }
   };
 
   componentDidMount = () => {
-    this.loadData();
     this.unlistenRouteChange = this.props.history.listen((location, action) => {
-      this.loadData()
+      const demandId = parseUrlLastSegment(location.pathname);
+      // Renew cancelSource
+      this.cancelSoure = CancelToken.source();
+      this.loadData(demandId);
     });
+    this.loadData();
   };
 
   componentWillUnmount = () => {
@@ -256,7 +259,7 @@ class EditAccountInfo extends React.Component {
   }
 
   render() {
-    const { classes, history, handleShowNotif } = this.props;
+    const { classes, handleShowNotif } = this.props;
 
     const { user, editMode, allTeams, allPositions, demandUserId } = this.state;
     const { userId, userType } = getUserEntity();
@@ -276,7 +279,7 @@ class EditAccountInfo extends React.Component {
                     component="h3" 
                     variant="h5"
                   >
-                  User not found! (ID: {queryString.parse(history.location.search).id})
+                  User not found! (ID: {demandUserId})
                   </Typography>
                   <CircularUnderLoad size={20} /> 
                 </div>
@@ -292,7 +295,7 @@ class EditAccountInfo extends React.Component {
                     console.log(`Submitted values: `, values);
                     updateProfile(values)
                       .then(res => {
-                        console.log(`response value: `, res);
+												console.log(`TCL: EditAccountInfo -> render -> updateProfile -> res`, res)
                         handleShowNotif(
                           NOTIF_SUCCESS,
                           `Updated profile successfully!`
@@ -302,7 +305,7 @@ class EditAccountInfo extends React.Component {
                         actions.setSubmitting(false);
                       })
                       .catch(err => {
-                        console.log(`err: `, err);
+												console.log(`TCL: EditAccountInfo -> render -> updateProfile -> err`, err)
                         handleShowNotif(
                           NOTIF_ERROR,
                           `Update fail! (${err.message})`
@@ -337,8 +340,8 @@ class EditAccountInfo extends React.Component {
                                 <Button
                                   className={classes.button}
                                   size="small"
-                                  variant="contained"
                                   color="primary"
+                                  variant="contained"
                                   onClick={handleSubmit}
                                   disabled={isSubmitting || !isUserInfoChanged}
                                 >
@@ -394,10 +397,10 @@ class EditAccountInfo extends React.Component {
                         {/* End - Top buttons */}
                         <React.Fragment>
                           <Typography
-                            className={classes.formTitle}
-                            component="h1"
                             variant="h5"
                             align="center"
+                            component="h1"
+                            className={classes.formTitle}
                           >
                             Edit {isCurrentLoggedInUser ? ' My ' : ` ${user.fFirstName} `} Profile
                           </Typography>
