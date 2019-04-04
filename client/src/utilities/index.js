@@ -93,3 +93,36 @@ export const compareDatesWithoutTime = (date1, date2, options) => {
     return -1;
   }
 };
+
+/**
+ * @todo Parse last segment of URL params
+ * 
+ * @param {string} url
+ * 
+ * @returns {string} url's last segment
+ */
+
+ export const parseUrlLastSegment = (url) => {
+  if (typeof(url) !== 'string') 
+    throw Error(`${url} is not a URL`);
+  let pathNameSegments = url.split('/');
+  const segment = url[url.length - 1] === '/' ? pathNameSegments.slice(-2)[0] : pathNameSegments.slice(-1)[0];
+  return segment;
+ }
+
+ /**
+ * @todo Parse segment of URL params at inputted position
+ * 
+ * @param {string} url
+ * 
+ * @returns {string} url's last segment
+ */
+ export const parseUrlSegmentAt = (url, position) => {
+  if (typeof(url) !== 'string') 
+    throw Error(`"${url}" is not a URL`);
+  let pathNameSegments = url.split('/');
+  if (position < 0 || position > pathNameSegments.length)
+    throw Error(`Position is not existed`);
+  const segment = url[url.length - 1] === '/' ? pathNameSegments.slice(position)[0] : pathNameSegments.slice(position)[0];
+  return segment;
+ }
