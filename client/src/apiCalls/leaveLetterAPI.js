@@ -23,17 +23,19 @@ export const getLeaveLetterDetails = id =>
   axios.get(`${SERVER_HOST_DEV}/leaveLetter/details?id=${id}`, {
     headers: {
       'x-access-token': getCookie(ACCESS_TOKEN_KEY)
-    }
+    },
   });
 
-export const getAllLeaveLetters = (page = 1, size = 10) =>
+export const getAllLeaveLetters = (cancelToken, page = 1, size = 10) =>
   axios.get(`${SERVER_HOST_DEV}/leaveLetter?page=${page}&size=${size}`, {
     headers: {
       'x-access-token': getCookie(ACCESS_TOKEN_KEY)
-    }
+    },
+    cancelToken: cancelToken
   });
 
 export const getMyLeaveLetters = (
+  cancelToken,
   page = 1,
   size = 10,
   demandUserId = getUserId()
@@ -43,7 +45,8 @@ export const getMyLeaveLetters = (
     {
       headers: {
         'x-access-token': getCookie(ACCESS_TOKEN_KEY)
-      }
+      },
+      cancelToken: cancelToken
     }
   );
 

@@ -5,6 +5,7 @@ import MUIDataTable from 'mui-datatables';
 import ExcelExporter from './ExcelExporter';
 import { Typography, Button, withStyles, Icon } from '@material-ui/core';
 
+import { CancelToken } from 'axios';
 /**
  * Constants
  */
@@ -54,34 +55,39 @@ class LetterManagement extends Component {
     try {
       const {
         data: { success, leaveLetters: letters, count }
-      } = await this.props.api(1, 10, demandUserId);
+      } = await this.props.api(this.cancelSource.token, 1, 10, demandUserId);
 
       if (success) this.setState({ letters, count });
     } catch (err) {
-      console.log(err);
+	  	console.log(`TCL: LetterManagement -> loadData -> err`, err)
     }
   }
 
   componentDidMount = () => {
+    this.cancelSource = CancelToken.source();
     this.loadData();
   };
+
+  componentWillUnmount = () => {
+    this.cancelSource.cancel('Request cancelled by user!');
+  }
 
   handleExport = async () => {
     try {
       const { data: { success, leaveLetters: exports }
-      } = await this.props.api(0); // get all
+      } = await this.props.api(this.cancelSource.token, 0); // get all
       if (success) this.setState({ exports }, () => {
           this.downloadTriggerRef.current.click();
           this.setState({ exports: [] }); // release memory
         });
     }
     catch(err) {
-      console.log(err);
+			console.log(`TCL: LetterManagement -> handleExport -> err`, err)
     }
   };
 
   changePage = (size = 10, page = 1, demandUserId) => {
-    this.props.api(page, size, demandUserId)
+    this.props.api(this.cancelSource.token, page, size, demandUserId)
     .then(({ data: { success, leaveLetters: letters, count } }) => 
       success && this.setState({ letters, count, page, size }))
     .catch(error => console.log(error));
