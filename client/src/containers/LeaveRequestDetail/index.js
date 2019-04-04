@@ -1,6 +1,7 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import moment from 'moment';
 import classNames from 'classnames';
+import { connect } from 'react-redux';
 import { Formik, Form, Field } from 'formik';
 import { withRouter } from 'react-router-dom';
 import {
@@ -14,7 +15,6 @@ import {
 import { green } from '@material-ui/core/colors';
 import { withStyles } from '@material-ui/core/styles';
 import queryString from 'query-string';
-import moment from 'moment';
 import RequestStatusPill from '../../components/RequestStatusPill';
 import DashContainer from '../DashContainer';
 
@@ -56,107 +56,7 @@ import {
 } from '../../constants/leaveDurationOptions';
 
 import { responseUserPermission } from '../../constants/permission';
-
-const styles = theme => ({
-  layout: {
-    width: 'auto',
-    marginLeft: theme.spacing.unit * 2,
-    marginRight: theme.spacing.unit * 2,
-    [theme.breakpoints.up(600 + theme.spacing.unit * 2 * 2)]: {
-      minWidth: 800,
-      marginLeft: 'auto',
-      marginRight: 'auto'
-    }
-  },
-  paper: {
-    marginTop: theme.spacing.unit * 3,
-    marginBottom: theme.spacing.unit * 3,
-    paddingTop: theme.spacing.unit * 2,
-    paddingBottom: theme.spacing.unit * 2,
-    [theme.breakpoints.up(600 + theme.spacing.unit * 3 * 2)]: {
-      marginTop: theme.spacing.unit * 6,
-      marginBottom: theme.spacing.unit * 6,
-      padding: theme.spacing.unit * 2
-    }
-  },
-  form: {
-    width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing.unit,
-    marginBottom: theme.spacing.unit,
-    paddingLeft: theme.spacing.unit * 4,
-    paddingRight: theme.spacing.unit * 4
-  },
-  leaveInfo: {
-    marginTop: theme.spacing.unit * 3
-  },
-  submit: {
-    marginTop: theme.spacing.unit * 6
-  },
-  preload: {
-    marginTop: theme.spacing.unit * 3
-  },
-  buttonGroupBottom: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    flexDirection: 'row',
-    alignItems: 'center',
-    [theme.breakpoints.down(360)]: {
-      justifyContent: 'space-between'
-    },
-    marginTop: theme.spacing.unit * 6
-  },
-  button: {
-    [theme.breakpoints.up(360)]: {
-      marginLeft: theme.spacing.unit
-    }
-  },
-  btnApprove: {
-    color: 'white',
-    backgroundColor: green[500],
-    '&:hover': {
-      backgroundColor: green[700]
-    }
-  },
-  leftIcon: {
-    marginRight: theme.spacing.unit
-  },
-  rightIcon: {
-    marginLeft: theme.spacing.unit
-  },
-  smallIcon: {
-    fontSize: 20
-  },
-  fieldTitle: {
-    color: 'black',
-    fontWeight: 600,
-    minWidth: 50,
-    [theme.breakpoints.down('xs')]: {
-      overflow: 'scroll'
-    }
-  },
-  fieldValue: {
-    color: 'black',
-    fontWeight: 500
-  },
-  fieldWrapper: {
-    paddingTop: 0,
-    paddingBottom: 0,
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alighItems: 'center'
-  },
-  topInfo: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: theme.spacing.unit * 3
-  },
-  email: {
-    wordBreak: 'break-all'
-  }
-});
+import { parseUrlSegmentAt, parseUrlLastSegment } from '../../utilities';
 
 class LeaveRequestDetail extends React.Component {
   constructor() {
@@ -178,11 +78,11 @@ class LeaveRequestDetail extends React.Component {
 
   // Handle approving
   handleApprove = ({setSubmitting, resetForm }) => {
-    const { history, handleShowNotif } = this.props;
-    const { leaveLetter: { fUserId } } = this.state;
+    const { handleShowNotif } = this.props;
+    const { leaveLetter: { fUserId, fId } } = this.state;
     //call api
     approveLeaveLetterRequest(
-      queryString.parse(history.location.search).id,
+      fId,
       fUserId,
       LEAVE_REQUEST_APPROVED
     )
@@ -197,7 +97,7 @@ class LeaveRequestDetail extends React.Component {
       .catch(err => {
         handleShowNotif(
           NOTIF_ERROR,
-          `Action failed (${err.message})`
+          `Action failed (${err.message})!`
         );
         setSubmitting(false);
       });
@@ -206,9 +106,10 @@ class LeaveRequestDetail extends React.Component {
   //Handle rejecting 
   handleReject = ({setSubmitting, resetForm, errors, values: {rejectReason}}) => {
     if (errors && Object.keys(errors).length === 0) {
-      const { history, handleShowNotif } = this.props;
+      const { handleShowNotif } = this.props;
+      const { fId } = this.state.leaveLetter;
       // call update status api
-      rejectLeaveLetterRequest(queryString.parse(history.location.search).id, rejectReason)
+      rejectLeaveLetterRequest(fId, rejectReason)
         .then(res => {
           handleShowNotif(
             NOTIF_SUCCESS,
@@ -228,9 +129,9 @@ class LeaveRequestDetail extends React.Component {
   }
 
   loadData = async () => {
-    let response = await getLeaveLetterDetails(
-      queryString.parse(this.props.location.search).id
-    );
+    this.demandLetterId = parseUrlLastSegment(this.props.location.pathname);
+    
+    let response = await getLeaveLetterDetails(this.demandLetterId);
     let {
       status: statusLetter,
       data: { success: successLetter, leaveLetter }
@@ -262,7 +163,7 @@ class LeaveRequestDetail extends React.Component {
   render() {
     const { history, classes, initialValues } = this.props;
     const { userInfo, leaveLetter, demandUser, rejectDialogOpen } = this.state;
-    console.log(`demandUser: `, demandUser);
+
     return (
       <DashContainer>
         <Paper className={classes.paper}>
@@ -308,7 +209,7 @@ class LeaveRequestDetail extends React.Component {
                   {/* End - Request Id */}
                   <Divider />
                   {/* End - Form title */}
-
+                  {/* Letter content */}
                   <React.Fragment>
                     <Grid container spacing={24} className={classes.leaveInfo}>
                       {/** User info  */}
@@ -420,19 +321,8 @@ class LeaveRequestDetail extends React.Component {
                       </Grid>
                     </Grid>
                   </React.Fragment>
+                  {/* End - Letter content */}
                   {/* Bottom buttons */}
-
-                  {/**
-                    if (letter status = pending)
-                    then 
-                          if (User type = HR)
-                          then 
-                              _Show button group: [Accept] [Reject]
-                          else 
-                              _Show button [Cancel]
-                    else 
-                        _Don't show any button to interact with
-                   */}
                   {leaveLetter.fStatus === LEAVE_REQUEST_PENDING
                     ? (
                       <React.Fragment>
@@ -544,6 +434,107 @@ const mapDispatchToProps = dispatch => {
     handleHideNotif: () => dispatch(hideNotification())
   };
 };
+
+const styles = theme => ({
+  layout: {
+    width: 'auto',
+    marginLeft: theme.spacing.unit * 2,
+    marginRight: theme.spacing.unit * 2,
+    [theme.breakpoints.up(600 + theme.spacing.unit * 2 * 2)]: {
+      minWidth: 800,
+      marginLeft: 'auto',
+      marginRight: 'auto'
+    }
+  },
+  paper: {
+    marginTop: theme.spacing.unit * 3,
+    marginBottom: theme.spacing.unit * 3,
+    paddingTop: theme.spacing.unit * 2,
+    paddingBottom: theme.spacing.unit * 2,
+    [theme.breakpoints.up(600 + theme.spacing.unit * 3 * 2)]: {
+      marginTop: theme.spacing.unit * 6,
+      marginBottom: theme.spacing.unit * 6,
+      padding: theme.spacing.unit * 2
+    }
+  },
+  form: {
+    width: '100%', // Fix IE 11 issue.
+    marginTop: theme.spacing.unit,
+    marginBottom: theme.spacing.unit,
+    paddingLeft: theme.spacing.unit * 4,
+    paddingRight: theme.spacing.unit * 4
+  },
+  leaveInfo: {
+    marginTop: theme.spacing.unit * 3
+  },
+  submit: {
+    marginTop: theme.spacing.unit * 6
+  },
+  preload: {
+    marginTop: theme.spacing.unit * 3
+  },
+  buttonGroupBottom: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    flexDirection: 'row',
+    alignItems: 'center',
+    [theme.breakpoints.down(360)]: {
+      justifyContent: 'space-between'
+    },
+    marginTop: theme.spacing.unit * 6
+  },
+  button: {
+    [theme.breakpoints.up(360)]: {
+      marginLeft: theme.spacing.unit
+    }
+  },
+  btnApprove: {
+    color: 'white',
+    backgroundColor: green[500],
+    '&:hover': {
+      backgroundColor: green[700]
+    }
+  },
+  leftIcon: {
+    marginRight: theme.spacing.unit
+  },
+  rightIcon: {
+    marginLeft: theme.spacing.unit
+  },
+  smallIcon: {
+    fontSize: 20
+  },
+  fieldTitle: {
+    color: 'black',
+    fontWeight: 600,
+    minWidth: 50,
+    [theme.breakpoints.down('xs')]: {
+      overflow: 'scroll'
+    }
+  },
+  fieldValue: {
+    color: 'black',
+    fontWeight: 500
+  },
+  fieldWrapper: {
+    paddingTop: 0,
+    paddingBottom: 0,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alighItems: 'center'
+  },
+  topInfo: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: theme.spacing.unit * 3
+  },
+  email: {
+    wordBreak: 'break-all'
+  }
+});
 
 export default connect(
   null,

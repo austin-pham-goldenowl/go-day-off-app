@@ -110,7 +110,7 @@ class LetterManagement extends Component {
                   { letterStatusText[fStatus] }
                 </span>,
             <Link
-              to={`/leave-request/details?id=${fId}`}
+              to={`/leave-request/${fId}`}
               className={classes.btnLink}
             >
               <Button variant='contained' color='primary'>

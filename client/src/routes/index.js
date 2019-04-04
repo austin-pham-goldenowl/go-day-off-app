@@ -58,7 +58,7 @@ const routes = [
     comp: props => <CreateNewUserAccout {...props} />
   },
   {
-    path: '/leave-request/details',
+    path: '/leave-request/:id',
     isPrivate: true,
     exact: true,
     comp: props => <LeaveRequestDetail {...props} />
