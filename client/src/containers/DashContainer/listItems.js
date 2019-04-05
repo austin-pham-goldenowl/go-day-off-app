@@ -74,10 +74,10 @@ const HRListItems = props => {
     <React.Fragment>
       <Divider />
       <br />
-      <Link to="/leave-request/all" className={classes.undecoratedLink}>
+      <Link to="/leave-requests" className={classes.undecoratedLink}>
         <ListItem
           button
-          className={isSelectedLink(history, '/leave-request/all', classes)}
+          className={isSelectedLink(history, '/leave-requests', classes)}
         >
           <ListItemIcon>
             <EmailIcon />

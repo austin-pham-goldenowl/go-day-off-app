@@ -43,109 +43,12 @@ import { compareJsonObjectValue, parseUrlLastSegment } from '../../utilities';
 import Axios, { CancelToken } from 'axios';
 import { getAllTeams, getAllPositions } from '../../apiCalls/supportingAPIs';
 import { getProfile, updateProfile } from '../../apiCalls/userAPIs';
-import { getMyLeaveLetters } from "../../apiCalls/leaveLetterAPI";
+import { getMyLeaveLetters, getUsedDayOff } from "../../apiCalls/leaveLetterAPI";
 
 //Notif redux
 import { NOTIF_ERROR, NOTIF_SUCCESS } from '../../constants/notification';
 import { showNotification } from '../../redux/actions/notificationActions';
-
-
-const styles = theme => ({
-  layout: {
-    width: 'auto',
-    marginLeft: theme.spacing.unit * 2,
-    marginRight: theme.spacing.unit * 2,
-    [theme.breakpoints.up(600 + theme.spacing.unit * 2 * 2)]: {
-      minWidth: 600,
-      marginLeft: 'auto',
-      marginRight: 'auto'
-    }
-  },
-  paper: {
-    marginTop: theme.spacing.unit * 3,
-    marginBottom: theme.spacing.unit * 3,
-    padding: theme.spacing.unit * 3,
-    [theme.breakpoints.up(600 + theme.spacing.unit * 3 * 2)]: {
-      marginTop: theme.spacing.unit * 6,
-      marginBottom: theme.spacing.unit * 6,
-      padding: theme.spacing.unit * 3,
-      paddingBottom: theme.spacing.unit * 6
-    }
-  },
-  buttonGroupTop: {
-    justifyContent: 'flex-start',
-    marginBottom: theme.spacing.unit * 3,
-    [theme.breakpoints.down('xs')]: {
-      display: 'none'
-    },
-    [theme.breakpoints.up('sm')]: {
-      display: 'flex'
-    }
-  },
-  buttonGroupBottom: {
-    justifyContent: 'flex-end',
-    marginTop: theme.spacing.unit * 6,
-    [theme.breakpoints.up('sm')]: {
-      display: 'none'
-    },
-    [theme.breakpoints.down('xs')]: {
-      display: 'flex'
-    }
-  },
-  button: {
-    marginLeft: theme.spacing.unit,
-    width: 100
-  },
-  leftIcon: {
-    marginRight: theme.spacing.unit
-  },
-  rightIcon: {
-    marginLeft: theme.spacing.unit
-  },
-  smallIcon: {
-    fontSize: 20
-  },
-  formTitle: {
-    marginBottom: theme.spacing.unit * 2
-  },
-  fieldTitle: {
-    color: 'black',
-    fontWeight: 600,
-    minWidth: 50,
-    [theme.breakpoints.down('xs')]: {
-      overflow: 'scroll'
-    }
-  },
-  fieldValue: {
-    color: 'black',
-    fontWeight: 500
-  },
-  fieldWrapper: {
-    paddingTop: 0,
-    paddingBottom: 0,
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alighItems: 'center'
-  },
-  groupInfo: {
-    marginTop: theme.spacing.unit
-  },
-  topInfo: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alighItems: 'center',
-    marginBottom: theme.spacing.unit
-  },
-  preloadWrapper: {
-    display: "flex",
-    alignItems: "center",
-    flexDirection: "column",
-    justifyContent: "center",
-    marginBottom: theme.spacing.unit,
-  },
-});
+import { getDayOffSetting } from '../../apiCalls/settingAPIs';
 
 const mapDispatchToProps = dispatch => {
   return {
@@ -200,20 +103,47 @@ class EditAccountInfo extends React.Component {
     }
   }
 
+  loadUsedDayOffInfo = () => {
+    Axios.all([getUsedDayOff(this.cancelSoure.token, this.state.demandUserId), getDayOffSetting(this.cancelSoure.token)])
+    .then(
+      Axios.spread((usedDayOffRepsonse, dayOffSettingResponse) => {
+        let usedDayOff = '-', dayOffSetting = '-';
+        if (usedDayOffRepsonse.data.success) {
+          usedDayOff = usedDayOffRepsonse.data.numOffDays;
+        }
+        if (dayOffSettingResponse.data.success) {
+          const { settings } = dayOffSettingResponse.data;
+          dayOffSetting = settings[0].fValue;
+        }
+        this.setState(prevState => ({
+          ...prevState,
+          usedDayOff,
+          dayOffSetting
+        }));
+      })
+    )
+    .catch(err => {
+      console.log(`TCL: EditAccountInfo -> loadData -> err`, err)
+    });
+  }
+
   loadData = async (demandId) => {
     //For axios' requests cancellation
     this.cancelSoure = CancelToken.source();
 
     await this.loadDemandId(demandId); //must await this 
+
     let response = await getProfile(this.state.demandUserId);
     let { status: reqStatusProfile, data: reqDataProfile } = response;
 
     if (reqStatusProfile === 200) {
+
       this.setState(prevState => ({
         ...prevState,
-        user: reqDataProfile.user,
+        user: reqDataProfile.user
       }));
 
+      this.loadUsedDayOffInfo();
 
       Axios.all([getAllTeams(this.cancelSoure.token), getAllPositions(this.cancelSoure.token)])
       .then(
@@ -254,14 +184,14 @@ class EditAccountInfo extends React.Component {
   };
 
   componentWillUnmount = () => {
-    this.cancelSoure.cancel('User suddenly left Page');
+    this.cancelSoure.cancel('User suddenly left the page');
     this.unlistenRouteChange();
   }
 
   render() {
     const { classes, handleShowNotif } = this.props;
+    const { user, editMode, allTeams, allPositions, demandUserId, usedDayOff, dayOffSetting } = this.state;
 
-    const { user, editMode, allTeams, allPositions, demandUserId } = this.state;
     const { userId, userType } = getUserEntity();
 
     const isCurrentLoggedInUser = (userId === demandUserId);
@@ -680,6 +610,13 @@ class EditAccountInfo extends React.Component {
                         }`}</span>
                       </div>
                     </Grid>
+                    {/* Used day-off */}
+                    <Grid item xs={12} sm={6}>
+                    <div className={classes.fieldTitle}>
+                      Used day-off:
+                      <span className={classes.fieldValue}>{` ${usedDayOff }/${dayOffSetting} (this year)`}</span>
+                    </div>
+                  </Grid>
                   </Grid>
                 </React.Fragment>
               )}
@@ -688,10 +625,8 @@ class EditAccountInfo extends React.Component {
         { isShowLetterList ? 
           (
             <React.Fragment>
-              <Typography component="h1" variant="h4">
-                Request letters
-              </Typography>
-              <LettersManagement 
+              <LettersManagement
+                title='Request letters'
                 api={getMyLeaveLetters}
                 demandUserId={demandUserId}
               />
@@ -702,6 +637,104 @@ class EditAccountInfo extends React.Component {
     );
   }
 }
+
+
+const styles = theme => ({
+  layout: {
+    width: 'auto',
+    marginLeft: theme.spacing.unit * 2,
+    marginRight: theme.spacing.unit * 2,
+    [theme.breakpoints.up(600 + theme.spacing.unit * 2 * 2)]: {
+      minWidth: 600,
+      marginLeft: 'auto',
+      marginRight: 'auto'
+    }
+  },
+  paper: {
+    marginTop: theme.spacing.unit * 3,
+    marginBottom: theme.spacing.unit * 3,
+    padding: theme.spacing.unit * 3,
+    [theme.breakpoints.up(600 + theme.spacing.unit * 3 * 2)]: {
+      marginTop: theme.spacing.unit * 6,
+      marginBottom: theme.spacing.unit * 6,
+      padding: theme.spacing.unit * 3,
+      paddingBottom: theme.spacing.unit * 6
+    }
+  },
+  buttonGroupTop: {
+    justifyContent: 'flex-start',
+    marginBottom: theme.spacing.unit * 3,
+    [theme.breakpoints.down('xs')]: {
+      display: 'none'
+    },
+    [theme.breakpoints.up('sm')]: {
+      display: 'flex'
+    }
+  },
+  buttonGroupBottom: {
+    justifyContent: 'flex-end',
+    marginTop: theme.spacing.unit * 6,
+    [theme.breakpoints.up('sm')]: {
+      display: 'none'
+    },
+    [theme.breakpoints.down('xs')]: {
+      display: 'flex'
+    }
+  },
+  button: {
+    marginLeft: theme.spacing.unit,
+    width: 100
+  },
+  leftIcon: {
+    marginRight: theme.spacing.unit
+  },
+  rightIcon: {
+    marginLeft: theme.spacing.unit
+  },
+  smallIcon: {
+    fontSize: 20
+  },
+  formTitle: {
+    marginBottom: theme.spacing.unit * 2
+  },
+  fieldTitle: {
+    color: 'black',
+    fontWeight: 600,
+    minWidth: 50,
+    [theme.breakpoints.down('xs')]: {
+      overflow: 'scroll'
+    }
+  },
+  fieldValue: {
+    color: 'black',
+    fontWeight: 500
+  },
+  fieldWrapper: {
+    paddingTop: 0,
+    paddingBottom: 0,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alighItems: 'center'
+  },
+  groupInfo: {
+    marginTop: theme.spacing.unit
+  },
+  topInfo: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alighItems: 'center',
+    marginBottom: theme.spacing.unit
+  },
+  preloadWrapper: {
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "column",
+    justifyContent: "center",
+    marginBottom: theme.spacing.unit,
+  },
+});
 
 export default withStyles(styles)(
   connect(null, mapDispatchToProps)(EditAccountInfo)

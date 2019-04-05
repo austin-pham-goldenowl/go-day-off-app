@@ -25,9 +25,6 @@ export default (sequelize, DataTypes) => {
             attributes,
             ...queryWhere
           });
-        // not send password
-        settings = Array.from(settings)
-          .filter(setting => !setting.get({ plain: true }).fValue.includes("password"));
         resolve(settings);
       } catch (err) {
         err.code = 500;

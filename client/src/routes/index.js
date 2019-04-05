@@ -64,7 +64,7 @@ const routes = [
     comp: props => <LeaveRequestDetail {...props} />
   },
   {
-    path: '/leave-request/all',
+    path: '/leave-requests',
     isPrivate: true,
     exact: true,
     comp: props => <AllLettersManagement {...props} />

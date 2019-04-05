@@ -281,6 +281,8 @@ CREATE TABLE settings
 
 INSERT INTO leavingForm.settings (fName, fValue) VALUES ('email', 'golden_owl@gmail.com');
 INSERT INTO leavingForm.settings (fName, fValue) VALUES ('password', 'password');
+INSERT INTO leavingForm.settings (fName, fValue) VALUES ('maxDayOff', 15);
+
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
