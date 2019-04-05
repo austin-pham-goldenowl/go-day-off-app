@@ -1,4 +1,5 @@
 import React from "react";
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import MUIDataTable from 'mui-datatables';
 import DashContainer from "../DashContainer";
@@ -13,6 +14,20 @@ import { getUsersList } from "../../apiCalls/userAPIs";
  * Constants
  */
 // import { availableStatusColor, availableStatusText } from "../../constants/user";
+
+// Notification redux
+import {
+  showNotification,
+} from '../../redux/actions/notificationActions';
+import { NOTIF_ERROR, NOTIF_SUCCESS } from '../../constants/notification';
+
+
+const mapDispatchToProps = dispatch => {
+  return {
+    handleShowNotif: (type, message) =>
+      dispatch(showNotification(type, message))
+  };
+};
 
 const styles = theme => ({
   btnLink: {
@@ -43,6 +58,7 @@ class UsersManagement extends React.Component {
     }
     catch(err) {
       console.log(err);
+      this.props.handleShowNotif(NOTIF_ERROR, err.message);
     }
   }
   
@@ -53,6 +69,7 @@ class UsersManagement extends React.Component {
     }
     catch(err) {
       console.log(err);
+      this.props.handleShowNotif(NOTIF_ERROR, err.message);
     }
   }
 
@@ -111,4 +128,6 @@ class UsersManagement extends React.Component {
   }
 }
 
-export default withStyles(styles)(UsersManagement);
+export default connect(null, mapDispatchToProps)(
+  withStyles(styles)(UsersManagement)
+);
