@@ -80,6 +80,9 @@ API_VERSIONS.forEach(version => {
   // --
   const settingCtrl = require(`./controllers/${version}/setting`);
   server.use(`/api/${version}/setting`, verifyAccToken, userMustBeHR, settingCtrl);
+  // --
+  const publicSettingCtrl = require(`./controllers/${DEFAULT_API_VERSION}/setting-public`);
+  server.use(`/api/${version}/public/setting`, verifyAccToken, publicSettingCtrl);
 });
 
 // If no api version specified, rollback to the default one
@@ -106,6 +109,9 @@ server.use(`/api/reject`, verifyAccToken, rejectCtrl);
 // --
 const settingCtrl = require(`./controllers/${DEFAULT_API_VERSION}/setting`);
 server.use(`/api/setting`, verifyAccToken, userMustBeHR, settingCtrl);
+// --
+const publicSettingCtrl = require(`./controllers/${DEFAULT_API_VERSION}/setting-public`);
+server.use(`/api/public/setting`, verifyAccToken, publicSettingCtrl);
 
 // Handle invalid routes
 server.all("*", (req, res) => {
