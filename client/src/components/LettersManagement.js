@@ -10,7 +10,7 @@ import { CancelToken } from 'axios';
  * Constants
  */
 import { letterColors, letterStatusText, dayOfWeek, defaultColumns, HRColumns, defaultExportColumns, HRExportColumns } from "../constants/letter";
-
+import { REJECT_TYPE } from '../constants/rejectType'; 
 /**
  * Helpers 
  */
@@ -96,18 +96,19 @@ class LetterManagement extends Component {
   render() {
     const { letters, exports } = this.state;
     const { classes, title, type, demandUserId } = this.props;
+		console.log(`TCL: render -> letters`, letters)
   
     const tableInfo = {
       columns: type === 'hr' ? HRColumns : defaultColumns,
       title: <Typography component='p' variant='h5' className={classes.title}> {title} </Typography>,
       data: Array.isArray(letters)
-        ? letters.map(({ fUserFullName, fFromDT, fToDT, fStatus, fId, fRdt }) => {
+        ? letters.map(({ fUserFullName, fFromDT, fToDT, fStatus, fId, fRdt, fRejectType }) => {
           const dataSet = [
             getDate(fRdt),
             getDate(fFromDT),
             getDate(fToDT),
             <span style={{ color: letterColors[fStatus] }} >
-                  { letterStatusText[fStatus] }
+                  { fRejectType && fRejectType === REJECT_TYPE.BY_SELF? `CANCELED` : letterStatusText[fStatus]  }
                 </span>,
             <Link
               to={`/leave-request/${fId}`}
@@ -147,14 +148,16 @@ class LetterManagement extends Component {
               ? HRExportColumns
               : defaultExportColumns,
           data: exports.map(({ fUserFullName, fApproverFullName,
-            fSubstituteFullName, fFromDT, fToDT, fFromOpt, fToOpt, fStatus, fRdt }) => {
+            fSubstituteFullName, fFromDT, fToDT, fFromOpt, fToOpt, fStatus, fRdt, fRejectType }) => {
+							console.log(`TCL: fRejectType`, fRejectType)
+							console.log(`TCL: letterStatusText[fStatus]`, letterStatusText[fStatus])
             const row = [
               { value: getDate(fRdt) },
               { value: `${getDate(fFromDT)} (${fFromOpt})` },
               { value: `${getDate(fToDT)} (${fToOpt})` },
               { value: fApproverFullName },
               { value: fSubstituteFullName },
-              { value: letterStatusText[fStatus] },
+              { value: fRejectType && fRejectType === REJECT_TYPE.BY_SELF? `CANCELED` : letterStatusText[fStatus] },
             ];
             if(type === 'hr') row.unshift({ value: fUserFullName });
             return formatRow(row);

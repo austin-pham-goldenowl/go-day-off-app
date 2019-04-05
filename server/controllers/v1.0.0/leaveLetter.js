@@ -10,6 +10,7 @@ const dateArray = require('moment-array-dates');
 const {
   users: userModel,
   leaveLetters: leaveLetterModel,
+  rejectedLetterDetail: rejectedLetterModel,
 } = require('../../models');
 
 /**
@@ -71,7 +72,7 @@ Router.get('/details', async (req, res) => {
     if (!leaveLetters || leaveLetters.length !== 1) throw { msg: 'LETTER_NOT_FOUND' };
 
     // load substitute fullName
-    const letter = leaveLetters[0].get({ plain: true });
+    let letter = leaveLetters[0].get({ plain: true });
     const { fApprover, fSubstituteId } = letter;
     // only HR marked as approver in letter is able to view and approve it
     if (fUserType === 'HR' && fApprover !== userId && fUserId !== userId) throw { code: 401, msg: 'NO_PERMISSION' };
@@ -79,7 +80,16 @@ Router.get('/details', async (req, res) => {
     const users = await userModel.loadAll(['fFirstName', 'fLastName'], { where: { fId: fSubstituteId } });
     if (users.length) {
       const { fFirstName, fLastName } = users[0].get({ plain: true });
-      letter.fFullName = fFirstName + ' ' + fLastName;
+      letter.fFullName = fFirstName + ' ' + fLastName; 
+    }
+
+    //if rejected, load rejectType for more detail
+    if (letter.fStatus === LEAVING_LETTER_STATUS.REJECTED) {
+      const rejectedLetters = await rejectedLetterModel.loadAll(['fRejectType'], { where: { fLetterId: letter.fId }});
+      if (rejectedLetters.length) {
+        const { fRejectType } = rejectedLetters[0].get({ plain: true });
+        letter.fRejectType = fRejectType;
+      }
     }
 
     handleSuccess(res, { leaveLetter: letter });
@@ -120,6 +130,15 @@ Router.get('/', userMustBeHR, async (req, res) => {
       for (let i = 0; i < rawLeaveLetters.length; i++) {
         const letter = rawLeaveLetters[i].get({ plain: true });
         const { fApprover, fUserId, fSubstituteId } = letter;
+
+            //if rejected, load rejectType for more detail
+        if (letter.fStatus === LEAVING_LETTER_STATUS.REJECTED) {
+          const rejectedLetters = await rejectedLetterModel.loadAll(['fRejectType'], { where: { fLetterId: letter.fId }});
+          if (rejectedLetters.length) {
+            const { fRejectType } = rejectedLetters[0].get({ plain: true });
+            letter.fRejectType = fRejectType;
+          }
+        }
 
         // user's fullName
         const users = await userModel.loadAll(['fFirstName', 'fLastName'], { where: { fId: fUserId } });

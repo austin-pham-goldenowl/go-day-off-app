@@ -3,14 +3,15 @@ import classNames from 'classnames';
 import { Chip, Avatar } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import {
-  AccessTime as PendingIcon,
   DoneAll as ApprovedIcon,
+  AccessTime as PendingIcon,
+  ErrorOutline as ErrorIcon,
   HighlightOffOutlined as RejectIcon,
-  ErrorOutline as ErrorIcon
 } from '@material-ui/icons';
 
 //constants
 import * as ReqStatusType from '../constants/requestStatusType';
+import { REJECT_TYPE } from '../constants/rejectType';
 import { requestStatusPillColors as PillColors } from '../constants/appThemeColors';
 //helpers
 import { getLeaveReqStatus } from '../helpers/leaveLetterHelper';
@@ -50,7 +51,7 @@ const styles = theme => ({
  */
 
 const RequestStatus = props => {
-  const { classes, statusType } = props;
+  const { classes, statusType, rejectType } = props;
   switch (statusType) {
     case ReqStatusType.LEAVE_REQUEST_PENDING:
       return (
@@ -71,7 +72,7 @@ const RequestStatus = props => {
     case ReqStatusType.LEAVE_REQUEST_REJECTED:
       return (
         <Chip
-          label="Rejected"
+          label={rejectType && rejectType === REJECT_TYPE.BY_APPROVER ? 'Rejected' : 'Canceled'}
           className={classNames(classes.rejected, classes.rejectedColor)}
           icon={<RejectIcon className={classes.rejectedColor} />}
         />

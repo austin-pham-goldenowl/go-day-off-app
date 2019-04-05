@@ -4,7 +4,7 @@ import { formatColumns } from "../helpers/excelFormatter";
 export const letterColors = {
   [requestStatusType.LEAVE_REQUEST_PENDING]: '#ffe43a',
   [requestStatusType.LEAVE_REQUEST_APPROVED]: '#0eba25',
-  [requestStatusType.LEAVE_REQUEST_REJECTED]: '#2A2A2E',
+  [requestStatusType.LEAVE_REQUEST_REJECTED]: '#ff0000',
 };
 
 export const letterStatusText = {
