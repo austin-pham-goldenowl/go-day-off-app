@@ -207,7 +207,10 @@ class LeaveRequestDetail extends React.Component {
                       <ArrowBackIcon className={classes.leftIcon} />
                       Back
                     </Button>
-                    <RequestStatusPill statusType={leaveLetter.fStatus} />
+                    <RequestStatusPill 
+                      statusType={leaveLetter.fStatus} 
+                      rejectType={leaveLetter.fRejectType && leaveLetter.fRejectType}
+                    />
                   </Grid>
                   {/* Form title */}
                   <Typography component="h1" variant="h5">
