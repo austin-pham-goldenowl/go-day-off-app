@@ -124,7 +124,7 @@ DROP TABLE IF EXISTS `rejectedLetterDetail`;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `rejectedLetterDetail` (
   `fLetterId` varchar(10) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `fReason` varchar(45) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `fReason` varchar(250) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `fRejectType` int(11) NOT NULL,
   `leaveLetters_fId` varchar(10) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`fLetterId`),

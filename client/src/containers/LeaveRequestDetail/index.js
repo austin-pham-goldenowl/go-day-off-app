@@ -181,10 +181,13 @@ class LeaveRequestDetail extends React.Component {
           <Formik
             validate={(values) => {
               let errors = {};
-              if (rejectDialogOpen && values.rejectReason.length < 50 ) {
-                errors.rejectReason = `'Reject reason' can't be less than 50 characters`;
+              if (rejectDialogOpen) {
+                if (values.rejectReason.length < 50  ) 
+                  errors.rejectReason = `'Reject reason' can't be less than 50 characters`;
+                else if (values.rejectReason.length > 250 )
+                  errors.rejectReason = `'Reject reason' can't be more than 250 characters`;
+                console.log('errors ', errors);
               }
-              console.log('errors ', errors);
               return errors;
             }}
             validateOnBlur={true}
@@ -194,6 +197,7 @@ class LeaveRequestDetail extends React.Component {
               handleReset,
               isSubmitting,
             }) => {
+              
               return (
                 <Form className={classes.form}>
                   <Grid item container xs={12} className={classes.topInfo}>
@@ -336,7 +340,7 @@ class LeaveRequestDetail extends React.Component {
                   </React.Fragment>
                   {/* End - Letter content */}
                   {/* Bottom buttons */}
-                  {leaveLetter.fStatus === LEAVE_REQUEST_PENDING
+                  {leaveLetter.fStatus === LEAVE_REQUEST_PENDING 
                     ? (
                       <React.Fragment>
                         <Grid
