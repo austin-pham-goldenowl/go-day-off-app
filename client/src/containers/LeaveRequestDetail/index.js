@@ -181,7 +181,7 @@ class LeaveRequestDetail extends React.Component {
           <Formik
             validate={(values) => {
               let errors = {};
-              if (rejectDialogOpen && values.rejectReason.length < 5 ) {
+              if (rejectDialogOpen && values.rejectReason.length < 50 ) {
                 errors.rejectReason = `'Reject reason' can't be less than 50 characters`;
               }
               console.log('errors ', errors);
