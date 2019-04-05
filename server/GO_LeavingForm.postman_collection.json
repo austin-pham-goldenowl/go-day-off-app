@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "b0c306ee-ebe2-411b-b77a-7d44ed904951",
+		"_postman_id": "bd8fdb69-cfe9-47fd-a981-be6a072cd880",
 		"name": "GO_LeavingForm",
 		"description": "Golden Owl - Leaving Form",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -877,6 +877,37 @@
 				},
 				{
 					"name": "Get all settings",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJMelBxOTBmOGJaIiwidXNlclR5cGUiOiJwZXJzb25uZWwiLCJpYXQiOjE1NTMyMjMxNTQsImV4cCI6MTU1MzI4MzE1NH0.e6QAKsW4WtaVKGtCJwe3KZUZP7zc0pDwYn0589FwMXA",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "localhost:3001/api/v1.0.0/setting/",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"api",
+								"v1.0.0",
+								"setting",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Day Off Setting",
 					"request": {
 						"method": "GET",
 						"header": [
