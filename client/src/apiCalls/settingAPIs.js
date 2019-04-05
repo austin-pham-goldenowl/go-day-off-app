@@ -22,3 +22,12 @@ export const saveSettings = pairs =>
         "x-access-token": getCookie(ACCESS_TOKEN_KEY)
       }
     });
+
+export const getDayOffSetting = (cancelToken) => {
+  return axios.get(`${SERVER_HOST_DEV}/public/setting/day-off`, {
+    headers: {
+      "x-access-token": getCookie(ACCESS_TOKEN_KEY)
+    },
+    cancelToken: cancelToken,
+  });
+}
