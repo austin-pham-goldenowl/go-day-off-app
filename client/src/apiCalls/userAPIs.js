@@ -76,9 +76,6 @@ export const getAllInformTo = () => {
 };
 
 export const getAllSubsitutes = () => {
-  let id = getUserId();
-  console.log(`[UserAPIs] -> getAllSubsitutes: `);
-  console.log(`-> userId: ${id}}`);
   return axios.get(`${SERVER_HOST_DEV}/user/substitutes`, {
     headers: {
       'x-access-token': getCookie(ACCESS_TOKEN_KEY)
@@ -87,8 +84,6 @@ export const getAllSubsitutes = () => {
 };
 
 export const getAllSubsitutesByUserId = userId => {
-  console.log(`[UserAPIs] -> getAllSubsitutes: `);
-  console.log(`-> userId: ${userId}}`);
   return axios.get(`${SERVER_HOST_DEV}/user/substitutes?id=${userId}`, {
     headers: {
       'x-access-token': getCookie(ACCESS_TOKEN_KEY)
@@ -102,3 +97,11 @@ export const getUsersList = (size = 10, page = 1) =>
       'x-access-token': getCookie(ACCESS_TOKEN_KEY)
     }
 });
+
+export const getUsedDayOff = (userId) => {
+  return axios.get(`${SERVER_HOST_DEV}/used-off-days?userId=${userId}`, {
+    headers: {
+      'x-access-token': getCookie(ACCESS_TOKEN_KEY)
+    }
+  });
+} 
