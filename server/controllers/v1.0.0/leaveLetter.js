@@ -368,11 +368,11 @@ Router.post('/send-email', async (req, res) => {
 
 Router.get('/used-off-days', async (req, res) => {
   try {
+    let { userId, month, year } = req.query;
     // only HR can view all; others can view oneself's
     const fUserType = await getPermissionByToken(req.token_payload);
     if(fUserType !== 'HR' && userId !== getIdFromToken(req.token_payload)) throw { code: 401, msg: 'NO_PERMISSION' };
 
-    const { userId, month, year } = req.query;
     if(!userId || 
       (await getPermissionByToken(req.token_payload) !== 'HR' && 
       userId !== getIdFromToken(req.token_payload))) throw { msg: 'INVALID_QUERY' };
