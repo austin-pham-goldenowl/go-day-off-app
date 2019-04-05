@@ -23,11 +23,8 @@ const Dashboard = props => {
 
   return (
     <DashContainer>
-      <Typography variant='h4' gutterBottom component='h1'>
-        My letters
-      </Typography>
       <div className={classes.tableContainer}>
-        <LettersManagement api={getMyLeaveLetters} />
+        <LettersManagement title='My letters' api={getMyLeaveLetters} />
       </div>
     </DashContainer>
   );

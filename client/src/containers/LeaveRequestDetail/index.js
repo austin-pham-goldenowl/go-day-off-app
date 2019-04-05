@@ -3,7 +3,6 @@ import moment from 'moment';
 import classNames from 'classnames';
 import { connect } from 'react-redux';
 import { Formik, Form, Field } from 'formik';
-import { withRouter } from 'react-router-dom';
 import {
   Paper,
   CssBaseline,
@@ -14,10 +13,8 @@ import {
 } from '@material-ui/core';
 import { green } from '@material-ui/core/colors';
 import { withStyles } from '@material-ui/core/styles';
-import queryString from 'query-string';
-import RequestStatusPill from '../../components/RequestStatusPill';
-import DashContainer from '../DashContainer';
 
+// icons
 import {
   ArrowBackIosOutlined as ArrowBackIcon,
   DoneOutlined as DoneIcon,
@@ -25,17 +22,15 @@ import {
 } from '@material-ui/icons';
 
 //components
+import RequestStatusPill from '../../components/RequestStatusPill';
 import LetterCancelingDialog from '../../components/Dialogs/LetterCancelingDialog';
+
+//containers
+import DashContainer from '../DashContainer';
 
 // Helper
 import { getLeaveType } from '../../helpers/leaveLetterHelper';
 import { getUserId } from '../../helpers/authHelpers';
-// Notification redux
-import {
-  showNotification,
-  hideNotification
-} from '../../redux/actions/notificationActions';
-import { NOTIF_ERROR, NOTIF_SUCCESS } from '../../constants/notification';
 
 // API
 import { getLeaveLetterDetails } from '../../apiCalls/leaveLetterAPI';
@@ -44,6 +39,14 @@ import {
   approveLeaveLetterRequest, 
   rejectLeaveLetterRequest
 } from '../../apiCalls/leaveLetterAPI';
+
+// Notification redux
+import {
+  showNotification,
+  hideNotification
+} from '../../redux/actions/notificationActions';
+import { NOTIF_ERROR, NOTIF_SUCCESS } from '../../constants/notification';
+
 
 // Constants
 import {
@@ -56,21 +59,23 @@ import {
 } from '../../constants/leaveDurationOptions';
 
 import { responseUserPermission } from '../../constants/permission';
-import { parseUrlSegmentAt, parseUrlLastSegment } from '../../utilities';
+
+//utilities
+import { parseUrlLastSegment } from '../../utilities';
 
 class LeaveRequestDetail extends React.Component {
   constructor() {
     super();
     this.state = {
-      leaveLetter: {},
       userInfo: {},
+      leaveLetter: {},
       demandUser: null,
       rejectDialogOpen: false,
     };
   }
 
   handleToggleRejectDialog = async (value = true) => {
-    this.setState(prevState => ({
+    this.__isMounted && this.setState(prevState => ({
       ...prevState,
       rejectDialogOpen: value
     }));
@@ -152,13 +157,18 @@ class LeaveRequestDetail extends React.Component {
     } = response;
     if(statusDemandUser !== 200 || successDemandUser !== true || !demandInfo) return;
 
-    this.setState({ leaveLetter, userInfo, demandUser: demandInfo });
+    this.__isMounted && this.setState({ leaveLetter, userInfo, demandUser: demandInfo });
   };
 
-  componentDidMount = async () => {
+  componentDidMount = () => {
+    this.__isMounted = true;
     //First request
     this.loadData();
   };
+
+  componentWillUnmount = () => {
+    this.__isMounted = false;
+  }
 
   render() {
     const { history, classes, initialValues } = this.props;
@@ -354,14 +364,17 @@ class LeaveRequestDetail extends React.Component {
                             )}
                           />
                           <Field
-                            render={({ field, form }) => (
+                            render={({ field, form: {setFieldTouched} }) => (
                               <Button
                                 className={classes.button}
                                 size="small"
                                 color="secondary"
                                 variant="contained"
                                 disabled={isSubmitting}
-                                onClick={() => this.handleToggleRejectDialog(true)}
+                                onClick={() => {
+                                  setFieldTouched(field.name, true)
+                                  this.handleToggleRejectDialog(true);
+                                }}
                               >
                                 <RemoveCircleIcon className={classes.leftIcon} />
                                 Reject
@@ -371,14 +384,17 @@ class LeaveRequestDetail extends React.Component {
                           </React.Fragment>
                         ) : (
                           <Field
-                          render={({ field, form }) => (
+                          render={({ field, form: {setFieldTouched} }) => (
                             <Button
                               className={classes.button}
                               size="small"
                               color="secondary"
                               variant="contained"
                               disabled={isSubmitting}
-                              onClick={() => this.handleToggleRejectDialog(true)}
+                              onClick={() => {
+                                setFieldTouched(field.name, true)
+                                this.handleToggleRejectDialog(true)
+                              }}
                             >
                               <RemoveCircleIcon className={classes.leftIcon} />
                               Cancel
@@ -400,7 +416,7 @@ class LeaveRequestDetail extends React.Component {
                         component={LetterCancelingDialog}
                         title={demandUser && demandUser.fTypeId === responseUserPermission['HR'] ? 'Reject' : 'Cancel'}
                         onConfirm={async (form) => {
-                          await this.handleReject(form);
+                          this.handleReject(form);
                           this.handleToggleRejectDialog(false);
                           handleReset();
                         }}
@@ -539,4 +555,4 @@ const styles = theme => ({
 export default connect(
   null,
   mapDispatchToProps
-)(withStyles(styles)(withRouter(LeaveRequestDetail)));
+)(withStyles(styles)(LeaveRequestDetail));
