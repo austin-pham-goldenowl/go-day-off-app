@@ -115,7 +115,7 @@ class EditAccountInfo extends React.Component {
           const { settings } = dayOffSettingResponse.data;
           dayOffSetting = settings[0].fValue;
         }
-        this.setState(prevState => ({
+        this.__isMounted && this.setState(prevState => ({
           ...prevState,
           usedDayOff,
           dayOffSetting
@@ -138,7 +138,7 @@ class EditAccountInfo extends React.Component {
 
     if (reqStatusProfile === 200) {
 
-      this.setState(prevState => ({
+      this.__isMounted && this.setState(prevState => ({
         ...prevState,
         user: reqDataProfile.user
       }));
@@ -158,7 +158,7 @@ class EditAccountInfo extends React.Component {
             label: item.fPosName
           }));
           
-          this.setState(prevState => ({
+          this.__isMounted && this.setState(prevState => ({
             ...prevState,
             allTeams,
             allPositions
@@ -174,7 +174,8 @@ class EditAccountInfo extends React.Component {
   };
 
   componentDidMount = () => {
-    this.unlistenRouteChange = this.props.history.listen((location, action) => {
+    this.__isMounted = true;
+    this.unlistenRouteChange = this.__isMounted && this.props.history.listen((location, action) => {
       const demandId = parseUrlLastSegment(location.pathname);
       // Renew cancelSource
       this.cancelSoure = CancelToken.source();
@@ -184,6 +185,7 @@ class EditAccountInfo extends React.Component {
   };
 
   componentWillUnmount = () => {
+    this.__isMounted = false;
     this.cancelSoure.cancel('User suddenly left the page');
     this.unlistenRouteChange();
   }
