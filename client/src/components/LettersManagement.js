@@ -1,9 +1,11 @@
 import moment from 'moment-timezone';
 import { Link } from 'react-router-dom';
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import MUIDataTable from 'mui-datatables';
 import ExcelExporter from './ExcelExporter';
-import { Typography, Button, withStyles, Icon } from '@material-ui/core';
+import { Typography, Button, withStyles } from '@material-ui/core';
+import { MuiThemeProvider, createMuiTheme } from "@material-ui/core";
+
 
 import { CancelToken } from 'axios';
 /**
@@ -15,20 +17,27 @@ import { REJECT_TYPE } from '../constants/rejectType';
  * Helpers 
  */
 import { formatRow } from "../helpers/excelFormatter";
+import LetterManagementToolbar from './LetterManagementToolbar';
 
-const styles = theme => ({
-  btnLink: {
-    textDecoration: 'none',
-  },
-  paper: {
-    padding: theme.spacing.unit * 5
-  },
-  title: {
-    textAlign: 'left',
-    marginTop: theme.spacing.unit * 3,
-    marginBottom: theme.spacing.unit * 3
-  },
-});
+//overrides `material-ui-pickers` theme
+const materialTheme = createMuiTheme({
+  overrides: {
+    MUIDataTableToolbar: {
+      left: {
+        flex: '1',
+      },
+      actions: {
+        flex: '2',
+      }
+    },
+    MuiFormControl: {
+      root: {
+        width: '135px',
+        marginRight: '5px'
+      }
+    }
+  }
+})
 
 const getDate = (rawDate = '') => {
   const date = moment(rawDate).isValid() && moment.tz(rawDate, 'Asia/Bangkok');
@@ -136,7 +145,13 @@ class LetterManagement extends Component {
         rowsPerPageOptions: [5, 10, 15, 20],
         onChangeRowsPerPage: size => this.changePage(size, 1, demandUserId),
         onTableChange: (action, tableState) => action === 'changePage' && this.changePage(tableState.rowsPerPage, tableState.page + 1, demandUserId),
-        customToolbar: () => <Button variant='contained' size='small' title='Export data' onClick={this.handleExport}><Icon>save</Icon></Button>,
+        customToolbar: () => {
+          return (
+            <LetterManagementToolbar 
+
+            />
+          )
+        },
       }
     };
 
@@ -167,18 +182,34 @@ class LetterManagement extends Component {
     ];
 
     return (
-      <>
-        <MUIDataTable
-          data={tableInfo.data}
-          title={tableInfo.title}
-          className={classes.paper}
-          columns={tableInfo.columns}
-          options={tableInfo.options}
-        />
+      <Fragment>
+        <MuiThemeProvider theme={materialTheme}>
+          <MUIDataTable
+            data={tableInfo.data}
+            title={tableInfo.title}
+            className={classes.paper}
+            columns={tableInfo.columns}
+            options={tableInfo.options}
+          />
+        </MuiThemeProvider>
         <ExcelExporter sheets={sheets} downloadTriggerRef={this.downloadTriggerRef}/>
-      </>
+      </Fragment>
     );
   }
 }
+
+const styles = theme => ({
+  btnLink: {
+    textDecoration: 'none',
+  },
+  paper: {
+    padding: theme.spacing.unit * 5
+  },
+  title: {
+    textAlign: 'left',
+    marginTop: theme.spacing.unit * 3,
+    marginBottom: theme.spacing.unit * 3
+  },
+});
 
 export default withStyles(styles)(LetterManagement);
