@@ -10,7 +10,7 @@ import Icon from '@material-ui/core/Icon';
 // Using components
 import SelectCustom from '../../components/CustomSelect';
 import TextFieldReadOnly from '../../components/ReadOnlyTextField';
-import DatePickerField from '../../components/DatePicker';
+import DatePickerField from '../../components/DatePickers/FormDatePicker';
 import CreatableSelectWithChips from '../../components/CreatableSelectWithChips';
 import DashContainer from '../DashContainer';
 // Validation

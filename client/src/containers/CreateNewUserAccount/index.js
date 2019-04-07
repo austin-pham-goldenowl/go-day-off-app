@@ -15,7 +15,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Icon from '@material-ui/core/Icon';
 
 import SelectCustom from '../../components/CustomSelect';
-import DatePickerField from '../../components/DatePicker';
+import DatePickerField from '../../components/DatePickers/FormDatePicker';
 import DashContainer from '../DashContainer';
 
 //Constants
