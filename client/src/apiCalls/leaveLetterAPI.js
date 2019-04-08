@@ -119,3 +119,20 @@ export const getUsedDayOff = (cancelToken, userId, toMonth, inYear) => {
     cancelToken: cancelToken,
   });
 } 
+
+export const getLetterByFilterAll = 
+(cancelToken, userId, fromMonth, fromYear, toMonth, toYear, status, page = 1, size = 10) => {
+  const url = `${SERVER_HOST_DEV}/leaveletter/filter?userId=${userId}`
+            + (fromMonth && fromYear && !isNaN(fromMonth) && !isNaN(fromYear) ? `&fromMonth=${fromMonth}&fromYear=${fromYear}` : '')
+            + (toMonth && toYear && !isNaN(toMonth) && !isNaN(toYear) ? `&toMonth=${toMonth}&toYear=${toYear}` : '')
+            + (page ? `&page=${page}` : '')
+            + (size ? `&size=${size}` : '')
+            + (status ? `&status=${status}` : '');
+  console.log(`TCL: url`, url)
+  return axios.get(url, {
+    headers: {
+      'x-access-token': getCookie(ACCESS_TOKEN_KEY)
+    },
+    cancelToken: cancelToken
+  })
+}
