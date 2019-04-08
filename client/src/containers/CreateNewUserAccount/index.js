@@ -30,7 +30,6 @@ import moment from 'moment';
 // Notification redux
 import { showNotification } from '../../redux/actions/notificationActions';
 import { NOTIF_ERROR, NOTIF_SUCCESS } from '../../constants/notification';
-import CircularUnderLoad from '../../components/Animation/CircularUnderLoad';
 
 const mapDispatchToProps = dispatch => {
   return {

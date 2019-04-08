@@ -14,6 +14,7 @@ import { CancelToken } from 'axios';
  */
 import { letterColors, letterStatusText, dayOfWeek, defaultColumns, HRColumns, defaultExportColumns, HRExportColumns } from "../constants/letter";
 import { REJECT_TYPE } from '../constants/rejectType'; 
+import { userTypes } from '../constants/permission';
 
 // Components
 import LetterManagementToolbar from './LetterManagementToolbar';
@@ -22,8 +23,6 @@ import LetterManagementToolbar from './LetterManagementToolbar';
  * Helpers 
  */
 import { formatRow } from "../helpers/excelFormatter";
-import { getLetterByFilterAll } from '../apiCalls/leaveLetterAPI';
-import { getUserId } from '../helpers/authHelpers';
 
 
 // Notification redux
@@ -31,6 +30,7 @@ import {
   showNotification,
 } from '../redux/actions/notificationActions';
 import { NOTIF_ERROR, NOTIF_SUCCESS } from '../constants/notification';
+import { getUserId } from '../helpers/authHelpers';
 
 const mapDispatchToProps = dispatch => {
   return {
@@ -38,7 +38,7 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-//overrides `material-ui-pickers` theme
+//overrides theme
 const materialTheme = createMuiTheme({
   overrides: {
     MUIDataTableToolbar: {
@@ -58,6 +58,15 @@ const materialTheme = createMuiTheme({
   }
 })
 
+const generateInitialValue = () => {
+  const currentDate = new Date();
+   return {
+    status: 0,
+    fromDate: new Date(currentDate.getFullYear(), 0, 1), //first date of first month
+    toDate: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0, 23, 59, 59), //last day of current month
+  }
+}
+
 const getDate = (rawDate = '') => {
   const date = moment(rawDate).isValid() && moment.tz(rawDate, 'Asia/Bangkok');
   return !date ?
@@ -74,6 +83,7 @@ class LetterManagement extends Component {
       count: 0,
       letters: [],
       exports: [],
+      filterOptions: generateInitialValue()
     };
     this.downloadTriggerRef = React.createRef();
   }
@@ -106,12 +116,21 @@ class LetterManagement extends Component {
     }
   }
 
-  handleFilterValueChange = async (values) => {
-    let userId = getUserId();
-    const { demandUserId } = this.props;
-    if (typeof(demandUserId) !== 'undefined') {
-      userId = demandUserId
+  handleFilterValueChange = async (values, { setSubmitting }) => {
+    const { demandUserId, type } = this.props;
+    let userId;
+    if (type && type === userTypes.MODE_HR) {
+      userId = '';
+    } else {
+      if (demandUserId !== undefined) {
+        userId = demandUserId;
+      }
+      else {
+        userId = getUserId();
+      }
     }
+    console.log(`TCL: handleFilterValueChange -> userId`, userId)
+    
     const fromDate = new Date(values.fromDate),
           toDate   = new Date(values.toDate);
     try {
@@ -119,25 +138,33 @@ class LetterManagement extends Component {
             toMonth   = toDate.getMonth() + 1,
             fromYear  = fromDate.getFullYear(),
             toYear    = toDate.getFullYear();
-      const { data: { success, leaveLetters, count }} = await getLetterByFilterAll(
-        this.cancelSource.token,
+      const filterData = {
         userId, 
         fromMonth,
         fromYear, 
         toMonth, 
         toYear, 
-        values.status
-      );
+        status: values.status,
+      }
+      const { 
+        data: { success, leaveLetters, count }
+      } = await this.props.filterAPI( this.cancelSource.token, filterData);
       if (success) {
-        //set state
-        this.__isMounted && this.setState({
-          letters: leaveLetters,
-          count
-        }, () => this.props.handleShowNotif(NOTIF_SUCCESS, `Load data completed!`));
+        this.__isMounted && this.setState(
+          {
+            count,
+            letters: leaveLetters,
+            filterOptions: filterData 
+          }, () => {
+            this.props.handleShowNotif(NOTIF_SUCCESS, `Load data completed!`)
+            typeof(setSubmitting) !== 'undefined' && setSubmitting(false)
+          }
+        );
       }
     }
     catch (err) {
       this.props.handleShowNotif(NOTIF_ERROR, `Load data failed! (${err.message})`)
+      typeof(setSubmitting) !== 'undefined' && setSubmitting(false)
     }
   }
 
@@ -156,12 +183,16 @@ class LetterManagement extends Component {
     }
   };
 
-  changePage = (size = 10, page = 1, demandUserId) => {
+  handleChangePage = (size = 10, page = 1, demandUserId) => {
     this.props.api(this.cancelSource.token, page, size, demandUserId)
     .then(({ data: { success, leaveLetters: letters, count } }) => 
       this.__isMounted && success && this.setState({ letters, count, page, size }))
     .catch(error => console.log(error));
   };
+
+  handleChangPageWithFilter = (size=10, page=1, demandUserId) => {
+    
+  }
 
   render() {
     const { letters, exports } = this.state;
@@ -169,7 +200,7 @@ class LetterManagement extends Component {
 		// console.log(`TCL: render -> letters`, letters)
   
     const tableInfo = {
-      columns: type === 'hr' ? HRColumns : defaultColumns,
+      columns: type === userTypes.MODE_HR ? HRColumns : defaultColumns,
       title: <Typography component='p' variant='h5' className={classes.title}> {title} </Typography>,
       data: Array.isArray(letters)
         ? letters.map(({ fUserFullName, fFromDT, fToDT, fStatus, fId, fRdt, fRejectType }) => {
@@ -189,7 +220,7 @@ class LetterManagement extends Component {
               </Button>
             </Link>
           ];
-          if (type === 'hr') dataSet.unshift(fUserFullName || 'Unknown');
+          if (type === userTypes.MODE_HR) dataSet.unshift(fUserFullName || 'Unknown');
           return dataSet;
         }) : [],
       options: {
@@ -204,11 +235,12 @@ class LetterManagement extends Component {
         count: this.state.count,
         rowsPerPage: this.state.size,
         rowsPerPageOptions: [5, 10, 15, 20],
-        onChangeRowsPerPage: size => this.changePage(size, 1, demandUserId),
-        onTableChange: (action, tableState) => action === 'changePage' && this.changePage(tableState.rowsPerPage, tableState.page + 1, demandUserId),
+        onChangeRowsPerPage: size => this.handleChangePage(size, 1, demandUserId),
+        onTableChange: (action, tableState) => action === 'handleChangePage' && this.handleChangePage(tableState.rowsPerPage, tableState.page + 1, demandUserId),
         customToolbar: () => {
           return (
-            <LetterManagementToolbar 
+            <LetterManagementToolbar
+              filterValues={this.state.filterOptions}
               onExport={this.handleExport}
               onFilterValueChange={this.handleFilterValueChange}
             />
@@ -221,7 +253,7 @@ class LetterManagement extends Component {
       {
         dataSet: [{
           columns:
-            type === 'hr'
+            type === userTypes.MODE_HR
               ? HRExportColumns
               : defaultExportColumns,
           data: exports.map(({ fUserFullName, fApproverFullName,
@@ -236,7 +268,7 @@ class LetterManagement extends Component {
               { value: fSubstituteFullName },
               { value: fRejectType && fRejectType === REJECT_TYPE.BY_SELF? `CANCELED` : letterStatusText[fStatus] },
             ];
-            if(type === 'hr') row.unshift({ value: fUserFullName });
+            if(type === userTypes.MODE_HR) row.unshift({ value: fUserFullName });
             return formatRow(row);
           })
         }],

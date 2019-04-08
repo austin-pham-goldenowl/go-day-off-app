@@ -5,7 +5,7 @@ import Calendar from '../../components/Calendar';
 import LettersManagement from '../../components/LettersManagement';
 import DashContainer from '../DashContainer';
 
-import { getMyLeaveLetters } from '../../apiCalls/leaveLetterAPI';
+import { getMyLeaveLetters, getDemandLetterByFilter } from '../../apiCalls/leaveLetterAPI';
 
 /**
  * Helpers
@@ -34,7 +34,7 @@ const Dashboard = props => {
         My letters
       </Typography>
       <div className={classes.tableContainer}>
-        <LettersManagement api={getMyLeaveLetters} />
+        <LettersManagement api={getMyLeaveLetters} filterAPI={getDemandLetterByFilter} />
       </div>Id
     </DashContainer>
   );

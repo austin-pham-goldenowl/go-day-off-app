@@ -2,7 +2,9 @@ import React from "react";
 import { Typography } from "@material-ui/core";
 import DashContainer from "../DashContainer";
 import LettersManagement from "../../components/LettersManagement";
-import { getAllLeaveLetters } from "../../apiCalls/leaveLetterAPI";
+import { getAllLeaveLetters, getAllLetterByFilter } from "../../apiCalls/leaveLetterAPI";
+
+import { userTypes } from '../../constants/permission'
 
 function AllLettersManagement() {
   return (
@@ -11,7 +13,7 @@ function AllLettersManagement() {
         All request letters
       </Typography>
       <br />
-      <LettersManagement api={getAllLeaveLetters} type="hr"  />
+      <LettersManagement api={getAllLeaveLetters} filterAPI={getAllLetterByFilter} type={userTypes.MODE_HR} />
     </DashContainer>
   );
 }

@@ -1,10 +1,9 @@
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
 import LettersManagement from '../../components/LettersManagement';
 import DashContainer from '../DashContainer';
 
-import { getMyLeaveLetters } from '../../apiCalls/leaveLetterAPI';
+import { getMyLeaveLetters, getDemandLetterByFilter } from '../../apiCalls/leaveLetterAPI';
 
 /**
  * Helpers
@@ -24,7 +23,7 @@ const Dashboard = props => {
   return (
     <DashContainer>
       <div className={classes.tableContainer}>
-        <LettersManagement title='My letters' api={getMyLeaveLetters} />
+        <LettersManagement title='My letters' api={getMyLeaveLetters} filterAPI={getDemandLetterByFilter} />
       </div>
     </DashContainer>
   );

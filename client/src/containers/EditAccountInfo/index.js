@@ -43,7 +43,7 @@ import { compareJsonObjectValue, parseUrlLastSegment } from '../../utilities';
 import Axios, { CancelToken } from 'axios';
 import { getAllTeams, getAllPositions } from '../../apiCalls/supportingAPIs';
 import { getProfile, updateProfile } from '../../apiCalls/userAPIs';
-import { getMyLeaveLetters, getUsedDayOff } from "../../apiCalls/leaveLetterAPI";
+import { getMyLeaveLetters, getUsedDayOff, getDemandLetterByFilter } from "../../apiCalls/leaveLetterAPI";
 
 //Notif redux
 import { NOTIF_ERROR, NOTIF_SUCCESS } from '../../constants/notification';
@@ -630,6 +630,7 @@ class EditAccountInfo extends React.Component {
               <LettersManagement
                 title='Request letters'
                 api={getMyLeaveLetters}
+                filterAPI={getDemandLetterByFilter}
                 demandUserId={demandUserId}
               />
             </React.Fragment>

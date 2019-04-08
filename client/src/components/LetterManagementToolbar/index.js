@@ -4,7 +4,6 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import {
   Button,
-  Grid,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 
@@ -29,15 +28,6 @@ import FilterDatePicker from '../DatePickers/FilterDatePicker';
  * 
  */
 
-const generateInitialValue = () => {
-  const currentDate = new Date();
-   return {
-    status: 0,
-    fromDate: new Date(currentDate.getFullYear(), 0, 1), //first date of first month
-    toDate: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0, 23, 59, 59), //last day of current month
-  }
-}
-
 class LetterManagementToolbar extends React.Component {
 
   handleExport = () => {
@@ -46,16 +36,14 @@ class LetterManagementToolbar extends React.Component {
   }
 
   render() {
-    const { classes, onFilterValueChange } = this.props;
+    const { classes, filterValues, onFilterValueChange } = this.props;
     return (
       <Formik 
-        initialValues={generateInitialValue()}
-        onSubmit={(values) => {
-          onFilterValueChange(values)
+        initialValues={filterValues}
+        onSubmit={(values, actions) => {
+				  onFilterValueChange(values, actions)
         }}
         render={({
-          values,
-          handleBlur,
           handleSubmit,
           isSubmitting,
           setFieldValue,
@@ -98,9 +86,9 @@ class LetterManagementToolbar extends React.Component {
                     value={field.value}
                     options={[
                       { label: 'All', value: 0 },
-                      { label: 'PENDING', value: LEAVE_REQUEST_PENDING },
-                      { label: 'APPROVED', value: LEAVE_REQUEST_APPROVED},
-                      { label: 'REJECTED', value: LEAVE_REQUEST_REJECTED },
+                      { label: 'Pending', value: LEAVE_REQUEST_PENDING },
+                      { label: 'Approved', value: LEAVE_REQUEST_APPROVED },
+                      { label: 'Rejected/Canceled', value: LEAVE_REQUEST_REJECTED },
                     ]}
                     onChange={({target: { value }}) => {
                       setFieldValue(field.name, value);
@@ -112,6 +100,7 @@ class LetterManagementToolbar extends React.Component {
                 size="small" 
                 color='primary'
                 variant="contained"
+                disabled={isSubmitting}
                 className={classes.button}
                 onClick={handleSubmit}
               >
