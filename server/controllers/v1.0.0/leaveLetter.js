@@ -330,9 +330,8 @@ Router.get('/filter', async (req, res) => {
       page = DEFAULT_PAGE_ORDER, size = DEFAULT_PAGE_SIZE } = req.query;
 
     if(toYear > currentYear) toYear = currentYear;
+    if(isNaN(page) || !ALLOWED_PAGE_SIZE.includes(+size)) size = DEFAULT_PAGE_SIZE;
     if(+size === 0) size = Number.MAX_SAFE_INTEGER;
-    if(page < 1 || isNaN(page)) page = DEFAULT_PAGE_ORDER;
-    if(!ALLOWED_PAGE_SIZE.includes(+size)) size = DEFAULT_PAGE_SIZE;
     if(isNaN(status) || !ALLOWED_STATUS.includes(+status)) status = DEFAULT_STATUS;
     if(!validatingQueryParams({ fromMonth, toMonth, fromYear, toYear })) throw { msg: 'INVALID_QUERY' };
       
