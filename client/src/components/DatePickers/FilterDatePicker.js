@@ -19,12 +19,11 @@ const FilterDatePicker = ({
   onChange,
   ...props
 }) => {
-  console.log(`TCL: props`, props)
   return (
     <MuiPickersUtilsProvider utils={MomentUtils} moment={moment}>
         <DatePicker 
-          label={label}
           name='When'
+          label={label}
           value={value}
           format='MMM YYYY'
           onChange={onChange}

@@ -33,7 +33,6 @@ class FilterSelect extends React.Component {
     const { name, label, value, options, variant, classes, onChange, ...props} = this.props;
     const selectBoxId = `select-box-${shortid.generate()}`;
     const InputComponent = !variant ? Input : InputComponentOptions[variant];
-		console.log(`TCL: FilterSelect -> render -> props`, props)
     
     return (
       <FormControl 
@@ -47,9 +46,6 @@ class FilterSelect extends React.Component {
             input={<InputComponent name={name} id={selectBoxId} />}
             {...props}
           >
-            <MenuItem key='none' value=''>
-              <em>None</em>
-            </MenuItem>
             {options && options.map(item => (
               <MenuItem 
                 value={item.value}
