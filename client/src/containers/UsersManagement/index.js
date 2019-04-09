@@ -19,7 +19,7 @@ import { getUsersList } from "../../apiCalls/userAPIs";
 import {
   showNotification,
 } from '../../redux/actions/notificationActions';
-import { NOTIF_ERROR, NOTIF_SUCCESS } from '../../constants/notification';
+import { NOTIF_ERROR } from '../../constants/notification';
 
 
 const mapDispatchToProps = dispatch => {

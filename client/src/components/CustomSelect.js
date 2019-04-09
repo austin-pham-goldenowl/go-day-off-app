@@ -25,14 +25,13 @@ const SelectCustom = ({
   onChange,
   ...props,
 }) => {
+  const selectBoxId = `select-box-${shortid.generate()}`
   return (
     <FormControl className={classes.formControl}>
     {
       (label && label.length > 0) ?
       (
-        <InputLabel htmlFor="select-box">
-        {label}
-      </InputLabel>
+        <InputLabel htmlFor={selectBoxId}>{label}</InputLabel>
       )
       : null
     }
@@ -40,7 +39,7 @@ const SelectCustom = ({
       name={name}
       value={value}
       onChange={onChange}
-      inputProps={{id: 'select-box'}}
+      inputProps={{id: selectBoxId}}
       {...props}
     >
       { options.map(item => (

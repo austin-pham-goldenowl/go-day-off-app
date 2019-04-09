@@ -10,7 +10,7 @@ import Icon from '@material-ui/core/Icon';
 // Using components
 import SelectCustom from '../../components/CustomSelect';
 import TextFieldReadOnly from '../../components/ReadOnlyTextField';
-import DatePickerField from '../../components/DatePicker';
+import DatePickerField from '../../components/DatePickers/FormDatePicker';
 import CreatableSelectWithChips from '../../components/CreatableSelectWithChips';
 import DashContainer from '../DashContainer';
 // Validation
@@ -276,26 +276,13 @@ class AbsenceLetterWithFormik extends React.Component {
               }}
               render={({
                 values,
+                handleBlur,
                 handleReset,
                 handleSubmit,
+                handleChange,
                 isSubmitting,
                 setFieldValue,
-                handleChange,
-                handleBlur,
-                setTouched,
-                setFieldTouched,
               }) => {
-                // const onBlur = (e) => {
-                //   handleBlur(e);
-                //   const { target: { name } } = e;
-                //   setFieldTouched(name, true);
-                // };
-
-                // const onChange = ({ target: { name, value } }) => {
-                //   setFieldTouched(name, false);
-                //   setFieldValue(name, value);
-                // }
-
                 const { buttonClickable } = this.state;
                 const isSameDaySelected = compareDatesWithoutTime(values.startDate, values.endDate) === 0;
                 return (

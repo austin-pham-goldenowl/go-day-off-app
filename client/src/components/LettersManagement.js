@@ -1,9 +1,12 @@
 import moment from 'moment-timezone';
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import MUIDataTable from 'mui-datatables';
 import ExcelExporter from './ExcelExporter';
-import { Typography, Button, withStyles, Icon } from '@material-ui/core';
+import { Typography, Button, withStyles } from '@material-ui/core';
+import { MuiThemeProvider, createMuiTheme } from "@material-ui/core";
+
 
 import { CancelToken } from 'axios';
 /**
@@ -11,24 +14,49 @@ import { CancelToken } from 'axios';
  */
 import { letterColors, letterStatusText, dayOfWeek, defaultColumns, HRColumns, defaultExportColumns, HRExportColumns } from "../constants/letter";
 import { REJECT_TYPE } from '../constants/rejectType'; 
+import { userTypes } from '../constants/permission';
+
+// Components
+import LetterManagementToolbar from './LetterManagementToolbar';
+
 /**
  * Helpers 
  */
+import { getUserId } from '../helpers/authHelpers';
 import { formatRow } from "../helpers/excelFormatter";
 
-const styles = theme => ({
-  btnLink: {
-    textDecoration: 'none',
-  },
-  paper: {
-    padding: theme.spacing.unit * 5
-  },
-  title: {
-    textAlign: 'left',
-    marginTop: theme.spacing.unit * 3,
-    marginBottom: theme.spacing.unit * 3
-  },
-});
+
+// Notification redux
+import {
+  showNotification,
+} from '../redux/actions/notificationActions';
+import { NOTIF_ERROR, NOTIF_SUCCESS } from '../constants/notification';
+
+// letterFilter redux
+import {
+  letterFilterChangeAll
+} from '../redux/actions/letterFilterActions';
+
+//overrides theme
+const materialTheme = createMuiTheme({
+  overrides: {
+    MUIDataTableToolbar: {
+      left: {
+        flex: '1',
+      },
+      actions: {
+        flex: '2',
+      }
+    },
+    MuiFormControl: {
+      root: {
+        width: '135px',
+        margin: '0 5px 0 0 !important',
+      }
+    }
+  }
+})
+
 
 const getDate = (rawDate = '') => {
   const date = moment(rawDate).isValid() && moment.tz(rawDate, 'Asia/Bangkok');
@@ -45,61 +73,179 @@ class LetterManagement extends Component {
       size: 10,
       count: 0,
       letters: [],
-      exports: [],
+      exports: []
     };
     this.downloadTriggerRef = React.createRef();
   }
+  
+  componentDidMount = () => {
+    this.__isMounted = true;
+    this.cancelSource = CancelToken.source();
+    this.props.filterValues !== undefined ? this.loadDataWithFilter() : this.loadDataWithoutFilter();
+  };
 
-  loadData = async () => {
+  componentWillUnmount = () => {
+    this.__isMounted = false;
+    this.cancelSource.cancel('Request cancelled by user!');
+  }
+
+  loadDataWithoutFilter = async () => {
     const { demandUserId } = this.props;
     try {
       const {
         data: { success, leaveLetters: letters, count }
       } = await this.props.api(this.cancelSource.token, 1, 10, demandUserId);
 
-      if (success) this.setState({ letters, count });
+      if (success) 
+        this.__isMounted 
+        && this.setState({ letters, count }, () => {
+          this.props.handleShowNotif(NOTIF_SUCCESS, `Load data complete!`)
+        });
     } catch (err) {
-	  	console.log(`TCL: LetterManagement -> loadData -> err`, err)
+      this.props.handleShowNotif(NOTIF_ERROR, `Load data failed! (${err.message})`)
     }
   }
 
-  componentDidMount = () => {
-    this.cancelSource = CancelToken.source();
-    this.loadData();
-  };
+  loadDataWithFilter = async () => {
+    this.handleFilterValueChange(this.props.filterValues);
+  }
 
-  componentWillUnmount = () => {
-    this.cancelSource.cancel('Request cancelled by user!');
+  handleFilterValueChange = async (values, formikActions = undefined) => {
+    const { demandUserId, type } = this.props;
+    const fromDate = new Date(values.fromDate),
+          toDate   = new Date(values.toDate);
+
+    let userId;
+    if (type && type === userTypes.MODE_HR) {
+      userId = '';
+    } else {
+      if (demandUserId !== undefined) {
+        userId = demandUserId;
+      }
+      else {
+        userId = getUserId();
+      }
+    }
+    // below `try-catch` block maybe have same logic to this.handleChangePageWithFilter
+    try {
+      const fromMonth = fromDate.getMonth() + 1,
+            toMonth   = toDate.getMonth() + 1,
+            fromYear  = fromDate.getFullYear(),
+            toYear    = toDate.getFullYear();
+      const filterData = {
+        userId, 
+        fromMonth,
+        fromYear, 
+        toMonth, 
+        toYear, 
+        status: values.status,
+      }
+      const { 
+        data: { success, leaveLetters, count }
+      } = await this.props.filterAPI( this.cancelSource.token, filterData);
+      if (success && this.__isMounted) {
+        formikActions !== undefined && this.props.handleChangeFilterValue({
+          toDate,
+          fromDate,
+          status: values.status
+        });
+        this.setState(
+          {
+            count,
+            letters: leaveLetters,
+          }, () => {
+            this.props.handleShowNotif(NOTIF_SUCCESS, `Load data completed!`)
+            formikActions !== undefined && formikActions.setSubmitting(false)
+          }
+        );
+      }
+    }
+    catch (err) {
+      this.props.handleShowNotif(NOTIF_ERROR, `Load data failed! (${err.message})`)
+      formikActions !== undefined && formikActions.setSubmitting(false)
+    }
   }
 
   handleExport = async () => {
     try {
       const { data: { success, leaveLetters: exports }
       } = await this.props.api(this.cancelSource.token, 0); // get all
-      if (success) this.setState({ exports }, () => {
+      if (success) 
+        this.__isMounted && this.setState({ exports }, () => {
           this.downloadTriggerRef.current.click();
-          this.setState({ exports: [] }); // release memory
+          this.__isMounted 
+          && this.setState(
+            { exports: [] }, // release memory
+            () => this.props.handleShowNotif(NOTIF_SUCCESS, `Data export completed!`));
         });
     }
     catch(err) {
-			console.log(`TCL: LetterManagement -> handleExport -> err`, err)
+      this.props.handleShowNotif(NOTIF_ERROR, `Data export failed! (${err.message})`)
     }
   };
 
-  changePage = (size = 10, page = 1, demandUserId) => {
+  handleChangePage = (size = 10, page = 1, demandUserId) => {
     this.props.api(this.cancelSource.token, page, size, demandUserId)
     .then(({ data: { success, leaveLetters: letters, count } }) => 
-      success && this.setState({ letters, count, page, size }))
-    .catch(error => console.log(error));
+      this.__isMounted && success 
+      && this.setState(
+        { letters, 
+          count,
+          page,
+          size 
+        }, () => this.props.handleShowNotif(NOTIF_SUCCESS, `Load data completed!`)
+      )
+    )
+    .catch(error => {
+      this.props.handleShowNotif(NOTIF_ERROR, `Action failed! (${error.message})`)
+    });
   };
+
+  handleChangPageWithFilter = async (size=10, page=1, demandUserId) => {
+    const { fromDate, toDate, status } = this.props.filterValues;
+    try {
+      const fromMonth = fromDate.getMonth() + 1,
+            toMonth   = toDate.getMonth() + 1,
+            fromYear  = fromDate.getFullYear(),
+            toYear    = toDate.getFullYear();
+      const filterData = {
+        userId: demandUserId, 
+        fromMonth,
+        fromYear, 
+        toMonth, 
+        toYear, 
+        status,
+        page,
+        size,
+      }
+      const { 
+        data: { success, leaveLetters, count }
+      } = await this.props.filterAPI( this.cancelSource.token, filterData);
+      if (success && this.__isMounted) {
+        this.setState(
+          {
+            count,
+            letters: leaveLetters,
+            page,
+            size,
+          }, () => {
+            this.props.handleShowNotif(NOTIF_SUCCESS, `Load data completed!`)
+          }
+        );
+      }
+    }
+    catch (err) {
+      this.props.handleShowNotif(NOTIF_ERROR, `Action failed! (${err.message})`)
+    }
+  }
 
   render() {
     const { letters, exports } = this.state;
     const { classes, title, type, demandUserId } = this.props;
-		console.log(`TCL: render -> letters`, letters)
-  
+    const handleChangePageFunc = this.props.filterValues !== undefined ? this.handleChangPageWithFilter : this.handleChangePage;
+
     const tableInfo = {
-      columns: type === 'hr' ? HRColumns : defaultColumns,
+      columns: type === userTypes.MODE_HR ? HRColumns : defaultColumns,
       title: <Typography component='p' variant='h5' className={classes.title}> {title} </Typography>,
       data: Array.isArray(letters)
         ? letters.map(({ fUserFullName, fFromDT, fToDT, fStatus, fId, fRdt, fRejectType }) => {
@@ -119,7 +265,7 @@ class LetterManagement extends Component {
               </Button>
             </Link>
           ];
-          if (type === 'hr') dataSet.unshift(fUserFullName || 'Unknown');
+          if (type === userTypes.MODE_HR) dataSet.unshift(fUserFullName || 'Unknown');
           return dataSet;
         }) : [],
       options: {
@@ -134,9 +280,21 @@ class LetterManagement extends Component {
         count: this.state.count,
         rowsPerPage: this.state.size,
         rowsPerPageOptions: [5, 10, 15, 20],
-        onChangeRowsPerPage: size => this.changePage(size, 1, demandUserId),
-        onTableChange: (action, tableState) => action === 'changePage' && this.changePage(tableState.rowsPerPage, tableState.page + 1, demandUserId),
-        customToolbar: () => <Button variant='contained' size='small' title='Export data' onClick={this.handleExport}><Icon>save</Icon></Button>,
+        onChangeRowsPerPage: size => handleChangePageFunc(size, 1, demandUserId),
+        onTableChange: (action, tableState) => {
+					console.log(`TCL: render -> action`, action)
+					console.log(`TCL: render -> tableState`, tableState)
+          action === 'changePage' && handleChangePageFunc(tableState.rowsPerPage, tableState.page + 1, demandUserId)
+        },
+        customToolbar: () => {
+          return (
+            <LetterManagementToolbar
+              filterValues={this.props.filterValues}
+              onExport={this.handleExport}
+              onFilterValueChange={this.handleFilterValueChange}
+            />
+          )
+        },
       }
     };
 
@@ -144,13 +302,11 @@ class LetterManagement extends Component {
       {
         dataSet: [{
           columns:
-            type === 'hr'
+            type === userTypes.MODE_HR
               ? HRExportColumns
               : defaultExportColumns,
           data: exports.map(({ fUserFullName, fApproverFullName,
             fSubstituteFullName, fFromDT, fToDT, fFromOpt, fToOpt, fStatus, fRdt, fRejectType }) => {
-							console.log(`TCL: fRejectType`, fRejectType)
-							console.log(`TCL: letterStatusText[fStatus]`, letterStatusText[fStatus])
             const row = [
               { value: getDate(fRdt) },
               { value: `${getDate(fFromDT)} (${fFromOpt})` },
@@ -159,7 +315,7 @@ class LetterManagement extends Component {
               { value: fSubstituteFullName },
               { value: fRejectType && fRejectType === REJECT_TYPE.BY_SELF? `CANCELED` : letterStatusText[fStatus] },
             ];
-            if(type === 'hr') row.unshift({ value: fUserFullName });
+            if(type === userTypes.MODE_HR) row.unshift({ value: fUserFullName });
             return formatRow(row);
           })
         }],
@@ -167,18 +323,54 @@ class LetterManagement extends Component {
     ];
 
     return (
-      <>
-        <MUIDataTable
-          data={tableInfo.data}
-          title={tableInfo.title}
-          className={classes.paper}
-          columns={tableInfo.columns}
-          options={tableInfo.options}
-        />
+      <Fragment>
+        <MuiThemeProvider theme={materialTheme}>
+          <MUIDataTable
+            data={tableInfo.data}
+            title={tableInfo.title}
+            className={classes.paper}
+            columns={tableInfo.columns}
+            options={tableInfo.options}
+          />
+        </MuiThemeProvider>
         <ExcelExporter sheets={sheets} downloadTriggerRef={this.downloadTriggerRef}/>
-      </>
+      </Fragment>
     );
   }
 }
 
-export default withStyles(styles)(LetterManagement);
+const styles = theme => ({
+  btnLink: {
+    textDecoration: 'none',
+  },
+  paper: {
+    padding: theme.spacing.unit * 5
+  },
+  title: {
+    textAlign: 'left',
+    marginTop: theme.spacing.unit * 3,
+    marginBottom: theme.spacing.unit * 3
+  },
+});
+
+const mapStateToProps = state => {
+  const {status, fromDate, toDate} = state.letterFilterReducers;
+  return {
+    filterValues: {
+      status,
+      fromDate,
+      toDate
+    }
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    handleShowNotif: (type, message) => dispatch(showNotification(type, message)),
+    handleChangeFilterValue: (values) => dispatch(letterFilterChangeAll(values)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(
+  withStyles(styles)(LetterManagement)
+);

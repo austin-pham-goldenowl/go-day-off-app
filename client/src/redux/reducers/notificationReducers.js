@@ -4,8 +4,6 @@ import {
   NOTIF_LASTEST
 } from "../contants/notificationContants";
 
-import {} from "../../constants/form";
-
 const initialState = {
   show: false,
   type: "",
