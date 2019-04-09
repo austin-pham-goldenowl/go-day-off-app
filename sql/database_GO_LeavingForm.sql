@@ -4,10 +4,6 @@
 -- ------------------------------------------------------
 -- Server version	8.0.15
 
-DROP DATABASE IF EXISTS `leavingForm`;
-CREATE DATABASE `leavingForm` CHARACTER SET utf8 COLLATE utf8_unicode_ci;
-USE `leavingForm`;
-
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
@@ -73,7 +69,7 @@ CREATE TABLE `leaveLetters` (
   KEY `fk_leaveLetters_users1_idx` (`users_fId1`) USING BTREE,
   KEY `fk_leaveLetters_users2` (`approver_fId`) USING BTREE,
   KEY `fk_leaveLetters_users_idx` (`users_fId`) USING BTREE,
-  CONSTRAINT `fk_leaveLetters_absenceTypes` FOREIGN KEY (`absenceTypes_fId`) REFERENCES `absenceTypes` (`fId`),
+  CONSTRAINT `fk_leaveLetters_absenceTypes` FOREIGN KEY (`absenceTypes_fId`) REFERENCES `absencetypes` (`fId`),
   CONSTRAINT `fk_leaveLetters_users` FOREIGN KEY (`users_fId`) REFERENCES `users` (`fId`),
   CONSTRAINT `fk_leaveLetters_users1` FOREIGN KEY (`users_fId1`) REFERENCES `users` (`fId`),
   CONSTRAINT `fk_leaveLetters_users2` FOREIGN KEY (`approver_fId`) REFERENCES `users` (`fId`)
@@ -144,6 +140,30 @@ INSERT INTO `rejectedLetterDetail` VALUES ('mLLrBQpcwZ','Đi ăn hỏi',0,NULL);
 UNLOCK TABLES;
 
 --
+-- Table structure for table `settings`
+--
+
+DROP TABLE IF EXISTS `settings`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `settings` (
+  `fName` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `fValue` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`fName`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `settings`
+--
+
+LOCK TABLES `settings` WRITE;
+/*!40000 ALTER TABLE `settings` DISABLE KEYS */;
+INSERT INTO `settings` VALUES ('email','golden_owl@gmail.com'),('maxDayOff','15'),('password','password');
+/*!40000 ALTER TABLE `settings` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `teams`
 --
 
@@ -168,7 +188,7 @@ CREATE TABLE `teams` (
 
 LOCK TABLES `teams` WRITE;
 /*!40000 ALTER TABLE `teams` DISABLE KEYS */;
-INSERT INTO `teams` VALUES ('1LwZq','PHP','MNeCqLCc4y',NULL),('4TCgb','Ruby/Ruby on Rails','6kl9baxAUv',NULL),('5eMvD','Design','pJa4TkFAz8',NULL),('A91fa','Khác','wYC0nl3LqV',NULL),('FfI2V','Javascript','Pq2UWS3gJm',NULL),('G81cf','Leaders','wYC0nI3LqV',NULL),('Gg6sG','QA','Ucb07m5zgI',NULL),('kTW7B','PA','LzPq90f8bZ',NULL);
+INSERT INTO `teams` VALUES ('1LwZq','PHP','MNeCqLCc4y','MNeCqLCc4y'),('4TCgb','Ruby/Ruby on Rails','6kl9baxAUv','6kI9baxAUv'),('5eMvD','Design','pJa4TkFAz8','pJa4TkFAz8'),('A91fa','Khác','wYC0nl3LqV','wYC0nI3LqV'),('FfI2V','Javascript','Pq2UWS3gJm','Pq2UWS3gJm'),('G81cf','Leaders','wYC0nI3LqV','wYC0nI3LqV'),('Gg6sG','QA','Ucb07m5zgI','Ucb07m5zgI'),('kTW7B','PA','LzPq90f8bZ','LzPq90f8bZ');
 /*!40000 ALTER TABLE `teams` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -257,7 +277,7 @@ CREATE TABLE `users` (
   KEY `fk_users_userPermission1_idx` (`userPermission_fId`) USING BTREE,
   CONSTRAINT `fk_users_positions1` FOREIGN KEY (`positions_fId`) REFERENCES `positions` (`fId`),
   CONSTRAINT `fk_users_teams1` FOREIGN KEY (`teams_fId`) REFERENCES `teams` (`fId`),
-  CONSTRAINT `fk_users_userPermission1` FOREIGN KEY (`userPermission_fId`) REFERENCES `userPermission` (`fId`)
+  CONSTRAINT `fk_users_userPermission1` FOREIGN KEY (`userPermission_fId`) REFERENCES `userpermission` (`fId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -272,18 +292,6 @@ INSERT INTO `users` VALUES ('5g3bqeTgu6','Nhan su','HR1','psS14','0123456789','A
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
-CREATE TABLE settings
-(
-  fName  VARCHAR(255) not null
-    primary key,
-  fValue VARCHAR(255) not null
-);
-
-INSERT INTO leavingForm.settings (fName, fValue) VALUES ('email', 'golden_owl@gmail.com');
-INSERT INTO leavingForm.settings (fName, fValue) VALUES ('password', 'password');
-INSERT INTO leavingForm.settings (fName, fValue) VALUES ('maxDayOff', 15);
-
-
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
@@ -292,4 +300,4 @@ INSERT INTO leavingForm.settings (fName, fValue) VALUES ('maxDayOff', 15);
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-03-19 15:41:34
+-- Dump completed on 2019-04-09 15:56:27
