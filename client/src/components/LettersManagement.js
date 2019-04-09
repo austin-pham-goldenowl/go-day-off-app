@@ -81,7 +81,7 @@ class LetterManagement extends Component {
   componentDidMount = () => {
     this.__isMounted = true;
     this.cancelSource = CancelToken.source();
-    this.loadDataWithFilter();
+    this.props.filterValues !== undefined ? this.loadDataWithFilter() : this.loadDataWithoutFilter();
   };
 
   componentWillUnmount = () => {
@@ -107,12 +107,7 @@ class LetterManagement extends Component {
   }
 
   loadDataWithFilter = async () => {
-    //reuse without update store
-    if (this.props.filterValues !== undefined) {
-      this.__isMounted && this.handleFilterValueChange(this.props.filterValues);
-    } else {
-      this.__isMounted && this.loadDataWithoutFilter();
-    }
+    this.handleFilterValueChange(this.props.filterValues);
   }
 
   handleFilterValueChange = async (values, formikActions = undefined) => {
@@ -131,7 +126,7 @@ class LetterManagement extends Component {
         userId = getUserId();
       }
     }
-    
+    // below `try-catch` block maybe have same logic to this.handleChangePageWithFilter
     try {
       const fromMonth = fromDate.getMonth() + 1,
             toMonth   = toDate.getMonth() + 1,
@@ -178,7 +173,10 @@ class LetterManagement extends Component {
       if (success) 
         this.__isMounted && this.setState({ exports }, () => {
           this.downloadTriggerRef.current.click();
-          this.__isMounted && this.setState({ exports: [] }); // release memory
+          this.__isMounted 
+          && this.setState(
+            { exports: [] }, // release memory
+            () => this.props.handleShowNotif(NOTIF_SUCCESS, `Data export completed!`));
         });
     }
     catch(err) {
@@ -189,19 +187,63 @@ class LetterManagement extends Component {
   handleChangePage = (size = 10, page = 1, demandUserId) => {
     this.props.api(this.cancelSource.token, page, size, demandUserId)
     .then(({ data: { success, leaveLetters: letters, count } }) => 
-      this.__isMounted && success && this.setState({ letters, count, page, size }))
-    .catch(error => console.log(error));
+      this.__isMounted && success 
+      && this.setState(
+        { letters, 
+          count,
+          page,
+          size 
+        }, () => this.props.handleShowNotif(NOTIF_SUCCESS, `Load data completed!`)
+      )
+    )
+    .catch(error => {
+      this.props.handleShowNotif(NOTIF_ERROR, `Action failed! (${error.message})`)
+    });
   };
 
-  handleChangPageWithFilter = (size=10, page=1, demandUserId) => {
-    
+  handleChangPageWithFilter = async (size=10, page=1, demandUserId) => {
+    const { fromDate, toDate, status } = this.props.filterValues;
+    try {
+      const fromMonth = fromDate.getMonth() + 1,
+            toMonth   = toDate.getMonth() + 1,
+            fromYear  = fromDate.getFullYear(),
+            toYear    = toDate.getFullYear();
+      const filterData = {
+        userId: demandUserId, 
+        fromMonth,
+        fromYear, 
+        toMonth, 
+        toYear, 
+        status,
+        page,
+        size,
+      }
+      const { 
+        data: { success, leaveLetters, count }
+      } = await this.props.filterAPI( this.cancelSource.token, filterData);
+      if (success && this.__isMounted) {
+        this.setState(
+          {
+            count,
+            letters: leaveLetters,
+            page,
+            size,
+          }, () => {
+            this.props.handleShowNotif(NOTIF_SUCCESS, `Load data completed!`)
+          }
+        );
+      }
+    }
+    catch (err) {
+      this.props.handleShowNotif(NOTIF_ERROR, `Action failed! (${err.message})`)
+    }
   }
 
   render() {
     const { letters, exports } = this.state;
     const { classes, title, type, demandUserId } = this.props;
-		// console.log(`TCL: render -> letters`, letters)
-  
+    const handleChangePageFunc = this.props.filterValues !== undefined ? this.handleChangPageWithFilter : this.handleChangePage;
+
     const tableInfo = {
       columns: type === userTypes.MODE_HR ? HRColumns : defaultColumns,
       title: <Typography component='p' variant='h5' className={classes.title}> {title} </Typography>,
@@ -238,8 +280,12 @@ class LetterManagement extends Component {
         count: this.state.count,
         rowsPerPage: this.state.size,
         rowsPerPageOptions: [5, 10, 15, 20],
-        onChangeRowsPerPage: size => this.handleChangePage(size, 1, demandUserId),
-        onTableChange: (action, tableState) => action === 'handleChangePage' && this.handleChangePage(tableState.rowsPerPage, tableState.page + 1, demandUserId),
+        onChangeRowsPerPage: size => handleChangePageFunc(size, 1, demandUserId),
+        onTableChange: (action, tableState) => {
+					console.log(`TCL: render -> action`, action)
+					console.log(`TCL: render -> tableState`, tableState)
+          action === 'changePage' && handleChangePageFunc(tableState.rowsPerPage, tableState.page + 1, demandUserId)
+        },
         customToolbar: () => {
           return (
             <LetterManagementToolbar
@@ -308,7 +354,6 @@ const styles = theme => ({
 });
 
 const mapStateToProps = state => {
-  console.log(`TCL: state`, state);
   const {status, fromDate, toDate} = state.letterFilterReducers;
   return {
     filterValues: {
