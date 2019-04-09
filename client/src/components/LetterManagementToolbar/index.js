@@ -22,12 +22,6 @@ import {
 import FilterSelect from './FilterSelect';
 import FilterDatePicker from '../DatePickers/FilterDatePicker';
 
-/**
- * child component(s): 2 select-boxs for `byWhen` and `byStatus`
- * `select-box` onChange: re-call api with query params
- * 
- */
-
 class LetterManagementToolbar extends React.Component {
 
   handleExport = () => {
