@@ -11,7 +11,7 @@ import Icon from "@material-ui/core/Icon";
 import DashContainer from '../DashContainer';
 
 // Validation
-import ValidationSchema from "./validationSchema";
+// import ValidationSchema from "./validationSchema";
 
 /**
  * Constants
@@ -26,17 +26,13 @@ import * as settingAPIs from '../../apiCalls/settingAPIs';
 // Notification redux
 import {
   showNotification,
-  hideNotification
 } from "../../redux/actions/notificationActions";
 import { NOTIF_ERROR, NOTIF_SUCCESS } from "../../constants/notification";
 
 const mapDispatchToProps = dispatch => {
   return {
     handleShowNotif: (type, message) =>
-      dispatch(showNotification(type, message)),
-    handleHideNotif: () => dispatch(hideNotification()),
-    handleShowNotifNoHide: (type, message, autoHide = false) =>
-      dispatch(showNotification(type, message, autoHide))
+      dispatch(showNotification(type, message))
   };
 };
 
