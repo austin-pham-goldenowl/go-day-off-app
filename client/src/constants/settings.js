@@ -1,0 +1,1 @@
+export default {EMAIL: 'email', PWD: 'password', MAX_ALLOWED_DAY_OFF: 'maxDayOff'};

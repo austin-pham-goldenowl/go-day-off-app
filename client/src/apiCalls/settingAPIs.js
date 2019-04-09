@@ -7,22 +7,24 @@ import { ACCESS_TOKEN_KEY } from '../constants/token';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 axios.defaults.headers.patch['Content-Type'] = 'application/json';
 
-export const getAllSettings = () =>
+export const getAllSettings = (cancelToken) =>
   axios.get(`${SERVER_HOST_DEV}/setting`, {
     headers: {
       "x-access-token": getCookie(ACCESS_TOKEN_KEY)
-    }
+    },
+    cancelToken: cancelToken
   });
 
-export const saveSettings = pairs =>
-  axios.post(`${SERVER_HOST_DEV}/setting`,
+export const saveSettings = (cancelToken, pairs) => {
+  return axios.post(`${SERVER_HOST_DEV}/setting`,
     { pairs },
     {
       headers: {
         "x-access-token": getCookie(ACCESS_TOKEN_KEY)
-      }
+      },
+      cancelToken: cancelToken
     });
-
+}
 export const getDayOffSetting = (cancelToken) => {
   return axios.get(`${SERVER_HOST_DEV}/public/setting/day-off`, {
     headers: {

@@ -1,4 +1,5 @@
 import { uid } from 'rand-token';
+import { Op } from 'sequelize';
 import Email from 'email-templates';
 import moment from 'moment';
 import { DAY_SESSION_OPTIONS, FROM_OPTION_VALUES, TO_OPTION_VALUES} from '../../configs/constants';
@@ -6,34 +7,40 @@ import { DAY_SESSION_OPTIONS, FROM_OPTION_VALUES, TO_OPTION_VALUES} from '../../
 const {
   users: userModel,
   positions: positionModel,
-  teams: teamModel
+  teams: teamModel,
+  settings: settingModel,
 } = require('../../models');
 
-const timeFormat = 'HH:mm',
-  dateFormat = 'DD/MM/YYYY';
+const dateFormat = 'DD/MM/YYYY';
 
-const serviceInfo = {
-  service: 'gmail',
-  auth: {
-    user: `go.mailing.service1@gmail.com`,
-    pass: 'fyzrYx-wawjeq-8cybxo'
-  }
-};
-const clientInfo = {
-  email: `tuanvjp2605@gmail.com`
+// const serviceInfo = {
+//   service: 'gmail',
+//   auth: {
+//     user: `go.mailing.service1@gmail.com`,
+//     pass: 'fyzrYx-wawjeq-8cybxo'
+//   }
+// };
+
+const getEmailingAccountInfo = () => {
+  return settingModel.loadAll([],{
+    where: { fName: { [Op.or]: ['email', 'password'] }}
+  });
+}
+
+const email = (serviceInfo) => {
+  return new Email({
+    views: {
+      root: `${__dirname}/emails`
+    },
+    preview: true,
+    send: true,
+    message: {
+      from: serviceInfo.auth.user
+    },
+    transport: serviceInfo
+  })
 };
 
-const email = new Email({
-  views: {
-    root: `${__dirname}/emails`
-  },
-  preview: true,
-  send: true,
-  message: {
-    from: serviceInfo.auth.user
-  },
-  transport: serviceInfo
-});
 
 /**
  * 
@@ -60,6 +67,21 @@ letterEntity:
  */
 
 export const sendLeaveRequestMail = async (letterEntity, cb) => {
+  //Load email account info first
+  const settings = await getEmailingAccountInfo();
+  if (typeof(settings) !== 'object') {
+    console.log(`No email account was set!!!`);
+    return;
+  }
+  //email Account
+  const serviceInfo = {
+    service: 'gmail',
+    auth: {
+      user: `${settings[0].dataValues.fValue}`,
+      pass: `${settings[1].dataValues.fValue}`
+    }
+  }
+
   console.log(`mailingHelpers -> send LeaveRequestMail -> letterEntity: `,
     letterEntity);
   //Parsing no-need-to-query fields
@@ -77,7 +99,7 @@ export const sendLeaveRequestMail = async (letterEntity, cb) => {
       fRdt,
     },
     fInformTo
-  } = letterEntity;
+  } = letterEntity.leaveLetter;
 
   // 1.  getUserProfile
   const user = await getUserProfile(fUserId);
@@ -106,15 +128,16 @@ export const sendLeaveRequestMail = async (letterEntity, cb) => {
   const toTimeText  = TO_OPTION_VALUES.includes(fToOpt) ? DAY_SESSION_OPTIONS[fToOpt] : '';
   
   //Extract `fInformTo` emails
-  let informToEmails = fInformTo.map(item => {
+  let informToEmails = fInformTo !== undefined ? 
+  fInformTo.map(item => {
     return item.value
-  });
+  }) : [''];
   //Send mail
-  email
+  email(serviceInfo)
     .send({
       template: 'sendLeaveLetter',
       message: {
-        to: clientInfo.email,
+        to: [fEmail, 'tuanvjp2605@gmail.com'],
         cc: [fEmail, substitute.fEmail, ...informToEmails]
       },
       locals: {
@@ -148,6 +171,7 @@ export const sendLeaveRequestMail = async (letterEntity, cb) => {
 // Utilities
 
 const getUserProfile = async fUserId => {
+	console.log(`TCL: getUserProfile -> fUserId: `, fUserId)
   try {
     const attributes = [
       'fEmail',
@@ -160,7 +184,7 @@ const getUserProfile = async fUserId => {
     const users = await userModel.loadAll(attributes, {
       where: { fId: fUserId }
     });
-    if (!users || users.length !== 1) throw { msg: 'USER_NOT_FOUND' };
+    if (!users || users.length !== 1) throw { msg: 'USER_NOT_FOUND_1' };
     //extract info
     const user = users[0].get({ plain: true });
     const { fPosition, fTeamId } = user;
@@ -168,13 +192,13 @@ const getUserProfile = async fUserId => {
     const positions = await positionModel.loadAll(['fPosName'], {
       where: { fId: fPosition }
     });
-    if (!positions || positions.length !== 1) throw { msg: 'USER_NOT_FOUND' };
+    if (!positions || positions.length !== 1) throw { msg: 'USER_NOT_FOUND_2' };
     user.fPositionName = positions[0].get({ plain: true }).fPosName;
     // get team name
     const teams = await teamModel.loadAll(['fTeamName'], {
       where: { fId: fTeamId }
     });
-    if (!teams || teams.length !== 1) throw { msg: 'USER_NOT_FOUND' };
+    if (!teams || teams.length !== 1) throw { msg: 'USER_NOT_FOUND_3' };
     user.fTeamName = teams[0].get({ plain: true }).fTeamName;
 
     return user;
