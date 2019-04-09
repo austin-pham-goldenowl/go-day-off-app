@@ -22,6 +22,7 @@ import LetterManagementToolbar from './LetterManagementToolbar';
 /**
  * Helpers 
  */
+import { getUserId } from '../helpers/authHelpers';
 import { formatRow } from "../helpers/excelFormatter";
 
 
@@ -30,13 +31,11 @@ import {
   showNotification,
 } from '../redux/actions/notificationActions';
 import { NOTIF_ERROR, NOTIF_SUCCESS } from '../constants/notification';
-import { getUserId } from '../helpers/authHelpers';
 
-const mapDispatchToProps = dispatch => {
-  return {
-    handleShowNotif: (type, message) => dispatch(showNotification(type, message)),
-  };
-};
+// letterFilter redux
+import {
+  letterFilterChangeAll
+} from '../redux/actions/letterFilterActions';
 
 //overrides theme
 const materialTheme = createMuiTheme({
@@ -58,14 +57,6 @@ const materialTheme = createMuiTheme({
   }
 })
 
-const generateInitialValue = () => {
-  const currentDate = new Date();
-   return {
-    status: 0,
-    fromDate: new Date(currentDate.getFullYear(), 0, 1), //first date of first month
-    toDate: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0, 23, 59, 59), //last day of current month
-  }
-}
 
 const getDate = (rawDate = '') => {
   const date = moment(rawDate).isValid() && moment.tz(rawDate, 'Asia/Bangkok');
@@ -82,8 +73,7 @@ class LetterManagement extends Component {
       size: 10,
       count: 0,
       letters: [],
-      exports: [],
-      filterOptions: generateInitialValue()
+      exports: []
     };
     this.downloadTriggerRef = React.createRef();
   }
@@ -91,7 +81,7 @@ class LetterManagement extends Component {
   componentDidMount = () => {
     this.__isMounted = true;
     this.cancelSource = CancelToken.source();
-    this.loadData();
+    this.loadDataWithFilter();
   };
 
   componentWillUnmount = () => {
@@ -99,7 +89,7 @@ class LetterManagement extends Component {
     this.cancelSource.cancel('Request cancelled by user!');
   }
 
-  loadData = async () => {
+  loadDataWithoutFilter = async () => {
     const { demandUserId } = this.props;
     try {
       const {
@@ -116,8 +106,20 @@ class LetterManagement extends Component {
     }
   }
 
-  handleFilterValueChange = async (values, { setSubmitting }) => {
+  loadDataWithFilter = async () => {
+    //reuse without update store
+    if (this.props.filterValues !== undefined) {
+      this.__isMounted && this.handleFilterValueChange(this.props.filterValues);
+    } else {
+      this.__isMounted && this.loadDataWithoutFilter();
+    }
+  }
+
+  handleFilterValueChange = async (values, formikActions = undefined) => {
     const { demandUserId, type } = this.props;
+    const fromDate = new Date(values.fromDate),
+          toDate   = new Date(values.toDate);
+
     let userId;
     if (type && type === userTypes.MODE_HR) {
       userId = '';
@@ -129,10 +131,7 @@ class LetterManagement extends Component {
         userId = getUserId();
       }
     }
-    console.log(`TCL: handleFilterValueChange -> userId`, userId)
     
-    const fromDate = new Date(values.fromDate),
-          toDate   = new Date(values.toDate);
     try {
       const fromMonth = fromDate.getMonth() + 1,
             toMonth   = toDate.getMonth() + 1,
@@ -149,22 +148,26 @@ class LetterManagement extends Component {
       const { 
         data: { success, leaveLetters, count }
       } = await this.props.filterAPI( this.cancelSource.token, filterData);
-      if (success) {
-        this.__isMounted && this.setState(
+      if (success && this.__isMounted) {
+        formikActions !== undefined && this.props.handleChangeFilterValue({
+          toDate,
+          fromDate,
+          status: values.status
+        });
+        this.setState(
           {
             count,
             letters: leaveLetters,
-            filterOptions: filterData 
           }, () => {
             this.props.handleShowNotif(NOTIF_SUCCESS, `Load data completed!`)
-            typeof(setSubmitting) !== 'undefined' && setSubmitting(false)
+            formikActions !== undefined && formikActions.setSubmitting(false)
           }
         );
       }
     }
     catch (err) {
       this.props.handleShowNotif(NOTIF_ERROR, `Load data failed! (${err.message})`)
-      typeof(setSubmitting) !== 'undefined' && setSubmitting(false)
+      formikActions !== undefined && formikActions.setSubmitting(false)
     }
   }
 
@@ -240,7 +243,7 @@ class LetterManagement extends Component {
         customToolbar: () => {
           return (
             <LetterManagementToolbar
-              filterValues={this.state.filterOptions}
+              filterValues={this.props.filterValues}
               onExport={this.handleExport}
               onFilterValueChange={this.handleFilterValueChange}
             />
@@ -258,8 +261,6 @@ class LetterManagement extends Component {
               : defaultExportColumns,
           data: exports.map(({ fUserFullName, fApproverFullName,
             fSubstituteFullName, fFromDT, fToDT, fFromOpt, fToOpt, fStatus, fRdt, fRejectType }) => {
-							console.log(`TCL: fRejectType`, fRejectType)
-							console.log(`TCL: letterStatusText[fStatus]`, letterStatusText[fStatus])
             const row = [
               { value: getDate(fRdt) },
               { value: `${getDate(fFromDT)} (${fFromOpt})` },
@@ -306,6 +307,25 @@ const styles = theme => ({
   },
 });
 
-export default connect(null, mapDispatchToProps)(
+const mapStateToProps = state => {
+  console.log(`TCL: state`, state);
+  const {status, fromDate, toDate} = state.letterFilterReducers;
+  return {
+    filterValues: {
+      status,
+      fromDate,
+      toDate
+    }
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    handleShowNotif: (type, message) => dispatch(showNotification(type, message)),
+    handleChangeFilterValue: (values) => dispatch(letterFilterChangeAll(values)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(
   withStyles(styles)(LetterManagement)
 );
