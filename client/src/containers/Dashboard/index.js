@@ -35,7 +35,7 @@ const Dashboard = props => {
       </Typography>
       <div className={classes.tableContainer}>
         <LettersManagement api={getMyLeaveLetters} filterAPI={getDemandLetterByFilter} />
-      </div>Id
+      </div>
     </DashContainer>
   );
 };
