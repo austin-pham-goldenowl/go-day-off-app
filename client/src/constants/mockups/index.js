@@ -1,3 +1,4 @@
+import GenderTypesDescription, { GENDER_TYPE_FEMALE, GENDER_TYPE_MALE, GENDER_TYPE_OTHERS } from '../genderTypes';
 
 // Mockup data
 export const mockupLeaveLetterReasons = [
@@ -26,15 +27,15 @@ export const mockupLeaveLetterReasons = [
 
 export const mockupGender = [
   {
-    value: 0,
-    label: 'Female'
+    value: GENDER_TYPE_FEMALE,
+    label: GenderTypesDescription[GENDER_TYPE_FEMALE]
   },
   {
-    value: 1,
-    label: 'Male'
+    value: GENDER_TYPE_MALE,
+    label: GenderTypesDescription[GENDER_TYPE_MALE]
   },
   {
-    value: 2,
-    label: 'Others'
+    value: GENDER_TYPE_OTHERS,
+    label: GenderTypesDescription[GENDER_TYPE_OTHERS]
   }
 ];
