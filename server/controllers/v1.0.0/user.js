@@ -120,6 +120,8 @@ Router.patch("/profile", bodyMustNotEmpty, userMustBeHR, async (req, res) => {
     if (fTeamId) entity.teams_fId = fTeamId;
     if (fPositionId) entity.positions_fId = fPositionId;
     if (fTypeId) entity.userPermission_fId = fTypeId;
+    
+		console.log(`TCL: entity`, entity);
 
     const affected = await userModel.modify(entity, {
       where: { fId: userId }

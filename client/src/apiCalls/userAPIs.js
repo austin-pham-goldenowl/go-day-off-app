@@ -31,17 +31,20 @@ export const createNewUser = userEntity => {
 };
 
 export const updateProfile = profileEntity => {
+	console.log(`TCL: updateProfile -> profileEntity`, profileEntity)
   let parsedEntity = {
     firstName: profileEntity.fFirstName,
     lastName: profileEntity.fLastName,
-    bday: new Date(),
     phone: profileEntity.fPhone,
     email: profileEntity.fEmail,
-    gender: profileEntity.fGender
+    gender: profileEntity.fGender,
+    teamId: profileEntity.fTeamId,
+    positionId: profileEntity.fPosition,
   };
   let id = getUserId();
-  console.log(`id: `, id);
-  console.log(`parsedEntity: `, parsedEntity);
+	console.log(`TCL: updateProfile -> id`, id);
+  console.log(`TCL: parsedEntity`, parsedEntity);
+  
   return axios.patch(
     `${SERVER_HOST_DEV}/user/profile`,
     {

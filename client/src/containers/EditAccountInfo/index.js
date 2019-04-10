@@ -126,7 +126,8 @@ class EditAccountInfo extends React.Component {
       })
     )
     .catch(err => {
-      this.props.handleShowNotif && this.props.handleShowNotif(NOTIF_ERROR, `Couldn't load 'Used Day-off'!`);
+      if (err.constructor.name !== 'Cancel')
+        this.props.handleShowNotif && this.props.handleShowNotif(NOTIF_ERROR, `Couldn't load 'Used Day-off'!`);
     });
   }
 
@@ -169,7 +170,8 @@ class EditAccountInfo extends React.Component {
         })
       )
       .catch(err => {
-			  console.log(`TCL: EditAccountInfo -> loadData -> Axios.all -> err`, err)
+        if (err.constructor.name !== 'Cancel') 
+          this.props.handleShowNotif && this.props.handleShowNotif(NOTIF_ERROR, `Couldn't load Positions and Teams!`);
       });
     } else {
       console.log(`err: `, response);
@@ -243,20 +245,18 @@ class EditAccountInfo extends React.Component {
 												console.log(`TCL: EditAccountInfo -> render -> updateProfile -> err`, err)
                         handleShowNotif(
                           NOTIF_ERROR,
-                          `Update fail! (${err.message})`
+                          `Update failed! (${err.message})`
                         );
                         actions.setSubmitting(false);
                       });
                   }}
                 >
                   {({
-                    errors,
                     values,
                     isSubmitting,
                     handleReset,
                     handleSubmit,
                     handleBlur,
-                    setFieldValue,
                     handleChange
                   }) => {
                     const isUserInfoChanged = !compareJsonObjectValue(values, user);
@@ -338,12 +338,7 @@ class EditAccountInfo extends React.Component {
                             <Grid item xs={12} sm={6}>
                               <Field
                                 name="fFirstName"
-                                render={({ field, form }) => {
-																	console.log(`TCL: EditAccountInfo -> render -> form`, form)
-																	console.log(`TCL: EditAccountInfo -> render -> field`, field)
-                                  console.log(`form.errors`, form.errors);
-                                  console.log(`form.touched`, form.touched);
-
+                                render={({ field }) => {
                                   return (
                                     <TextField
                                       fullWidth
@@ -368,7 +363,7 @@ class EditAccountInfo extends React.Component {
                             <Grid item xs={12} sm={6}>
                               <Field
                                 name="fLastName"
-                                render={({ field, form }) => {
+                                render={({ field }) => {
                                   return (
                                     <TextField
                                       fullWidth
@@ -393,7 +388,7 @@ class EditAccountInfo extends React.Component {
                             <Grid item xs={12} sm={6}>
                               <Field
                                 name="fGender"
-                                render={({ field, form, ...otherProps }) => {
+                                render={({ field, form }) => {
                                   return (
                                     <SelectCustom
                                       name={field.name}
@@ -410,7 +405,7 @@ class EditAccountInfo extends React.Component {
                             <Grid item xs={12} sm={6}>
                               <Field
                                 name="fEmail"
-                                render={({ field, form, ...otherProps }) => {
+                                render={({ field, form }) => {
                                   return (
                                     <TextField
                                       fullWidth
@@ -424,18 +419,18 @@ class EditAccountInfo extends React.Component {
                                 }}
                               />
                               <ErrorMessage name='fEmail'>
-                              {msg => (
-                                <div className={classes.errorMessage}>
-                                  {msg}
-                                </div>
-                              )}
-                            </ErrorMessage>
+                                {msg => (
+                                  <div className={classes.errorMessage}>
+                                    {msg}
+                                  </div>
+                                )}
+                              </ErrorMessage>
                             </Grid>
                             {/** fPhone number  */}
                             <Grid item xs={12} sm={6}>
                               <Field
                                 name="fPhone"
-                                render={({ field, form, ...otherProps }) => {
+                                render={({ field, form }) => {
                                   return (
                                     <TextField
                                       fullWidth
@@ -449,12 +444,12 @@ class EditAccountInfo extends React.Component {
                                 }}
                               />
                               <ErrorMessage name='fPhone'>
-                              {msg => (
-                                <div className={classes.errorMessage}>
-                                  {msg}
-                                </div>
-                              )}
-                            </ErrorMessage>
+                                {msg => (
+                                  <div className={classes.errorMessage}>
+                                    {msg}
+                                  </div>
+                                )}
+                              </ErrorMessage>
                             </Grid>
                             {!isHrSession ? null : (
                               <React.Fragment>
@@ -462,7 +457,7 @@ class EditAccountInfo extends React.Component {
                                 <Grid item xs={12} sm={6}>
                                   <Field
                                     name="fTeamId"
-                                    render={({ field, form, ...otherProps }) => {
+                                    render={({ field }) => {
                                       return (
                                         <SelectCustom
                                           name={field.name}
@@ -479,7 +474,7 @@ class EditAccountInfo extends React.Component {
                                 <Grid item xs={12} sm={6}>
                                   <Field
                                     name="fPosition"
-                                    render={({ field, form, ...otherProps }) => {
+                                    render={({ field }) => {
                                       return (
                                         <SelectCustom
                                           name={field.name}
