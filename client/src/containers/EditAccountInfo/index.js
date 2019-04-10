@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Formik, Form, Field } from 'formik';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 
 //material-ui
 import {
@@ -38,6 +38,9 @@ import { getGenderName } from '../../helpers/userHelpers';
 
 //Utilities
 import { compareJsonObjectValue, parseUrlLastSegment } from '../../utilities';
+
+//ValidationSchema
+import ValidationSchema from './validationSchema';
 
 //API
 import Axios, { CancelToken } from 'axios';
@@ -123,7 +126,7 @@ class EditAccountInfo extends React.Component {
       })
     )
     .catch(err => {
-      console.log(`TCL: EditAccountInfo -> loadData -> err`, err)
+      this.props.handleShowNotif && this.props.handleShowNotif(NOTIF_ERROR, `Couldn't load 'Used Day-off'!`);
     });
   }
 
@@ -175,7 +178,7 @@ class EditAccountInfo extends React.Component {
 
   componentDidMount = () => {
     this.__isMounted = true;
-    this.unlistenRouteChange = this.__isMounted && this.props.history.listen((location, action) => {
+    this.unlistenRouteChange = this.props.history.listen((location, action) => {
       const demandId = parseUrlLastSegment(location.pathname);
       // Renew cancelSource
       this.cancelSoure = CancelToken.source();
@@ -195,7 +198,6 @@ class EditAccountInfo extends React.Component {
     const { user, editMode, allTeams, allPositions, demandUserId, usedDayOff, dayOffSetting } = this.state;
 
     const { userId, userType } = getUserEntity();
-
     const isCurrentLoggedInUser = (userId === demandUserId);
     const isHrSession = userTypes.MODE_HR === userType;
     const isShowLetterList = (isHrSession && !isCurrentLoggedInUser && typeof(demandUserId) !== 'undefined');
@@ -222,6 +224,7 @@ class EditAccountInfo extends React.Component {
               {editMode && isHrSession ? (
                 <Formik
                   initialValues={user}
+                  validationSchema={ValidationSchema}
                   onSubmit={(values, actions) => {
                     //Call api update here
                     console.log(`Submitted values: `, values);
@@ -252,9 +255,9 @@ class EditAccountInfo extends React.Component {
                     isSubmitting,
                     handleReset,
                     handleSubmit,
+                    handleBlur,
                     setFieldValue,
-                    handleChange,
-                    ...formikProps
+                    handleChange
                   }) => {
                     const isUserInfoChanged = !compareJsonObjectValue(values, user);
                     return (
@@ -267,63 +270,55 @@ class EditAccountInfo extends React.Component {
                             xs={12}
                             className={classes.buttonGroupTop}
                           >
-                            <Field
-                              render={({ field, form }) => (
-                                <Button
-                                  className={classes.button}
-                                  size="small"
-                                  color="primary"
-                                  variant="contained"
-                                  onClick={handleSubmit}
-                                  disabled={isSubmitting || !isUserInfoChanged}
-                                >
+                            <Button
+                              className={classes.button}
+                              size="small"
+                              color="primary"
+                              variant="contained"
+                              onClick={handleSubmit}
+                              disabled={isSubmitting || !isUserInfoChanged}
+                            >
+                              <Icon
+                                fontSize="small"
+                                className={classes.leftIcon}
+                              >
+                                save
+                              </Icon>
+                              SAVE
+                            </Button>
+                            <Button
+                              className={classes.button}
+                              size="small"
+                              color="secondary"
+                              variant="outlined"
+                              disabled={isSubmitting}
+                              onClick={() => {
+                                handleReset();
+                                this.handleEnableEditMode(false);
+                              }}
+                            >
+                              {!isUserInfoChanged ? (
+                                <React.Fragment>
                                   <Icon
                                     fontSize="small"
                                     className={classes.leftIcon}
                                   >
-                                    save
+                                    cancel
                                   </Icon>
-                                  SAVE
-                                </Button>
+                                  Cancel
+                                </React.Fragment>
+                              ) : (
+                                <React.Fragment>
+                                  <Icon
+                                    fontSize="small"
+                                    className={classes.leftIcon}
+                                  >
+                                    delete_sweep
+                                  </Icon>
+                                  Discard
+                                </React.Fragment>
                               )}
-                            />
-                            <Field
-                              render={({ field, form }) => (
-                                <Button
-                                  className={classes.button}
-                                  size="small"
-                                  color="secondary"
-                                  variant="outlined"
-                                  disabled={isSubmitting}
-                                  onClick={() => {
-                                    handleReset();
-                                    this.handleEnableEditMode(false);
-                                  }}
-                                >
-                                  {!isUserInfoChanged ? (
-                                    <React.Fragment>
-                                      <Icon
-                                        fontSize="small"
-                                        className={classes.leftIcon}
-                                      >
-                                        cancel
-                                      </Icon>
-                                      Cancel
-                                    </React.Fragment>
-                                  ) : (
-                                    <React.Fragment>
-                                      <Icon
-                                        fontSize="small"
-                                        className={classes.leftIcon}
-                                      >
-                                        delete_sweep
-                                      </Icon>
-                                      Discard
-                                    </React.Fragment>
-                                  )}
-                                </Button>
-                              )}
-                            />
+                            </Button>
                           </Grid>
                         </React.Fragment>
                         {/* End - Top buttons */}
@@ -343,35 +338,56 @@ class EditAccountInfo extends React.Component {
                             <Grid item xs={12} sm={6}>
                               <Field
                                 name="fFirstName"
-                                render={({ field, form, ...otherProps }) => {
+                                render={({ field, form }) => {
+																	console.log(`TCL: EditAccountInfo -> render -> form`, form)
+																	console.log(`TCL: EditAccountInfo -> render -> field`, field)
+                                  console.log(`form.errors`, form.errors);
+                                  console.log(`form.touched`, form.touched);
+
                                   return (
                                     <TextField
                                       fullWidth
                                       label="First name"
                                       name={field.name}
                                       value={field.value}
+                                      onBlur={handleBlur}
                                       onChange={handleChange}
                                     />
                                   );
                                 }}
                               />
+                              <ErrorMessage name='fFirstName'>
+                                {msg => (
+                                  <div className={classes.errorMessage}>
+                                    {msg}
+                                  </div>
+                                )}
+                              </ErrorMessage>
                             </Grid>
                             {/** Last name */}
                             <Grid item xs={12} sm={6}>
                               <Field
                                 name="fLastName"
-                                render={({ field, form, ...otherProps }) => {
+                                render={({ field, form }) => {
                                   return (
                                     <TextField
                                       fullWidth
                                       label="Last name"
                                       name={field.name}
                                       value={field.value}
+                                      onBlur={handleBlur}
                                       onChange={handleChange}
                                     />
                                   );
                                 }}
                               />
+                              <ErrorMessage name='fLastName'>
+                              {msg => (
+                                <div className={classes.errorMessage}>
+                                  {msg}
+                                </div>
+                              )}
+                            </ErrorMessage>
                             </Grid>
                             {/** Gender name */}
                             <Grid item xs={12} sm={6}>
@@ -399,13 +415,21 @@ class EditAccountInfo extends React.Component {
                                     <TextField
                                       fullWidth
                                       label="Email"
-                                      value={field.value}
                                       name={field.name}
+                                      value={field.value}
+                                      onBlur={handleBlur}
                                       onChange={handleChange}
                                     />
                                   );
                                 }}
                               />
+                              <ErrorMessage name='fEmail'>
+                              {msg => (
+                                <div className={classes.errorMessage}>
+                                  {msg}
+                                </div>
+                              )}
+                            </ErrorMessage>
                             </Grid>
                             {/** fPhone number  */}
                             <Grid item xs={12} sm={6}>
@@ -418,11 +442,19 @@ class EditAccountInfo extends React.Component {
                                       label="Phone"
                                       value={field.value}
                                       name={field.name}
+                                      onBlur={handleBlur}
                                       onChange={handleChange}
                                     />
                                   );
                                 }}
                               />
+                              <ErrorMessage name='fPhone'>
+                              {msg => (
+                                <div className={classes.errorMessage}>
+                                  {msg}
+                                </div>
+                              )}
+                            </ErrorMessage>
                             </Grid>
                             {!isHrSession ? null : (
                               <React.Fragment>
@@ -736,6 +768,11 @@ const styles = theme => ({
     flexDirection: "column",
     justifyContent: "center",
     marginBottom: theme.spacing.unit,
+  },
+  errorMessage: {
+    color: 'red',
+    fontSize: 12,
+    fontWeight: 500
   },
 });
 
