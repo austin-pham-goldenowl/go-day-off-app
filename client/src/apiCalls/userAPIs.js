@@ -3,20 +3,19 @@ import { getCookie } from 'tiny-cookie';
 import { SERVER_HOST_DEV } from '../constants/api';
 import { ACCESS_TOKEN_KEY } from '../constants/token';
 
-import { getUserId } from '../helpers/authHelpers';
-
 //Global headers configurations
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
-export const getProfile = id => {
+export const getProfile = (id, cancelToken = undefined) => {
   return axios.get(`${SERVER_HOST_DEV}/user/profile?id=${id}`, {
     headers: {
       'x-access-token': getCookie(ACCESS_TOKEN_KEY)
-    }
+    },
+    cancelToken
   });
 };
 
-export const createNewUser = userEntity => {
+export const createNewUser = (userEntity, cancelToken = undefined) => {
   return axios.post(
     `${SERVER_HOST_DEV}/auth/account`,
     {
@@ -25,13 +24,13 @@ export const createNewUser = userEntity => {
     {
       headers: {
         'x-access-token': getCookie(ACCESS_TOKEN_KEY)
-      }
+      },
+      cancelToken
     }
   );
 };
 
-export const updateProfile = profileEntity => {
-	console.log(`TCL: updateProfile -> profileEntity`, profileEntity)
+export const updateProfile = (userId, profileEntity, cancelToken = undefined) => {
   let parsedEntity = {
     firstName: profileEntity.fFirstName,
     lastName: profileEntity.fLastName,
@@ -39,16 +38,14 @@ export const updateProfile = profileEntity => {
     email: profileEntity.fEmail,
     gender: profileEntity.fGender,
     teamId: profileEntity.fTeamId,
-    positionId: profileEntity.fPosition,
+    position: profileEntity.fPosition,
   };
-  let id = getUserId();
-	console.log(`TCL: updateProfile -> id`, id);
-  console.log(`TCL: parsedEntity`, parsedEntity);
+  console.log(`TCL: updateProfile -> parsedEntity`, parsedEntity)
   
   return axios.patch(
     `${SERVER_HOST_DEV}/user/profile`,
     {
-      id: getUserId(),
+      id: userId,
       info: {
         ...parsedEntity
       }
@@ -56,37 +53,41 @@ export const updateProfile = profileEntity => {
     {
       headers: {
         'x-access-token': getCookie(ACCESS_TOKEN_KEY)
-      }
+      },
+      cancelToken
     }
   );
 };
 
 //
-export const getAllApprover = () => {
+export const getAllApprover = (cancelToken = undefined) => {
   return axios.get(`${SERVER_HOST_DEV}/user/approver`, {
     headers: {
       'x-access-token': getCookie(ACCESS_TOKEN_KEY)
-    }
+    },
+    cancelToken
   });
 };
 
-export const getAllInformTo = () => {
+export const getAllInformTo = (cancelToken = undefined) => {
   return axios.get(`${SERVER_HOST_DEV}/user/team-leader`, {
     headers: {
       'x-access-token': getCookie(ACCESS_TOKEN_KEY)
-    }
+    },
+    cancelToken
   });
 };
 
-export const getAllSubsitutes = () => {
+export const getAllSubsitutes = (cancelToken = undefined) => {
   return axios.get(`${SERVER_HOST_DEV}/user/substitutes`, {
     headers: {
       'x-access-token': getCookie(ACCESS_TOKEN_KEY)
-    }
+    },
+    cancelToken
   });
 };
 
-export const getAllSubsitutesByUserId = userId => {
+export const getAllSubsitutesByUserId = (userId, cancelToken = undefined) => {
   return axios.get(`${SERVER_HOST_DEV}/user/substitutes?id=${userId}`, {
     headers: {
       'x-access-token': getCookie(ACCESS_TOKEN_KEY)
@@ -94,9 +95,10 @@ export const getAllSubsitutesByUserId = userId => {
   });
 };
 
-export const getUsersList = (size = 10, page = 1) => 
+export const getUsersList = (size = 10, page = 1, cancelToken = undefined) => 
   axios.get(`${SERVER_HOST_DEV}/user?page=${page}&size=${size}`, {
     headers: {
       'x-access-token': getCookie(ACCESS_TOKEN_KEY)
-    }
+    },
+    cancelToken
 });

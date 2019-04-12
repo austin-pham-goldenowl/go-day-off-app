@@ -19,23 +19,24 @@ axios.defaults.headers.post['Content-Type'] = 'application/json'
 axios.defaults.headers.patch['Content-Type'] = 'application/json'
 
 // Promise Functions
-export const getLeaveLetterDetails = id =>
+export const getLeaveLetterDetails = (id, cancelToken = undefined) =>
   axios.get(`${SERVER_HOST_DEV}/leaveLetter/details?id=${id}`, {
     headers: {
       'x-access-token': getCookie(ACCESS_TOKEN_KEY)
     },
+    cancelToken
   });
 
-export const getAllLeaveLetters = (cancelToken, page = 1, size = 10) =>
+export const getAllLeaveLetters = (cancelToken = undefined, page = 1, size = 10) =>
   axios.get(`${SERVER_HOST_DEV}/leaveLetter?page=${page}&size=${size}`, {
     headers: {
       'x-access-token': getCookie(ACCESS_TOKEN_KEY)
     },
-    cancelToken: cancelToken
+    cancelToken
   });
 
 export const getMyLeaveLetters = (
-  cancelToken,
+  cancelToken = undefined,
   page = 1,
   size = 10,
   demandUserId = getUserId()
@@ -110,17 +111,17 @@ export const approveLeaveLetterRequest = (letterId, userId) => {
   );
 };
 
-export const getUsedDayOff = (cancelToken, userId, toMonth, inYear) => {
+export const getUsedDayOff = (cancelToken = undefined, userId, toMonth, inYear) => {
   const url = `${SERVER_HOST_DEV}/leaveletter/used-off-days?userId=${userId}` + (!isNaN(toMonth) ? `&month=${toMonth}` : '') + (!isNaN(inYear) ? `&year=${inYear}` : '');
   return axios.get(url, {
     headers: {
       'x-access-token': getCookie(ACCESS_TOKEN_KEY)
     },
-    cancelToken: cancelToken,
+    cancelToken
   });
 } 
 
-export const getDemandLetterByFilter = (cancelToken, filterOptions) => {
+export const getDemandLetterByFilter = (cancelToken = undefined, filterOptions) => {
   const {userId, fromMonth, fromYear, toMonth, toYear, status, page = 1, size = 10} = filterOptions;
   
   const url = `${SERVER_HOST_DEV}/leaveletter/filter?userId=${userId}`
@@ -133,11 +134,11 @@ export const getDemandLetterByFilter = (cancelToken, filterOptions) => {
     headers: {
       'x-access-token': getCookie(ACCESS_TOKEN_KEY)
     },
-    cancelToken: cancelToken
+    cancelToken
   })
 }
 
-export const getAllLetterByFilter = (cancelToken, filterOptions) => {
+export const getAllLetterByFilter = (cancelToken = undefined, filterOptions) => {
   const {fromMonth, fromYear, toMonth, toYear, status, page = 1, size = 10} = filterOptions;
   
   const url = `${SERVER_HOST_DEV}/leaveletter?`
@@ -150,6 +151,6 @@ export const getAllLetterByFilter = (cancelToken, filterOptions) => {
     headers: {
       'x-access-token': getCookie(ACCESS_TOKEN_KEY)
     },
-    cancelToken: cancelToken
+    cancelToken
   })
 }
