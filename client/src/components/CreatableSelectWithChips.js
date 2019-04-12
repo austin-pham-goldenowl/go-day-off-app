@@ -252,7 +252,6 @@ class IntegrationReactSelect extends React.Component {
         components={components}
         inputValue={this.state.inputValue}
         onBlur={(e) => {
-          console.log(e.target);
           //This `onBlur` event is issued by the `input` element, not the `Select`, we have to point to the `Select`
           onBlur(e);
         }}

@@ -1,8 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import moment from 'moment';
+import { Link } from 'react-router-dom';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
-import { Paper, Grid, Typography, TextField, Button } from '@material-ui/core';
+import { Paper, Grid, Typography, TextField, Button, Slide } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 
 import Icon from '@material-ui/core/Icon';
@@ -71,7 +72,9 @@ class AbsenceLetterWithFormik extends React.Component {
       substitutesList: [],
     },
     otherReasonSelected: false,
-    buttonClickable: false
+    buttonClickable: false,
+    isRequestCreated: false,
+    lastLetterId: undefined,
   };
 
   switchButtonCtrl = enable => {
@@ -192,10 +195,7 @@ class AbsenceLetterWithFormik extends React.Component {
       templateList: { leaveTypesList, informToList, approverList, substitutesList },
       otherReasonSelected
     } = this.state;
-
     const { usedDayOff, dayOffSetting } = this.state;
-		console.log(`TCL: render -> dayOffSetting`, dayOffSetting)
-		console.log(`TCL: render -> usedDayOff`, usedDayOff)
 
     return (
       <DashContainer>
@@ -218,10 +218,17 @@ class AbsenceLetterWithFormik extends React.Component {
 
                 createLeaveLetter(submitValues)
                   .then(res => {
-                    handleShowNotif(NOTIF_SUCCESS, `Leave request created successfully!`);
-                    this.handleChangeReason();
-                    actions.resetForm();
-                    actions.setSubmitting(false);
+										console.log(`TCL: render -> res`, res)
+                    const { fId } = res.data.leaveLetter.leaveLetter;
+                    this.__isMounted && this.setState({
+                      lastLetterId: fId,
+                      isRequestCreated: true,
+                    }, () => {
+                      handleShowNotif(NOTIF_SUCCESS, `Leave request created successfully!`);
+                      this.handleChangeReason();
+                      actions.resetForm();
+                      actions.setSubmitting(false);
+                    });
                   })
                   .catch(err => {
                     handleShowNotif(NOTIF_ERROR, `Can't create Leave request! Try later`);
@@ -237,7 +244,7 @@ class AbsenceLetterWithFormik extends React.Component {
                 isSubmitting,
                 setFieldValue,
               }) => {
-                const { buttonClickable } = this.state;
+                const { buttonClickable, isRequestCreated, lastLetterId } = this.state;
                 const isSameDaySelected = compareDatesWithoutTime(values.startDate, values.endDate) === 0;
                 return (
                   <Form>
@@ -291,7 +298,7 @@ class AbsenceLetterWithFormik extends React.Component {
                         />
                       </Grid>
                     </React.Fragment>
-                    {/* End - Top buttons */}
+                    {/* End - Top buttons  */}
                     <React.Fragment>
                       <Typography
                         className={classes.formTitle}
@@ -579,6 +586,16 @@ class AbsenceLetterWithFormik extends React.Component {
                         </Button>
                       </Grid>
                     </React.Fragment>
+                        <Grid container item xs={12} className={classes.linkRequestBottom}>
+                          <Slide direction='right' in={isRequestCreated} mountOnEnter unmountOnExit>
+                            <Paper elevation={4} className={classes.linkRequestPaper}>
+                              Review request {' '}
+                              <Link to={`/leave-request/${lastLetterId}`}>
+                                #{lastLetterId}
+                              </Link>
+                            </Paper>
+                          </Slide>
+                        </Grid>
                   </Form>
                 );
               }}
@@ -629,9 +646,6 @@ const styles = theme => ({
       padding: theme.spacing.unit * 3
     }
   },
-  rightSide: {
-
-  },
   buttonGroupTop: {
     justifyContent: 'flex-start',
     marginBottom: theme.spacing.unit * 3,
@@ -641,6 +655,18 @@ const styles = theme => ({
     [theme.breakpoints.up('sm')]: {
       display: 'flex'
     }
+  },
+  linkRequestBottom: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    marginTop: '20px',
+    marginRight: '5px',
+  },
+  linkRequestPaper: {
+    backgroundColor: '#e2e2e2',
+    padding: '5px',
+    color: '#000',
   },
   buttonGroupBottom: {
     justifyContent: 'flex-end',
