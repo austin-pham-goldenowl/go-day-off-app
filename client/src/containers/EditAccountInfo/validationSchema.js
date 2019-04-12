@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import { PHONE_PATTERN, EMAIL_PATTERN } from '../../constants/regexPatterns';
 
 /**
  * Fields' maxLength
@@ -17,10 +18,12 @@ const YupValidationSchema = Yup.object().shape({
             .required(`"Last name" can't be empty`),
   fEmail: Yup.string()
           .max(45, `"Email" max length is ${45}`)
+          .matches(EMAIL_PATTERN, `"Email" is invalid`)
           .required(`"Email" can't be empty`),
   fPhone: Yup.string()
           .min(10, `"Phone number" must be 10-character string`)
           .max(10, `"Phone number" must be 10-character string`)
+          .matches(PHONE_PATTERN, `"Phone number" is invalid`)
           .required(`"Phone number" can't be empty`),
 });
 

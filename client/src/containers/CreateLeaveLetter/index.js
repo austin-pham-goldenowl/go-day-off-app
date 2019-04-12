@@ -15,7 +15,6 @@ import CreatableSelectWithChips from '../../components/CreatableSelectWithChips'
 import DashContainer from '../DashContainer';
 // Validation
 import { YupValidationSchema, CustomValidationSchema } from './validationSchema';
-// const emailRegexPattern = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 
 //constants
 import { LeaveDurationOptions } from '../../constants/leaveDurationOptions';
