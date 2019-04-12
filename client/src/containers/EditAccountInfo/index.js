@@ -174,7 +174,7 @@ class EditAccountInfo extends React.Component {
           this.props.handleShowNotif && this.props.handleShowNotif(NOTIF_ERROR, `Couldn't load Positions and Teams!`);
       });
     } else {
-      console.log(`err: `, response);
+      this.props.handleShowNotif && this.props.handleShowNotif(NOTIF_ERROR, `Counldn't load user profile. Try later!`);
     }
   };
 
@@ -229,10 +229,8 @@ class EditAccountInfo extends React.Component {
                   validationSchema={ValidationSchema}
                   onSubmit={(values, actions) => {
                     //Call api update here
-                    console.log(`Submitted values: `, values);
-                    updateProfile(values)
+                    updateProfile(this.state.demandUserId, values)
                       .then(res => {
-												console.log(`TCL: EditAccountInfo -> render -> updateProfile -> res`, res)
                         handleShowNotif(
                           NOTIF_SUCCESS,
                           `Updated profile successfully!`
@@ -242,7 +240,6 @@ class EditAccountInfo extends React.Component {
                         actions.setSubmitting(false);
                       })
                       .catch(err => {
-												console.log(`TCL: EditAccountInfo -> render -> updateProfile -> err`, err)
                         handleShowNotif(
                           NOTIF_ERROR,
                           `Update failed! (${err.message})`

@@ -95,9 +95,6 @@ Router.get('/profile', async (req, res) => {
 // Update user profile
 Router.patch("/profile", bodyMustNotEmpty, userMustBeHR, async (req, res) => {
   try {
-    const userId = getIdFromToken(req.token_payload);
-    if (!userId) throw { msg: 'USER_NOT_FOUND' };
-
     const keys = Object.keys(req.body);
     if (
       keys.length < 2 ||
@@ -105,6 +102,9 @@ Router.patch("/profile", bodyMustNotEmpty, userMustBeHR, async (req, res) => {
       (keys.includes('info') && Object.keys(req.body.info) < 1)
     )
       throw { msg: 'INVALID_VALUES' };
+    const { id } = req.body;
+    if (!id || id === undefined) throw { msg: 'USER_NOT_FOUND' };
+  
     const entity = req.body.info && standardizeObj(req.body.info);
 
     // validate gender value
@@ -116,15 +116,15 @@ Router.patch("/profile", bodyMustNotEmpty, userMustBeHR, async (req, res) => {
       throw { msg: 'INVALID_VALUES' };
 
     // update foreign keys
-    const { fTeamId, fPositionId, fTypeId } = entity;
+    const { fTeamId, fPosition, fTypeId } = entity;
     if (fTeamId) entity.teams_fId = fTeamId;
-    if (fPositionId) entity.positions_fId = fPositionId;
+    if (fPosition) entity.positions_fId = fPosition;
     if (fTypeId) entity.userPermission_fId = fTypeId;
     
 		console.log(`TCL: entity`, entity);
 
     const affected = await userModel.modify(entity, {
-      where: { fId: userId }
+      where: { fId: id }
     });
     if (affected[0] !== 1) throw { msg: 'USER_NOT_FOUND' };
 
