@@ -203,7 +203,10 @@
 
 .calendar .body .btn.btn-detail {
   display: none;
-  z-index: 999;
+  z-index: 10;
+}
+.calendar .body .btn.btn-create {
+  z-index: 10;
 }
 
 .calendar .body .cell:hover > .btn.btn-detail {
@@ -224,6 +227,18 @@
   flex-grow: 0;
   flex-basis: calc(100% / 7);
   width: calc(100% / 7);
+}
+
+.calendar .body .normal > .btn.btn-create {
+  display: none;
+}
+
+.calendar .body .normal:hover  > .btn.btn-create {
+  display: block;
+}
+
+.calendar .body .currentDate > .btn.btn-create {
+  display: none;
 }
 
 @media screen and (max-width: 720px) {

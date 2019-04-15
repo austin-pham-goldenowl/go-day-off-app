@@ -42,7 +42,7 @@ class Calendar extends React.Component {
   state = {
     currentDate: new moment(),
     currentMonth: new moment(),
-    selectedDate: new moment(),
+    selectedDate: '',
     dayoffs: {}, //dictionary
   };
 
@@ -171,7 +171,7 @@ class Calendar extends React.Component {
             : ( 
               compareDatesWithoutTime(day, currentDate) === 0
               ? 'currentDate' 
-              : ''
+              : 'normal'
             )
           );
         
@@ -183,14 +183,22 @@ class Calendar extends React.Component {
           >
             <span className='number'>{formattedDate}</span>
             <span className='bg'>{formattedDate}</span>
-            { dayoffId !== undefined && !isDisabledDay
-              ? 
-              <button 
-                className='btn btn-detail' 
-                onClick={() => this.onButtonDetailClick(dayoffId)}
-              >
-                Show details
-              </button>
+            { !isDisabledDay
+              ? (dayoffId !== undefined ? 
+                 <button 
+                    className='btn btn-detail' 
+                    onClick={() => this.onButtonDetailClick(dayoffId)}
+                  >
+                    Show details
+                  </button> 
+                :
+                  <button 
+                    className='btn btn-create' 
+                    onClick={() => this.onButtonCreateClick()}
+                  >
+                    Create new request
+                  </button> 
+              )
               : null
             }
           </div>
@@ -217,6 +225,11 @@ class Calendar extends React.Component {
   onButtonDetailClick = dayoffId => {
     const { history } = this.props;
     history.push(`/leave-request/${dayoffId}`);
+  }
+
+  onButtonCreateClick = () => {
+    const { history } = this.props;
+    history.push(`leave-request/create`);
   }
 
   nextMonth = () => {
