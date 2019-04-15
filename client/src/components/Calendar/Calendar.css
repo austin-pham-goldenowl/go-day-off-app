@@ -193,7 +193,7 @@
 } */
 
 .calendar .body .offday {
-  background-color: #ffbe00;
+  background-color: rgba(255, 190, 0, 0.5);
   color: red;
 }
 
