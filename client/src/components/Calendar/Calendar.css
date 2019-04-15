@@ -130,6 +130,12 @@
   border-image-slice: 1;
 }
 
+.calendar .body .currentDate {
+  border-left: 10px solid transparent;
+  border-image: linear-gradient(45deg, #1aff40 0%, #9af153 40%);
+  border-image-slice: 1;
+}
+
 .calendar .body .row {
   border-bottom: 1px solid var(--border-color);
 }
@@ -171,6 +177,18 @@
 
 .calendar .body .cell:hover .bg,
 .calendar .body .selected .bg {
+  opacity: 0.05;
+  transition: 0.5s ease-in;
+}
+
+.calendar .body .cell:hover .bg,
+.calendar .body .currentDate .bg {
+  opacity: 0.05;
+  transition: 0.5s ease-in;
+}
+
+.calendar .body .offday .bg {
+  background-color: burlywood;
   opacity: 0.05;
   transition: 0.5s ease-in;
 }

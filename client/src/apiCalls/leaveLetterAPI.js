@@ -154,3 +154,14 @@ export const getAllLetterByFilter = (cancelToken = undefined, filterOptions) => 
     cancelToken
   })
 }
+
+export const getCalendarApprovedDayOff = (cancelToken = undefined, filterOptions) => {
+  const { month, year, status = LEAVE_REQUEST_APPROVED } = filterOptions;
+
+  return axios.get(`${SERVER_HOST_DEV}/leaveletter/calendar-off-day?month=${month}&year=${year}&status=${status}`, {
+    headers: {
+      'x-access-token': getCookie(ACCESS_TOKEN_KEY)
+    },
+    cancelToken
+  })
+}

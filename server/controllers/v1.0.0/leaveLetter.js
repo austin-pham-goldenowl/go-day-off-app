@@ -196,7 +196,11 @@ Router.post('/', bodyMustNotEmpty, async (req, res) => {
     entity.users_fId1 = fUserId;
     entity.approver_fId = fApprover;
     entity.absenceTypes_fId = fAbsenceType;
+
+    entity.fFromDT = moment.utc(fFromDT).toDate();
+    entity.fToDT = moment.utc(fToDT).toDate();
     const leaveLetter = await leaveLetterModel.add(entity);
+
 
     //Send email
     let { fInformTo } = entity;
@@ -414,7 +418,7 @@ Router.get('/calendar-off-day', async (req, res) => {
 
     console.log('PASS 3')
 
-    handleSuccess(res, { leaveLetter: [...letterFromLastMonth ,...lettersInMonth, ...letterFromNextMonth] });
+    handleSuccess(res, { leaveLetters: [...letterFromLastMonth ,...lettersInMonth, ...letterFromNextMonth] });
   }
   catch (err){
     handleFailure(res, { err, route: req.originalUrl });
