@@ -187,10 +187,37 @@
   transition: 0.5s ease-in;
 }
 
-.calendar .body .offday .bg {
-  background-color: burlywood;
+/* .calendar .body .offday .bg {
   opacity: 0.05;
   transition: 0.5s ease-in;
+} */
+
+.calendar .body .offday {
+  background-color: #ffbe00;
+  color: red;
+}
+
+.calendar .body .offday:hover {
+  color: black;
+}
+
+.calendar .body .btn.btn-detail {
+  display: none;
+  z-index: 999;
+}
+
+.calendar .body .cell:hover > .btn.btn-detail {
+  display: block;
+}
+
+.calendar .body .cell {
+  display: flex;
+  flex-flow: column wrap;
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+.calendar .body .selected > .btn.btn-detail {
+  display: block;
 }
 
 .calendar .body .col {

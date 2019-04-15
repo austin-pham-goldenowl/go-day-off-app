@@ -1,5 +1,6 @@
 import React from 'react';
 import moment from 'moment';
+import { withRouter } from 'react-router-dom';
 import {connect} from 'react-redux';
 import shortid from 'shortid';
 import { CancelToken } from 'axios';
@@ -161,6 +162,7 @@ class Calendar extends React.Component {
         formattedDate = day.format(dateFormat);
         const cloneDate = day.clone(); //Must have this line of code
         const isDisabledDay = day.month() !== currentMonth.month();
+        const dayoffId = this.state.dayoffs[cloneDate.get('date')];
         let styleClassName = isDisabledDay
           ? 'disabled' 
           : (
@@ -172,7 +174,8 @@ class Calendar extends React.Component {
               : ''
             )
           );
-          
+        
+        styleClassName += !isDisabledDay && dayoffId !== undefined ? ' offday' : '';
         days.push(
           <div className={`col cell ${styleClassName}`}
             key={shortid.generate()}
@@ -180,9 +183,14 @@ class Calendar extends React.Component {
           >
             <span className='number'>{formattedDate}</span>
             <span className='bg'>{formattedDate}</span>
-            { this.state.dayoffs[cloneDate.get('date')] !== undefined && !isDisabledDay
+            { dayoffId !== undefined && !isDisabledDay
               ? 
-              <button onClick={() => console.log(`letterId: ${this.state.dayoffs[cloneDate.get('date')]}`)}>{this.state.dayoffs[cloneDate.get('date')]}</button>
+              <button 
+                className='btn btn-detail' 
+                onClick={() => this.onButtonDetailClick(dayoffId)}
+              >
+                Show details
+              </button>
               : null
             }
           </div>
@@ -203,7 +211,14 @@ class Calendar extends React.Component {
     this.__isMounted__ && this.setState({
       selectedDate: date
     })
+    //if day is an approved-dayoff -> show button
   };
+
+  onButtonDetailClick = dayoffId => {
+    const { history } = this.props;
+    history.push(`/leave-request/${dayoffId}`);
+  }
+
   nextMonth = () => {
     this.__isMounted__ && this.setState( {
       currentMonth: this.state.currentMonth.add(1, 'months'),
@@ -231,7 +246,7 @@ class Calendar extends React.Component {
   }
 }
 
-export default connect(null, mapDispatchToProps)(Calendar);
+export default withRouter(connect(null, mapDispatchToProps)(Calendar));
 
 
     /**
