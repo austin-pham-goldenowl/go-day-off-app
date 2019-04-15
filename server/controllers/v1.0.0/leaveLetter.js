@@ -4,6 +4,8 @@ const Router = express.Router();
 const { Op } = require('sequelize');
 const uid = require('rand-token').uid;
 const dateArray = require('moment-array-dates');
+
+
 /**
  * Models
  */
@@ -357,6 +359,67 @@ Router.get('/filter', async (req, res) => {
     handleFailure(res, { err, route: req.originalUrl });
   }
 });
+
+/**
+ * fromMonth, fromYear, toMonth, toYear, status
+ */
+
+Router.get('/calendar-off-day', async (req, res) => {
+  try {
+    //validating query params
+    const currentDate = moment().get('year');
+    let { month = currentDate.get('month'), year = currentDate.get('year'),
+      status = LEAVING_LETTER_STATUS.APPROVED 
+    } = req.query;
+    
+    console.log(`TCL: status`, status)
+
+    const userId = getIdFromToken(req.token_payload);
+    if (!userId) throw { msg: 'NO_TOKEN' }
+    if (isNaN(status) || !ALLOWED_STATUS.includes(+status)) 
+    status = DEFAULT_STATUS;
+    
+    console.log(`TCL: status`, status)
+    
+    const firstDayOfMonth = month < 10 ? moment.utc(`0${month}-01-${year}`) : moment.utc(`${month}-01-${year}`);
+    const lastDayOfMonth = moment.utc(firstDayOfMonth).set('date', firstDayOfMonth.daysInMonth());
+
+    const lettersInMonth = await leaveLetterModel.loadAll([], {
+      where: {
+        fUserId: userId,
+        fStatus: +status === 0 ? { [Op.ne]: null } : status,
+        fFromDT: { [Op.between]: [firstDayOfMonth.toDate(), lastDayOfMonth.toDate()] },
+        fToDT: { [Op.between]: [firstDayOfMonth.toDate(), lastDayOfMonth.toDate()] },
+      }
+    })
+    console.log('PASS 1')
+    const letterFromLastMonth = await leaveLetterModel.loadAll([], {
+      where: {
+        fUserId: userId,
+        fStatus: +status === 0 ? { [Op.ne]: null } : status,
+        fFromDT: { [Op.lt]: firstDayOfMonth.toDate() },
+        fToDT: { [Op.between]: [firstDayOfMonth.toDate(), lastDayOfMonth.toDate()] },
+      }
+    })
+    console.log('PASS 2')
+
+    const letterFromNextMonth = await leaveLetterModel.loadAll([], {
+      where: {
+        fUserId: userId,
+        fStatus: +status === 0 ? { [Op.ne]: null } : status,
+        fFromDT: { [Op.between]: [firstDayOfMonth.toDate(), lastDayOfMonth.toDate()] },
+        fToDT: { [Op.gt]: lastDayOfMonth.toDate() },
+      }
+    })
+
+    console.log('PASS 3')
+
+    handleSuccess(res, { leaveLetter: [...letterFromLastMonth ,...lettersInMonth, ...letterFromNextMonth] });
+  }
+  catch (err){
+    handleFailure(res, { err, route: req.originalUrl });
+  }
+})
 
 Router.post('/send-email', async (req, res) => {
   try {
