@@ -122,6 +122,6 @@ server.all("*", (req, res) => {
 /**
  * Start Express server
  */
-server.listen(server.get("port"), () => {
+server.listen(process.env.PORT || 3001, () => {
   console.log(`[GO-LeavingForm] Express server is running at http://localhost:${server.get("port")}`);
 });

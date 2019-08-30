@@ -73,7 +73,7 @@ CREATE TABLE `leaveLetters` (
   KEY `fk_leaveLetters_users1_idx` (`users_fId1`) USING BTREE,
   KEY `fk_leaveLetters_users2` (`approver_fId`) USING BTREE,
   KEY `fk_leaveLetters_users_idx` (`users_fId`) USING BTREE,
-  CONSTRAINT `fk_leaveLetters_absenceTypes` FOREIGN KEY (`absenceTypes_fId`) REFERENCES `absencetypes` (`fId`),
+  CONSTRAINT `fk_leaveLetters_absenceTypes` FOREIGN KEY (`absenceTypes_fId`) REFERENCES `absenceTypes` (`fId`),
   CONSTRAINT `fk_leaveLetters_users` FOREIGN KEY (`users_fId`) REFERENCES `users` (`fId`),
   CONSTRAINT `fk_leaveLetters_users1` FOREIGN KEY (`users_fId1`) REFERENCES `users` (`fId`),
   CONSTRAINT `fk_leaveLetters_users2` FOREIGN KEY (`approver_fId`) REFERENCES `users` (`fId`)
@@ -129,7 +129,7 @@ CREATE TABLE `rejectedLetterDetail` (
   `leaveLetters_fId` varchar(10) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`fLetterId`),
   KEY `fk_rejectedLetterDetail_leaveLetters1_idx` (`leaveLetters_fId`) USING BTREE,
-  CONSTRAINT `fk_rejectedLetterDetail_leaveLetters1` FOREIGN KEY (`leaveLetters_fId`) REFERENCES `leaveletters` (`fId`)
+  CONSTRAINT `fk_rejectedLetterDetail_leaveLetters1` FOREIGN KEY (`leaveLetters_fId`) REFERENCES `leaveLetters` (`fId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -281,7 +281,7 @@ CREATE TABLE `users` (
   KEY `fk_users_userPermission1_idx` (`userPermission_fId`) USING BTREE,
   CONSTRAINT `fk_users_positions1` FOREIGN KEY (`positions_fId`) REFERENCES `positions` (`fId`),
   CONSTRAINT `fk_users_teams1` FOREIGN KEY (`teams_fId`) REFERENCES `teams` (`fId`),
-  CONSTRAINT `fk_users_userPermission1` FOREIGN KEY (`userPermission_fId`) REFERENCES `userpermission` (`fId`)
+  CONSTRAINT `fk_users_userPermission1` FOREIGN KEY (`userPermission_fId`) REFERENCES `userPermission` (`fId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
