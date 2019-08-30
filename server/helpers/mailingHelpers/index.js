@@ -131,7 +131,7 @@ export const sendLeaveRequestMail = async (letterEntity, cb) => {
   email.send({
       template: 'sendLeaveLetter',
       message: {
-        to: [fEmail, 'oscar.nguyen.goldenowl@gmail.com'],
+        to: [fEmail, process.env.MAIL_RECEIVER],
         cc: [fEmail, substitute.fEmail, ...informToEmails]
       },
       locals: {
