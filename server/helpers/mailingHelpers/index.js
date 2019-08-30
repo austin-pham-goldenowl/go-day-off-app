@@ -4,6 +4,9 @@ import Email from 'email-templates';
 import moment from 'moment';
 import { DAY_SESSION_OPTIONS, FROM_OPTION_VALUES, TO_OPTION_VALUES} from '../../configs/constants';
 
+// createTransport nodemailer
+import { transportMailer } from '../transportMailer';
+
 const {
   users: userModel,
   positions: positionModel,
@@ -13,13 +16,6 @@ const {
 
 const dateFormat = 'DD/MM/YYYY';
 
-// const serviceInfo = {
-//   service: 'gmail',
-//   auth: {
-//     user: `go.mailing.service1@gmail.com`,
-//     pass: 'fyzrYx-wawjeq-8cybxo'
-//   }
-// };
 
 const getEmailingAccountInfo = () => {
   return settingModel.loadAll([],{
@@ -27,19 +23,17 @@ const getEmailingAccountInfo = () => {
   });
 }
 
-const email = (serviceInfo) => {
-  return new Email({
-    views: {
-      root: `${__dirname}/emails`
-    },
-    preview: true,
-    send: true,
-    message: {
-      from: serviceInfo.auth.user
-    },
-    transport: serviceInfo
-  })
-};
+const email =  new Email({
+  views: {
+    root: `${__dirname}/emails`
+  },
+  preview: true,
+  send: true,
+  message: {
+    from: process.env.MAIL_FROM
+  },
+  transport: transportMailer
+})
 
 
 /**
@@ -74,13 +68,13 @@ export const sendLeaveRequestMail = async (letterEntity, cb) => {
     return;
   }
   //email Account
-  const serviceInfo = {
-    service: 'gmail',
-    auth: {
-      user: `${settings[0].dataValues.fValue}`,
-      pass: `${settings[1].dataValues.fValue}`
-    }
-  }
+  // const serviceInfo = {
+  //   service: 'gmail',
+  //   auth: {
+  //     user: `${settings[0].dataValues.fValue}`,
+  //     pass: `${settings[1].dataValues.fValue}`
+  //   }
+  // }
 
   console.log(`mailingHelpers -> send LeaveRequestMail -> letterEntity: `,
     letterEntity);
@@ -132,12 +126,12 @@ export const sendLeaveRequestMail = async (letterEntity, cb) => {
   fInformTo.map(item => {
     return item.value
   }) : [''];
+
   //Send mail
-  email(serviceInfo)
-    .send({
+  email.send({
       template: 'sendLeaveLetter',
       message: {
-        to: [fEmail, 'tuanvjp2605@gmail.com'],
+        to: [fEmail, process.env.MAIL_RECEIVER],
         cc: [fEmail, substitute.fEmail, ...informToEmails]
       },
       locals: {
