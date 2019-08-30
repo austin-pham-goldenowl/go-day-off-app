@@ -345,7 +345,7 @@ class CreateNewAccount extends React.Component {
                       {/** team name */}
                       <Grid item xs={12} sm={6}>
                         <Field
-                          name="team"
+                          name="teamId"
                           render={({ field, form, ...otherProps }) => {
                             return (
                               <SelectCustom
@@ -466,7 +466,7 @@ CreateNewAccount.defaultProps = {
     position: '',
     address: '',
     phone: '',
-    team: '',
+    teamId: '',
     email: '',
     typeId: responseUserPermission['USER']
   }
@@ -475,14 +475,18 @@ CreateNewAccount.defaultProps = {
 const mockup_gender = [
   {
     value: 0,
-    label: 'Female'
+    label: 'Choose Gender'
   },
   {
     value: 1,
-    label: 'Male'
+    label: 'Female'
   },
   {
     value: 2,
+    label: 'Male'
+  },
+  {
+    value: 3,
     label: 'Others'
   }
 ];
