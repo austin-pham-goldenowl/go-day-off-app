@@ -19,7 +19,7 @@ module.exports = {
     }
   },
   production: {
-    use_env_variable: "DATABASE_URL",
-    DATABASE_URL: process.env.DATABASE_URL
+    use_env_variable: "CLEARDB_DATABASE_URL",
+    CLEARDB_DATABASE_URL: process.env.CLEARDB_DATABASE_URL,
   }
 };
