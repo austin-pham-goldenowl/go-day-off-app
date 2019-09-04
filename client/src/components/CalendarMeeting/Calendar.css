@@ -1,0 +1,14 @@
+.calendar .body .btn.btn-create {
+  z-index: 10;
+  background-color: #ffbe00;
+  box-shadow: 0 8px 16px -4px rgba(9,30,66,.25), 0 0 0 1px rgba(9,30,66,.08);
+  padding: 6px 10px;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.calendar .body .btn.btn-create:hover{
+  background-color: #ff9800;
+}
