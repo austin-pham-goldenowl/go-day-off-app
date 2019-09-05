@@ -83,6 +83,9 @@ API_VERSIONS.forEach(version => {
   // --
   const publicSettingCtrl = require(`./controllers/${DEFAULT_API_VERSION}/setting-public`);
   server.use(`/api/${version}/public/setting`, verifyAccToken, publicSettingCtrl);
+  // -- 
+  const bookingCtrl = require(`./controllers/${version}/booking`);
+  server.use(`/api/${version}/booking`, bookingCtrl);
 });
 
 // If no api version specified, rollback to the default one
