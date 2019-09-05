@@ -53,13 +53,15 @@ export default (sequelize, DataTypes) => {
         let bookings = null;
         if (attributes.length < 1){
           bookings = await Booking.findAll({
-            ...queryWhere
+            ...queryWhere,
+            ...options[0]
           });
         }
         else
           bookings = await Booking.findAll({
             attributes,
-            ...queryWhere
+            ...queryWhere,
+            ...options[0]
           });
         resolve(bookings);
       } catch (err) {

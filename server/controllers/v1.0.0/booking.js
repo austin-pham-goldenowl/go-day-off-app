@@ -35,25 +35,25 @@ Router.post('/', async (req, res) => {
     !req.body.fStartTime || req.body.fStartTime === '' ? errors.startTime = 'fStartTime is not null' : ''
     !req.body.fEndTime || req.body.fEndTime === '' ? errors.endTime = 'fEndTime is not null' : ''
 
-    if(Object.keys(errors).length < 1){
+    if(!Object.keys(errors).length){
       if(req.body.id){
         delete req.body.id;
       }
       // call API Booking.add
-      const booking = await bookingModel.add(req.body);
+      await bookingModel.add(req.body);
 
       res.status(200).json({
         success: true,
         booking: req.body
       })
-    }else{
+    } else {
       res.status(400).json({
         error: true,
         errors
       })
     }
   } catch (err) {
-    res.status(400).json({
+    res.status(500).json({
       error: true,
       message: err
     }) 
@@ -90,22 +90,19 @@ Router.get('/detailInDate/:paramDate', async (req, res) => {
   }
 })
 
-Router.get('/page/:page/limit/:limit', async (req, res) => {
+Router.post('/pagination', async (req, res) => {
   try {
-    const start = (+req.params.page - 1) * +req.params.limit;
-    const end = +start +  (+req.params.limit - 1);
+    const options = {
+      offset: (+req.body.page - 1) * +req.body.limit,
+      limit: +req.body.limit
+    }
 
-    const bookings = await bookingModel.loadAll([], {})
+    const bookings = await bookingModel.loadAll([], {}, options)
     let entityBookings = [];
     bookings.forEach(booking => {
       entityBookings.push(booking.dataValues)
     });
 
-    // cut end of array
-    entityBookings.splice(+end + 1);
-    // cut start of array
-    entityBookings.splice(0, +start);
-    
     res.status(200).json({
       success: true,
       bookings: entityBookings
