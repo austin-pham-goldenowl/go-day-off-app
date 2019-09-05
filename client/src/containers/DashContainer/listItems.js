@@ -63,6 +63,30 @@ const PersonnelListItems = props => {
           <ListItemText primary="My letters" />
         </ListItem>
       </Link>
+      <Divider />
+      <br />
+      <Link to="/booking-meeting" className={classes.undecoratedLink}>
+        <ListItem
+          button
+          className={isSelectedLink(history, '/booking', classes)}
+        >
+          <ListItemIcon>
+            <SendIcon />
+          </ListItemIcon>
+          <ListItemText primary="Booking Meeting" />
+        </ListItem>
+      </Link>
+      <Link to="/booking-meeting-request/create" className={classes.undecoratedLink}>
+        <ListItem
+          button
+          className={isSelectedLink(history, '/booking-meeting-request/create', classes)}
+        >
+          <ListItemIcon>
+            <HistoryIcon />
+          </ListItemIcon>
+          <ListItemText primary="Create Booking" />
+        </ListItem>
+      </Link>
       <br />
     </React.Fragment>
   );

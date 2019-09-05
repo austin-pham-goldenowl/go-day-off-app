@@ -13,6 +13,8 @@ import LeaveRequestDetail from '../containers/LeaveRequestDetail';
 import AbsenceLetterCreate from '../containers/CreateLeaveLetter';
 import CreateNewUserAccout from '../containers/CreateNewUserAccount';
 import AllLettersManagement from '../containers/AllLettersManagement';
+import BookingRoom from '../containers/BookingRoom';
+import CreateBookingRoom from '../containers/CreateBookingRoom';
 
 const routes = [
   {
@@ -38,6 +40,18 @@ const routes = [
     isPrivate: true,
     exact: true,
     comp: props => <Dashboard {...props} />
+  },
+  {
+    path: '/booking-meeting',
+    isPrivate: true,
+    exact: true,
+    comp: props => <BookingRoom {...props} />
+  },
+  {
+    path: '/booking-meeting-request/create',
+    isPrivate: true,
+    exact: true,
+    comp: props => <CreateBookingRoom {...props} />
   },
   {
     path: '/leave-request/create',
