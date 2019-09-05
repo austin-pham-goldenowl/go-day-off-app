@@ -126,7 +126,10 @@ class CalendarMeeting extends React.Component {
             <span className='number'>{formattedDate}</span>
             <span className='bg'>{formattedDate}</span>
             { 
-              !isDisabledDay && <button className='btn btn-create' onClick={() => this.onButtonCreateClick()}>Booking now</button> 
+              !isDisabledDay && <button className='btn btn-create' onClick={() => this.onButtonCreateClick()}>Booking now</button>  
+            }
+            {
+              !isDisabledDay && <button className='btn btn-detail' onClick={() => this.onButtonCreateClick()}>Detail</button>
             }
           </div>
         );
@@ -142,7 +145,7 @@ class CalendarMeeting extends React.Component {
     return <div className='body'>{rows}</div>;
   };
 
-  onDateClick = date => {
+  onDateClick = date => {   
     this.__isMounted__ && this.setState({
       selectedDate: date
     })
