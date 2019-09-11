@@ -1,6 +1,8 @@
+import sha256 from "sha256";
 const express = require('express');
 const Router = express.Router();
 const { Op } = require('sequelize');
+
 
 /**
  * Models
@@ -283,5 +285,45 @@ Router.get("/", userMustBeHR, async (req, res) => {
     handleFailure(res, { err, route: req.originalUrl });
   }
 });
+
+Router.post('/checkPassword', async (req, res) => {
+  try {
+    const {userId, password} = req.body;
+    const users = await userModel.loadAll([], { where: { fId: userId } });
+    if(sha256(password) === users[0].dataValues.fPassword){
+      res.status(200).json({
+        success: true,
+      })
+    } else {
+      res.status(400).json({
+        error: true,
+      })
+    }
+  } catch (err) {
+    res.status(500).json({
+      error: true,
+    })
+  }
+})
+
+Router.put('/changePassword', async (req, res) => {
+  try {
+    const {userId, password} = req.body;
+    const fPassword = sha256(password);
+    await userModel.modify({fPassword}, {
+      where: { fId: userId }
+    });
+
+    // if(affected[0] !== 1) throw 'User not found'
+    
+    res.status(200).json({
+      success: true
+    })
+  } catch (err) {
+    res.status(500).json({
+      error: true
+    })
+  }
+})
 
 module.exports = Router;

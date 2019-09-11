@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { Link } from 'react-router-dom';
 
 //material-ui
 import {
@@ -545,8 +546,20 @@ class EditAccountInfo extends React.Component {
                 </Formik>
               ) : (
                 <React.Fragment>
-                  {isHrSession ? (
-                    <div className={classes.topInfo}>
+                  <div className={classes.topInfo}>
+                    <Link to="/password">
+                      <Button
+                        className={classes.button}
+                        size="small"
+                        color="default"
+                        variant="contained"
+                        onClick={() => this.handleEnableEditMode(true)}
+                      >
+                        <EditIcon className={classes.leftIcon} />
+                        Change Password
+                      </Button>
+                    </Link>
+                    {isHrSession ? (
                       <Button
                         className={classes.button}
                         size="small"
@@ -557,8 +570,8 @@ class EditAccountInfo extends React.Component {
                         <EditIcon className={classes.leftIcon} />
                         Edit
                       </Button>
-                    </div>
-                  ) : null}
+                      ) : null}
+                  </div>
     
                   {/* Title */}
                   <Typography component="h1" variant="h4">
@@ -710,7 +723,7 @@ const styles = theme => ({
   },
   button: {
     marginLeft: theme.spacing.unit,
-    width: 100
+    // width: 100
   },
   leftIcon: {
     marginRight: theme.spacing.unit
