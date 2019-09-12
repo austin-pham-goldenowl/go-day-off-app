@@ -103,7 +103,7 @@ const routes = [
     comp: props => <UsersManagement {...props}/>
   },
   {
-    path: '/password',
+    path: '/password/:id',
     isPrivate: true,
     exact: true,
     comp: props => <ChangePassword {...props}/>

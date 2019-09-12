@@ -30,27 +30,14 @@ export const createNewUser = (userEntity, cancelToken = undefined) => {
   );
 };
 
-export const checkPassword = (userId, password) => {
-  return axios.post(
-    `${SERVER_HOST_DEV}/user/checkPassword`,
-    {
-      userId,
-      password
-    },
-    {
-      headers: {
-        'x-access-token': getCookie(ACCESS_TOKEN_KEY)
-      }
-    }
-  )
-}
 
-export const updatePassword = (userId, password) => {
+export const updatePassword = (userId, password, newPassword) => {
   return axios.put(
     `${SERVER_HOST_DEV}/user/changePassword`,
     {
       userId,
-      password
+      password,
+      newPassword
     },
     {
       headers: {

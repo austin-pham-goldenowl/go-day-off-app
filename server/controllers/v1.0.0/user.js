@@ -286,39 +286,46 @@ Router.get("/", userMustBeHR, async (req, res) => {
   }
 });
 
-Router.post('/checkPassword', async (req, res) => {
-  try {
-    const {userId, password} = req.body;
-    const users = await userModel.loadAll([], { where: { fId: userId } });
-    if(sha256(password) === users[0].dataValues.fPassword){
-      res.status(200).json({
-        success: true,
-      })
-    } else {
-      res.status(400).json({
-        error: true,
-      })
-    }
-  } catch (err) {
-    res.status(500).json({
-      error: true,
-    })
-  }
-})
 
 Router.put('/changePassword', async (req, res) => {
+  
   try {
-    const {userId, password} = req.body;
-    const fPassword = sha256(password);
-    await userModel.modify({fPassword}, {
-      where: { fId: userId }
-    });
+    const ownUserId = getIdFromToken(req.token_payload);
+    const {userId, password, newPassword} = req.body;
+  
+    if (!ownUserId) throw { msg: 'USER_NOT_FOUND' };
+  
+    const fUserType = await getPermissionByUserId(ownUserId);
 
-    // if(affected[0] !== 1) throw 'User not found'
-    
-    res.status(200).json({
-      success: true
-    })
+    if (fUserType && fUserType === 'HR' && ownUserId !== userId) { // admin đổi password user khác
+        const fPassword = sha256(newPassword);
+  
+        await userModel.modify({fPassword}, {
+          where: { fId: userId }
+        });
+  
+        res.status(200).json({
+          success: true
+        })
+    } else { //user or admin đổi pass chính mình
+      const users = await userModel.loadAll([], { where: { fId: userId } });
+      if(users.length && sha256(password) === users[0].dataValues.fPassword){
+        const fPassword = sha256(newPassword);
+  
+        await userModel.modify({fPassword}, {
+          where: { fId: userId }
+        });
+  
+        res.status(200).json({
+          success: true
+        })
+      } else {
+        res.status(400).json({
+          error: true,
+          message: "Change password error"
+        })
+      }
+    }
   } catch (err) {
     res.status(500).json({
       error: true

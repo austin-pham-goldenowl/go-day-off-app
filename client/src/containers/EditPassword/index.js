@@ -20,20 +20,19 @@ import { withStyles } from '@material-ui/core/styles';
 
 
 //ValidationSchema
+import ValidationSchema from './validationSchema';
 
 
-//API
-import CancelToken from 'axios';
+import { getUserId } from '../../helpers/authHelpers';
+import { getUserTypeFromCookie } from '../../helpers/getUserInfo';
+import { responseUserPermission } from '../../constants/permission'
+
 
 //Notif redux
 import { NOTIF_ERROR, NOTIF_SUCCESS } from '../../constants/notification';
 import { showNotification } from '../../redux/actions/notificationActions';
 
-import { getUserId } from '../../helpers/authHelpers';
-
-import { checkPassword, updatePassword } from '../../apiCalls/userAPIs';
-
-import ValidationSchema from './validationSchema';
+import { updatePassword, getProfile } from '../../apiCalls/userAPIs';
 
 const mapDispatchToProps = dispatch => {
   return {
@@ -52,6 +51,7 @@ class EditPassword extends React.Component {
 
   state = {
     checkStatus: false,
+    typeUser: ""
   }
 
   handleEnableEditMode = enable => {
@@ -64,15 +64,48 @@ class EditPassword extends React.Component {
 
   componentDidMount = () => {
     this.__isMounted = true;
+    getProfile(this.props.match.params.id).then(res => this.setState({typeUser: res.data.user.fTypeId})).catch(err => console.log(err))
+    console.log("current ID: ", getUserTypeFromCookie());
   };
 
   componentWillUnmount = () => {
     this.__isMounted = false;
   }
 
+  handleOnSubmit = (values, actions) => {
+    const userId = this.props.match.params.id;
+    const { typeUser } = this.state;
+      // compare Password with NewPassword
+      if(typeUser !== responseUserPermission.HR && (values.fPassword === values.fNewPassword)){
+        this.props.handleShowNotif(NOTIF_ERROR, "Password and NewPassword must not match")
+        actions.setSubmitting(false);
+        return;
+      }
+      // Compare Password with Confirm Password
+      if(values.fNewPassword !== values.fConfirmPassword){
+        this.props.handleShowNotif(NOTIF_ERROR, "NewPassword and ConfirmPasswod is not match")
+        actions.setSubmitting(false);
+        return;
+      }
+      // Update Password
+      updatePassword(userId, values.fPassword, values.fNewPassword)
+      .then(res => {
+        this.props.handleShowNotif(NOTIF_SUCCESS, "Update Password success !")
+        actions.resetForm();
+      })
+      .catch(err => {
+        this.props.handleShowNotif(NOTIF_ERROR, "Update Password failed !")
+        actions.setSubmitting(false);
+      })
+  }
+
   render() {
-    const { classes, handleShowNotif } = this.props;
-    const { checkStatus } = this.state;
+    const { classes } = this.props;
+    const { checkStatus, typeUser } = this.state;
+
+    console.log("user Type: ", typeUser);
+    
+    
     return (
       <DashContainer className={classes.layout}>
           <CssBaseline />
@@ -80,40 +113,7 @@ class EditPassword extends React.Component {
               <Formik
                 initialValues={initialValues}
                 validationSchema={ValidationSchema}
-                onSubmit={(values, actions) => {
-                      const userId = getUserId();
-                      // compare Password with API
-                      checkPassword(userId, values.fPassword)
-                        .then(res => {
-                          // compare Password with NewPassword
-                          if(values.fPassword === values.fNewPassword){
-                            handleShowNotif(NOTIF_ERROR, "Password and NewPassword must not match")
-                            actions.setSubmitting(false);
-                          } else {
-                            // Compare Password with Confirm Password
-                            if(values.fNewPassword !== values.fConfirmPassword){
-                              handleShowNotif(NOTIF_ERROR, "NewPassword and ConfirmPasswod is not match")
-                              actions.setSubmitting(false);
-                            } else {
-                              // Update Password
-                              updatePassword(userId, values.fNewPassword)
-                              .then(res => {
-                                handleShowNotif(NOTIF_SUCCESS, "Update Password success !")
-                                actions.resetForm();
-                              })
-                              .catch(err => {
-                                handleShowNotif(NOTIF_ERROR, "Update Password failed !")
-                                actions.setSubmitting(false);
-                              })
-                            }
-                          }
-                        })
-                        .catch(err => {
-                          handleShowNotif(NOTIF_ERROR, "Password is not match")
-                          actions.setSubmitting(false);
-                        })
-                    }
-                  }
+                onSubmit={(values, actions) => this.handleOnSubmit(values, actions)}
               >
                 {({
                   values,
@@ -138,14 +138,19 @@ class EditPassword extends React.Component {
                             Change password
                           </Typography>
                         </React.Fragment>
-                        <Grid item xs={12} sm={12}>
+                        {
+                          // (getUserTypeFromCookie() === 'hr' && typeUser !== responseUserPermission.HR) || 
+                          // (getUserTypeFromCookie() !== 'hr') || (getUserTypeFromCookie() === 'hr' && typeUser === responseUserPermission.HR) ?
+                          getUserTypeFromCookie() !== 'hr' || 
+                          (getUserTypeFromCookie() === 'hr' && typeUser === responseUserPermission.HR) ?
+                          <Grid item xs={12} sm={12}>
                             <Field
                               name="fPassword"
                               render={({ field }) => {
                                 return (
                                   <TextField
                                     fullWidth
-                                    label="Current assword"
+                                    label="Current password"
                                     name={field.name}
                                     type={checkStatus ? 'text' : 'password'}
                                     value={field.value}
@@ -162,7 +167,9 @@ class EditPassword extends React.Component {
                                 </div>
                               )}
                             </ErrorMessage>
-                          </Grid>
+                          </Grid> : null
+
+                          }
                           <Grid item xs={12} sm={12}>
                             <Field
                               name="fNewPassword"

@@ -547,7 +547,7 @@ class EditAccountInfo extends React.Component {
               ) : (
                 <React.Fragment>
                   <div className={classes.topInfo}>
-                    <Link to="/password">
+                    {demandUserId && <Link to={`/password/${demandUserId}`}>
                       <Button
                         className={classes.button}
                         size="small"
@@ -559,6 +559,7 @@ class EditAccountInfo extends React.Component {
                         Change Password
                       </Button>
                     </Link>
+                    }
                     {isHrSession ? (
                       <Button
                         className={classes.button}
