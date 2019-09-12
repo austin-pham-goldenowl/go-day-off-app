@@ -29,9 +29,11 @@ import CancelToken from 'axios';
 import { NOTIF_ERROR, NOTIF_SUCCESS } from '../../constants/notification';
 import { showNotification } from '../../redux/actions/notificationActions';
 
-import { getUserId, getUserPassword } from '../../helpers/authHelpers';
+import { getUserId } from '../../helpers/authHelpers';
 
 import { checkPassword, updatePassword } from '../../apiCalls/userAPIs';
+
+import ValidationSchema from './validationSchema';
 
 const mapDispatchToProps = dispatch => {
   return {
@@ -77,29 +79,41 @@ class EditPassword extends React.Component {
           <Paper className={classes.paper}>
               <Formik
                 initialValues={initialValues}
+                validationSchema={ValidationSchema}
                 onSubmit={(values, actions) => {
-                  if(values.fNewPassword !== values.fConfirmPassword){
-                    handleShowNotif(NOTIF_ERROR, "Password is not match")
-                  } else {
-                    const userId = getUserId();
-                    checkPassword(userId, values.fPassword)
-                      .then(res => {
-                        updatePassword(userId, values.fNewPassword)
-                          .then(res => {
-                            handleShowNotif(NOTIF_SUCCESS, "Update Password success !")
-                            actions.resetForm();
-                          })
-                          .catch(err => {
-                            handleShowNotif(NOTIF_ERROR, "Update Password failed !")
+                      const userId = getUserId();
+                      // compare Password with API
+                      checkPassword(userId, values.fPassword)
+                        .then(res => {
+                          // compare Password with NewPassword
+                          if(values.fPassword === values.fNewPassword){
+                            handleShowNotif(NOTIF_ERROR, "Password and NewPassword must not match")
                             actions.setSubmitting(false);
-                          })
-                      })
-                      .catch(err => {
-                        handleShowNotif(NOTIF_ERROR, "Password is not match")
-                        actions.setSubmitting(false);
-                      })
+                          } else {
+                            // Compare Password with Confirm Password
+                            if(values.fNewPassword !== values.fConfirmPassword){
+                              handleShowNotif(NOTIF_ERROR, "NewPassword and ConfirmPasswod is not match")
+                              actions.setSubmitting(false);
+                            } else {
+                              // Update Password
+                              updatePassword(userId, values.fNewPassword)
+                              .then(res => {
+                                handleShowNotif(NOTIF_SUCCESS, "Update Password success !")
+                                actions.resetForm();
+                              })
+                              .catch(err => {
+                                handleShowNotif(NOTIF_ERROR, "Update Password failed !")
+                                actions.setSubmitting(false);
+                              })
+                            }
+                          }
+                        })
+                        .catch(err => {
+                          handleShowNotif(NOTIF_ERROR, "Password is not match")
+                          actions.setSubmitting(false);
+                        })
+                    }
                   }
-                }}
               >
                 {({
                   values,
@@ -162,6 +176,7 @@ class EditPassword extends React.Component {
                                     value={field.value}
                                     onBlur={handleBlur}
                                     onChange={handleChange}
+                                    secureTextEntry
                                   />
                                 );
                               }}
@@ -188,6 +203,7 @@ class EditPassword extends React.Component {
                                     value={field.value}
                                     onBlur={handleBlur}
                                     onChange={handleChange}
+                                    secureTextEntry
                                   />
                                 );
                               }}
