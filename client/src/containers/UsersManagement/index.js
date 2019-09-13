@@ -83,7 +83,6 @@ class UsersManagement extends React.Component {
       data: Array.isArray(users) ? (
         users.map(({ fId, fFirstName, fLastName, fEmail, fTeamName, fAvailable }) => [
             `${fFirstName} ${fLastName}`,
-            // <span style={{ color: availableStatusColor[fAvailable] }}>{ availableStatusText[fAvailable] }</span>,
             fTeamName,
             fEmail,
             <Link

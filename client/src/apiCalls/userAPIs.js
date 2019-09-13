@@ -30,6 +30,23 @@ export const createNewUser = (userEntity, cancelToken = undefined) => {
   );
 };
 
+
+export const updatePassword = (userId, password, newPassword) => {
+  return axios.put(
+    `${SERVER_HOST_DEV}/user/changePassword`,
+    {
+      userId,
+      password,
+      newPassword
+    },
+    {
+      headers: {
+        'x-access-token': getCookie(ACCESS_TOKEN_KEY)
+      }
+    }
+  )
+}
+
 export const updateProfile = (userId, profileEntity, cancelToken = undefined) => {
   let parsedEntity = {
     firstName: profileEntity.fFirstName,

@@ -1,6 +1,8 @@
+import sha256 from "sha256";
 const express = require('express');
 const Router = express.Router();
 const { Op } = require('sequelize');
+
 
 /**
  * Models
@@ -283,5 +285,52 @@ Router.get("/", userMustBeHR, async (req, res) => {
     handleFailure(res, { err, route: req.originalUrl });
   }
 });
+
+
+Router.put('/changePassword', async (req, res) => {
+  
+  try {
+    const ownUserId = getIdFromToken(req.token_payload);
+    const {userId, password, newPassword} = req.body;
+  
+    if (!ownUserId) throw { msg: 'USER_NOT_FOUND' };
+  
+    const fUserType = await getPermissionByUserId(ownUserId);
+
+    if (fUserType && fUserType === 'HR' && ownUserId !== userId) { // admin đổi password user khác
+        const fPassword = sha256(newPassword);
+  
+        await userModel.modify({fPassword}, {
+          where: { fId: userId }
+        });
+  
+        res.status(200).json({
+          success: true
+        })
+    } else { //user or admin đổi pass chính mình
+      const users = await userModel.loadAll([], { where: { fId: userId } });
+      if(users.length && sha256(password) === users[0].dataValues.fPassword){
+        const fPassword = sha256(newPassword);
+  
+        await userModel.modify({fPassword}, {
+          where: { fId: userId }
+        });
+  
+        res.status(200).json({
+          success: true
+        })
+      } else {
+        res.status(400).json({
+          error: true,
+          message: "Change password error"
+        })
+      }
+    }
+  } catch (err) {
+    res.status(500).json({
+      error: true
+    })
+  }
+})
 
 module.exports = Router;

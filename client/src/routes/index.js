@@ -15,6 +15,7 @@ import CreateNewUserAccout from '../containers/CreateNewUserAccount';
 import AllLettersManagement from '../containers/AllLettersManagement';
 import BookingRoom from '../containers/BookingRoom';
 import CreateBookingRoom from '../containers/CreateBookingRoom';
+import ChangePassword from '../containers/EditPassword';
 
 const routes = [
   {
@@ -100,6 +101,12 @@ const routes = [
     isPrivate: true,
     exact: true,
     comp: props => <UsersManagement {...props}/>
+  },
+  {
+    path: '/password/:id',
+    isPrivate: true,
+    exact: true,
+    comp: props => <ChangePassword {...props}/>
   },
   {
     path: '',
