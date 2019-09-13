@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { Formik, Form, Field, ErrorMessage, validateYupSchema } from 'formik';
 
 //material-ui
 import {
@@ -64,8 +64,16 @@ class EditPassword extends React.Component {
 
   componentDidMount = () => {
     this.__isMounted = true;
-    getProfile(this.props.match.params.id).then(res => this.setState({typeUser: res.data.user.fTypeId})).catch(err => console.log(err))
-    console.log("current ID: ", getUserTypeFromCookie());
+    getProfile(this.props.match.params.id).then(res => this.setState(
+                                                                      {typeUser: res.data.user.fTypeId},
+                                                                      () => {
+                                                                        if(getUserTypeFromCookie() === 'hr' && this.state.typeUser !== responseUserPermission.HR){
+                                                                          delete ValidationSchema.fields.fPassword;
+                                                                        }
+                                                                      }))
+                                          .catch(err => console.log(err))
+    console.log("validate: ", ValidationSchema);
+    
   };
 
   componentWillUnmount = () => {
@@ -139,8 +147,6 @@ class EditPassword extends React.Component {
                           </Typography>
                         </React.Fragment>
                         {
-                          // (getUserTypeFromCookie() === 'hr' && typeUser !== responseUserPermission.HR) || 
-                          // (getUserTypeFromCookie() !== 'hr') || (getUserTypeFromCookie() === 'hr' && typeUser === responseUserPermission.HR) ?
                           getUserTypeFromCookie() !== 'hr' || 
                           (getUserTypeFromCookie() === 'hr' && typeUser === responseUserPermission.HR) ?
                           <Grid item xs={12} sm={12}>
