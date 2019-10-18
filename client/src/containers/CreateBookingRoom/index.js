@@ -30,12 +30,12 @@ class BookingMeetingWithFormik extends React.Component {
 
   componentDidMount() {
     this.__isMounted = true;
-    this.cancelSoure = CancelToken.source();
+    this.cancelSource = CancelToken.source();
   }
 
   componentWillUnmount = () => {
     this.__isMounted = false;
-    this.cancelSoure.cancel(`User has suddenly left the page!`);
+    this.cancelSource.cancel(`User has suddenly left the page!`);
   }
 
   render() {

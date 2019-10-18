@@ -2,7 +2,7 @@ const path = require("path");
 const Sequelize = require("sequelize");
 
 if (process.env.NODE_ENV !== "production") {
-  require("dotenv").config({ path: path.resolve(process.cwd(), ".env.dev") }); // eslint-disable-line
+  require("dotenv").config({ path: path.resolve(process.cwd(), ".env.dev.example") }); // eslint-disable-line
 }
 
 module.exports = {

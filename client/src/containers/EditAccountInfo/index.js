@@ -108,7 +108,8 @@ class EditAccountInfo extends React.Component {
   }
 
   loadUsedDayOffInfo = () => {
-    Axios.all([getUsedDayOff(this.cancelSoure.token, this.state.demandUserId), getDayOffSetting(this.cancelSoure.token)])
+        //Load usedDayOff
+    Axios.all([getUsedDayOff(this.cancelSource.token, this.state.demandUserId), getDayOffSetting(this.cancelSource.token)])
     .then(
       Axios.spread((usedDayOffRepsonse, dayOffSettingResponse) => {
         let usedDayOff = '-', dayOffSetting = '-';
@@ -127,14 +128,14 @@ class EditAccountInfo extends React.Component {
       })
     )
     .catch(err => {
-      if (err.constructor.name !== 'Cancel')
+      if (err.message !== 'User suddenly left the page')
         this.props.handleShowNotif && this.props.handleShowNotif(NOTIF_ERROR, `Couldn't load 'Used Day-off'!`);
     });
   }
 
   loadData = async (demandId) => {
     //For axios' requests cancellation
-    this.cancelSoure = CancelToken.source();
+    this.cancelSource = CancelToken.source();
 
     await this.loadDemandId(demandId); //must await this 
 
@@ -150,7 +151,7 @@ class EditAccountInfo extends React.Component {
 
       this.loadUsedDayOffInfo();
 
-      Axios.all([getAllTeams(this.cancelSoure.token), getAllPositions(this.cancelSoure.token)])
+      Axios.all([getAllTeams(this.cancelSource.token), getAllPositions(this.cancelSource.token)])
       .then(
         Axios.spread((allTeamResponse, allPositionResponse) => {
           let allTeams = allTeamResponse.data.teams.map(item => ({
@@ -167,11 +168,10 @@ class EditAccountInfo extends React.Component {
             ...prevState,
             allTeams,
             allPositions
-          }));
-        })
-      )
+          }));     
+      }))
       .catch(err => {
-        if (err.constructor.name !== 'Cancel') 
+        if (err.message !== 'User suddenly left the page') 
           this.props.handleShowNotif && this.props.handleShowNotif(NOTIF_ERROR, `Couldn't load Positions and Teams!`);
       });
     } else {
@@ -184,7 +184,7 @@ class EditAccountInfo extends React.Component {
     this.unlistenRouteChange = this.props.history.listen((location, action) => {
       const demandId = parseUrlLastSegment(location.pathname);
       // Renew cancelSource
-      this.cancelSoure = CancelToken.source();
+      this.cancelSource = CancelToken.source();
       this.loadData(demandId);
     });
     this.loadData();
@@ -192,7 +192,7 @@ class EditAccountInfo extends React.Component {
 
   componentWillUnmount = () => {
     this.__isMounted = false;
-    this.cancelSoure.cancel('User suddenly left the page');
+    this.cancelSource.cancel('User suddenly left the page');
     this.unlistenRouteChange();
   }
 

@@ -82,7 +82,7 @@ class UsersManagement extends React.Component {
       title: <Typography component="span" variant="h4" className={classes.title}>All users</Typography>,
       data: Array.isArray(users) ? (
         users.map(({ fId, fFirstName, fLastName, fEmail, fTeamName, fAvailable }) => [
-            `${fFirstName} ${fLastName}`,
+            `${fLastName} ${fFirstName}`,
             fTeamName,
             fEmail,
             <Link
