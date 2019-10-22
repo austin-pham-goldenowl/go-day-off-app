@@ -50,7 +50,7 @@ import { getProfile, updateProfile } from '../../apiCalls/userAPIs';
 import { getMyLeaveLetters, getUsedDayOff, getDemandLetterByFilter } from "../../apiCalls/leaveLetterAPI";
 
 //Notif redux
-import { NOTIF_ERROR, NOTIF_SUCCESS } from '../../constants/notification';
+import { NOTIF_ERROR, NOTIF_SUCCESS, USER_LEFT_PAGE } from '../../constants/notification';
 import { showNotification } from '../../redux/actions/notificationActions';
 import { getDayOffSetting } from '../../apiCalls/settingAPIs';
 
@@ -128,7 +128,7 @@ class EditAccountInfo extends React.Component {
       })
     )
     .catch(err => {
-      if (err.message !== 'User suddenly left the page')
+      if (err.message !== USER_LEFT_PAGE)
         this.props.handleShowNotif && this.props.handleShowNotif(NOTIF_ERROR, `Couldn't load 'Used Day-off'!`);
     });
   }
@@ -171,7 +171,7 @@ class EditAccountInfo extends React.Component {
           }));     
       }))
       .catch(err => {
-        if (err.message !== 'User suddenly left the page') 
+        if (err.message !== USER_LEFT_PAGE) 
           this.props.handleShowNotif && this.props.handleShowNotif(NOTIF_ERROR, `Couldn't load Positions and Teams!`);
       });
     } else {
@@ -192,7 +192,7 @@ class EditAccountInfo extends React.Component {
 
   componentWillUnmount = () => {
     this.__isMounted = false;
-    this.cancelSource.cancel('User suddenly left the page');
+    this.cancelSource.cancel(USER_LEFT_PAGE);
     this.unlistenRouteChange();
   }
 

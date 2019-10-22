@@ -97,8 +97,9 @@ class LetterManagement extends Component {
       } = await this.props.api(this.cancelSource.token, 1, 10, demandUserId);
 
       if (success) 
+      // Austin is here
         this.__isMounted 
-        && this.setState({ letters, count }, () => {
+        && this.setState({ letters: [], count }, () => {
           this.props.handleShowNotif(NOTIF_SUCCESS, `Load data complete!`)
         });
     } catch (err) {
@@ -149,10 +150,11 @@ class LetterManagement extends Component {
           fromDate,
           status: values.status
         });
+        // Austin is here
         this.setState(
           {
             count,
-            letters: leaveLetters,
+            letters: []/* leaveLetters */,
           }, () => {
             this.props.handleShowNotif(NOTIF_SUCCESS, `Load data completed!`)
             formikActions !== undefined && formikActions.setSubmitting(false)
