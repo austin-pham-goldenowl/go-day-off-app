@@ -42,7 +42,7 @@ import {
   showNotification,
   hideNotification
 } from '../../redux/actions/notificationActions';
-import { NOTIF_ERROR, NOTIF_SUCCESS } from '../../constants/notification';
+import { NOTIF_ERROR, NOTIF_SUCCESS, USER_LEFT_PAGE } from '../../constants/notification';
 import CircularUnderLoad from '../../components/Animation/CircularUnderLoad';
 import DaySessionsRadio from '../../components/DaySessionsRadio';
 import { getUserId } from '../../helpers/authHelpers';
@@ -170,7 +170,7 @@ class AbsenceLetterWithFormik extends React.Component {
 
       this.__isMounted && this.setState({ usedDayOff });
     }).catch(err => {
-      if (err.message !== 'User suddenly left the page') 
+      if (err.message !== USER_LEFT_PAGE) 
         this.props.handleShowNotif && this.props.handleShowNotif(NOTIF_ERROR, `Couldn't load 'Used Day-off'!`);
     });
 
@@ -184,7 +184,7 @@ class AbsenceLetterWithFormik extends React.Component {
         this.__isMounted && this.setState({ dayOffSetting });
       })
     .catch(err => {
-      if (err.message !== 'User suddenly left the page') 
+      if (err.message !== USER_LEFT_PAGE) 
         this.props.handleShowNotif && this.props.handleShowNotif(NOTIF_ERROR, `Couldn't load 'Day-off Setting'!`);
     });
   }
