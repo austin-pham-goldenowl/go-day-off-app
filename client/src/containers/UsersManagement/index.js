@@ -57,7 +57,6 @@ class UsersManagement extends React.Component {
       if(success) this.setState({ users, count });
     }
     catch(err) {
-      console.log(err);
       this.props.handleShowNotif(NOTIF_ERROR, err.message);
     }
   }
@@ -68,7 +67,6 @@ class UsersManagement extends React.Component {
       if(success) this.setState({ users, count, size });
     }
     catch(err) {
-      console.log(err);
       this.props.handleShowNotif(NOTIF_ERROR, err.message);
     }
   }

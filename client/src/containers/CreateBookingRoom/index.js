@@ -56,13 +56,6 @@ class BookingMeetingWithFormik extends React.Component {
               validate={CustomValidationSchema}
               onReset={(values, action) => {}}
               onSubmit={(values, action) => {
-                // let submitValues = JSON.parse(JSON.stringify(values));
-                console.log("name: ", values.name);
-                console.log("booking date: ", values.bookingDate);
-                console.log("start time: ", values.startTime);
-                console.log("end time: ", values.endTime);
-                // console.log("booking date: ", moment(values.bookingDate).format('L'));
-                // console.log("booking time: ", moment(values.bookingTime).format('LTS'));
                 action.resetForm();
                 action.setSubmitting(false);
               }}

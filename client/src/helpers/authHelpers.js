@@ -26,8 +26,6 @@ export const checkAuth = () => {
 
 export const signIn = async (accessToken, refToken, userBasicInfo) => {
   const { exp, iat, ...userInfo } = jwt_decode(accessToken);
-  console.log(`authHelpers -> signIn -> jwt_decode(ACCESS_TOKEN): `, jwt_decode(accessToken));
-  console.log(`userBasic info: `, userBasicInfo);
   if(!exp || Date.now() < exp) return false;
   const expires = new Date(exp * 1000);
   await (accessToken && setCookie(ACCESS_TOKEN_KEY, accessToken, {expires}));

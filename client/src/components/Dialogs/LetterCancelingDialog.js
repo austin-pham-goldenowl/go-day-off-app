@@ -28,7 +28,6 @@ const LetterCancelingDialogWithFormik = (props) => {
     <Dialog
       fullWidth
       open={open}
-      onClose={() => console.log(`closed`)}
       aria-labelledby="letter-canceling-title"
     >
       <DialogTitle id="letter-canceling-title">{title ?  `Provide ${title} reason` : 'Provide cancel reason'}</DialogTitle>

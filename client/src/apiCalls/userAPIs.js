@@ -57,7 +57,6 @@ export const updateProfile = (userId, profileEntity, cancelToken = undefined) =>
     teamId: profileEntity.fTeamId,
     position: profileEntity.fPosition,
   };
-  console.log(`TCL: updateProfile -> parsedEntity`, parsedEntity)
   
   return axios.patch(
     `${SERVER_HOST_DEV}/user/profile`,
