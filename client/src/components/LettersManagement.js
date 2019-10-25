@@ -96,7 +96,7 @@ class LetterManagement extends Component {
         data: { success, leaveLetters: letters, count }
       } = await this.props.api(this.cancelSource.token, 1, 10, demandUserId);
 
-      if (success) 
+      if (success)
         this.__isMounted 
         && this.setState({ letters, count }, () => {
           this.props.handleShowNotif(NOTIF_SUCCESS, `Load data complete!`)
