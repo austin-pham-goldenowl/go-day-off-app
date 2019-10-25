@@ -223,7 +223,6 @@ class AbsenceLetterWithFormik extends React.Component {
 
                 createLeaveLetter(submitValues)
                   .then(res => {
-										console.log(`TCL: render -> res`, res)
                     const { fId } = res.data.leaveLetter.leaveLetter;
                     this.__isMounted && this.setState({
                       lastLetterId: fId,

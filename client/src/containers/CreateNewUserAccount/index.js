@@ -126,7 +126,7 @@ class CreateNewAccount extends React.Component {
         })
       )
       .catch(err => {
-        console.log('error -> ', err);
+        this.props.handleShowNotif(NOTIF_ERROR, err.message);
       });
   };
   render() {
@@ -140,10 +140,8 @@ class CreateNewAccount extends React.Component {
             initialValues={initialValues}
             onSubmit={(values, actions) => {
               //Call api update here
-              console.log(values);
               createNewUser(values)
                 .then(res => {
-                  console.log(res);
                   handleShowNotif(
                     NOTIF_SUCCESS,
                     `Created new account successfully!`
@@ -151,7 +149,6 @@ class CreateNewAccount extends React.Component {
                   actions.setSubmitting(false);
                 })
                 .catch(err => {
-                  console.log(err);
                   handleShowNotif(
                     NOTIF_ERROR,
                     `Action failed! (${err.message})`

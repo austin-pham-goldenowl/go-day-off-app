@@ -58,18 +58,14 @@ class Calendar extends React.Component {
       .then(response => {
         const { data: { success, leaveLetters } } = response;
         if (success) {
-          console.log(`TCL: Calendar -> componentDidMount -> leaveLetters`, leaveLetters)
           let dayoffs = {};
           for (let x = 0; x < leaveLetters.length; x++) {
             const firstDay = calculateStartDayOfLetterInMonth(currentMonth, leaveLetters[x].fFromDT);
-						console.log(`TCL: Calendar -> loadLetters -> firstDay`, firstDay)
             const lastDay = calculateEndDayOfLetterInMonth(currentMonth, leaveLetters[x].fToDT);
-						console.log(`TCL: Calendar -> loadLetters -> lastDay`, lastDay)
             for (let i = firstDay; i <= lastDay; i++) {
               dayoffs[i] = leaveLetters[x].fId;
             }
           }
-          console.log(`TCL: Calendar -> componentDidMount -> dayOffs`, dayoffs)
           this.__isMounted__ && this.setState (
             { dayoffs }, 
             () => this.props.handleShowNotif && this.props.handleShowNotif(NOTIF_SUCCESS, 'Load calendar success!')
@@ -79,7 +75,6 @@ class Calendar extends React.Component {
         }
       })
       .catch(err => {
-        console.log(`TCL: Calendar -> componentDidMount -> err`, err)
         this.props.handleShowNotif && this.props.handleShowNotif(NOTIF_ERROR, `${err.message}`);
       })
   }

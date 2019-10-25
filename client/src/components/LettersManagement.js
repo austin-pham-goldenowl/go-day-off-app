@@ -282,8 +282,6 @@ class LetterManagement extends Component {
         rowsPerPageOptions: [5, 10, 15, 20],
         onChangeRowsPerPage: size => handleChangePageFunc(size, 1, demandUserId),
         onTableChange: (action, tableState) => {
-					console.log(`TCL: render -> action`, action)
-					console.log(`TCL: render -> tableState`, tableState)
           action === 'changePage' && handleChangePageFunc(tableState.rowsPerPage, tableState.page + 1, demandUserId)
         },
         customToolbar: () => {

@@ -64,16 +64,18 @@ class EditPassword extends React.Component {
 
   componentDidMount = () => {
     this.__isMounted = true;
-    getProfile(this.props.match.params.id).then(res => this.setState(
-                                                                      {typeUser: res.data.user.fTypeId},
-                                                                      () => {
-                                                                        if(getUserTypeFromCookie() === 'hr' && this.state.typeUser !== responseUserPermission.HR){
-                                                                          delete ValidationSchema.fields.fPassword;
-                                                                        }
-                                                                      }))
-                                          .catch(err => console.log(err))
-    console.log("validate: ", ValidationSchema);
-    
+    getProfile(this.props.match.params.id)
+      .then(res => 
+        this.setState({
+          typeUser: res.data.user.fTypeId
+        }, () => {
+          if (getUserTypeFromCookie() === 'hr' && this.state.typeUser !== responseUserPermission.HR) {
+            delete ValidationSchema.fields.fPassword;
+          }
+        }))
+      .catch(err => {
+        this.props.handleShowNotif(NOTIF_ERROR, err.message);
+      })
   };
 
   componentWillUnmount = () => {
@@ -111,9 +113,6 @@ class EditPassword extends React.Component {
     const { classes } = this.props;
     const { checkStatus, typeUser } = this.state;
 
-    console.log("user Type: ", typeUser);
-    
-    
     return (
       <DashContainer className={classes.layout}>
           <CssBaseline />

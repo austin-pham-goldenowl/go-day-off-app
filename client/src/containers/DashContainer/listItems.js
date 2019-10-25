@@ -63,6 +63,7 @@ const PersonnelListItems = props => {
           <ListItemText primary="My letters" />
         </ListItem>
       </Link>
+      <br />
       <Divider />
       <br />
       <Link to="/booking-meeting" className={classes.undecoratedLink}>
@@ -71,9 +72,9 @@ const PersonnelListItems = props => {
           className={isSelectedLink(history, '/booking', classes)}
         >
           <ListItemIcon>
-            <SendIcon />
+            <DashboardIcon />
           </ListItemIcon>
-          <ListItemText primary="Booking Meeting" />
+          <ListItemText primary="Meeting Bookings" />
         </ListItem>
       </Link>
       <Link to="/booking-meeting-request/create" className={classes.undecoratedLink}>
@@ -82,7 +83,7 @@ const PersonnelListItems = props => {
           className={isSelectedLink(history, '/booking-meeting-request/create', classes)}
         >
           <ListItemIcon>
-            <HistoryIcon />
+            <SendIcon />
           </ListItemIcon>
           <ListItemText primary="Create Booking" />
         </ListItem>
