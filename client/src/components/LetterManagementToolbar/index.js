@@ -49,7 +49,7 @@ class LetterManagementToolbar extends React.Component {
                 name='fromDate'
                 render={({ field }) => (
                   <FilterDatePicker
-                    label='From'
+                    label='Day(s) leave from'
                     variant='standard'
                     value={field.value}
                     views={['year', 'month']}
@@ -95,7 +95,7 @@ class LetterManagementToolbar extends React.Component {
                 color='primary'
                 variant="contained"
                 disabled={isSubmitting}
-                className={classes.button}
+                className={`${classes.button} py-2`}
                 onClick={handleSubmit}
               >
                 <SearchIcon className={classNames(classes.leftIcon, classes.iconSmall)} />
@@ -107,7 +107,7 @@ class LetterManagementToolbar extends React.Component {
                 title='Export data'
                 variant='contained'
                 disabled={isSubmitting}
-                className={classes.button}
+                className={`${classes.button} py-2`}
                 onClick={this.handleExport}
               >
                 <CloudDownLoadIcon className={classNames(classes.iconSmall, classes.leftIcon)} >save</CloudDownLoadIcon>

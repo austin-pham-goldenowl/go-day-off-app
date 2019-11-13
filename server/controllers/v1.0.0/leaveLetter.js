@@ -46,10 +46,10 @@ const { FROM_OPTION, DEFAULT_PAGE_ORDER,
  *  Local helpers 
  */
 const validatingQueryParams = ({ fromMonth, toMonth, fromYear, toYear }) => 
-  !(((toYear && (isNaN(toYear) || toYear < fromYear) || 
-    fromMonth && (isNaN(fromMonth) || fromMonth > 12)) || 
-    (fromYear && (isNaN(fromYear) || fromYear > moment().get('year'))) ||
-    (toMonth && (isNaN(toMonth) || toMonth > 12 || toMonth < fromMonth)))  
+  !(((toYear && (isNaN(toYear) || parseInt(toYear) < parseInt(fromYear)) || 
+    fromMonth && (isNaN(fromMonth) || parseInt(fromMonth) > 12)) || 
+    (fromYear && (isNaN(fromYear))) ||
+    (toMonth && (isNaN(toMonth) || parseInt(toMonth) > 12 || parseInt(toMonth) < parseInt(fromMonth))))  
   )
 
 Router.get('/details', async (req, res) => {
@@ -104,7 +104,9 @@ Router.get('/', userMustBeHR, async (req, res) => {
   try {
     // validating query params
     const currentYear = moment().get('year');
-    let { fromMonth = '01', toMonth = '12',
+    let { 
+    fromDay = '01', toDay = '31',
+    fromMonth = '01', toMonth = '12',
     fromYear = currentYear, toYear = currentYear, 
     status = 0, page = DEFAULT_PAGE_ORDER, size = DEFAULT_PAGE_SIZE } = req.query;
 
@@ -115,11 +117,11 @@ Router.get('/', userMustBeHR, async (req, res) => {
     if(!validatingQueryParams({ fromMonth, toMonth, fromYear, toYear })) throw { msg: 'INVALID_QUERY' };
 
     const userId = getIdFromToken(req.token_payload);
-    const toDate = new Date(`${toMonth}/31/${toYear}`);
-    const fromDate = new Date(`${fromMonth}/01/${fromYear}`);
+    const toDate = new Date(`${toMonth}/${toDay}/${toYear}`);
+    const fromDate = new Date(`${fromMonth}/${fromDay}/${fromYear}`);
     const { rawLeaveLetters, count } = await leaveLetterModel.countAll([],
       { where: { 
-        fRdt: { [Op.between]: [fromDate, toDate] },
+        [Op.and]: [{ fFromDT: {[Op.lte]: toDate} }, { fToDT: { [Op.gte]: fromDate } }],
         fStatus: +status === 0 ? { [Op.ne]: null } : +status, 
         [Op.or]: [{ fUserId: userId }, { fApprover: userId }],
       }},
@@ -179,6 +181,8 @@ Router.post('/', bodyMustNotEmpty, async (req, res) => {
     const entity = standardizeObj({ ...req.body, id });
     const { fStatus, fFromDT, fToDT } = entity;
 
+    console.log(req.body, entity);
+
     // validate status value
     if (
       (fStatus || 3) &&
@@ -187,8 +191,9 @@ Router.post('/', bodyMustNotEmpty, async (req, res) => {
       throw { msg: 'INVALID_VALUES' };
 
     // validate whether fromDT <= toDT
-    if (fFromDT && fToDT && 
-      new Date(fFromDT) > new Date(fToDT)) throw { msg: 'INVALID_VALUES' };
+    if (fFromDT && fToDT && new Date(fFromDT) > new Date(fToDT) ) {
+      throw { msg: 'INVALID_VALUES' };
+    }
 
     // add foreign keys
     const { fUserId, fAbsenceType, fApprover } = entity;
@@ -201,6 +206,7 @@ Router.post('/', bodyMustNotEmpty, async (req, res) => {
     entity.fToDT = moment.utc(fToDT).toDate();
     const leaveLetter = await leaveLetterModel.add(entity);
 
+    console.log('lL', leaveLetter);
 
     //Send email
     let { fInformTo } = entity;

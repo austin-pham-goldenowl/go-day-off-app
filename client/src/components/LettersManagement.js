@@ -134,8 +134,10 @@ class LetterManagement extends Component {
             toYear    = toDate.getFullYear();
       const filterData = {
         userId, 
+        fromDay: 1,
         fromMonth,
         fromYear, 
+        toDay: 31,
         toMonth, 
         toYear, 
         status: values.status,
