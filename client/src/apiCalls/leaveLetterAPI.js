@@ -57,7 +57,9 @@ export const createLeaveLetter = letterEntity => {
     {
       absenceType: letterEntity.leaveType,
       fromDT: letterEntity.startDate,
+      fromOpt: letterEntity.fromOpt,
       toDT: letterEntity.endDate,
+      toOpt: letterEntity.toOpt,
       status: LEAVE_REQUEST_PENDING, // This must be set on the server-side
       substituteId: letterEntity.substituteId,
       userId: getUserId(),
@@ -139,11 +141,11 @@ export const getDemandLetterByFilter = (cancelToken = undefined, filterOptions) 
 }
 
 export const getAllLetterByFilter = (cancelToken = undefined, filterOptions) => {
-  const {fromMonth, fromYear, toMonth, toYear, status, page = 1, size = 10} = filterOptions;
-  
+  const {fromDay ,fromMonth, fromYear, toDay, toMonth, toYear, status, page = 1, size = 10} = filterOptions;
+
   const url = `${SERVER_HOST_DEV}/leaveletter?`
-          + (fromMonth && fromYear && !isNaN(fromMonth) && !isNaN(fromYear) ? `&fromMonth=${fromMonth}&fromYear=${fromYear}` : '')
-          + (toMonth && toYear && !isNaN(toMonth) && !isNaN(toYear) ? `&toMonth=${toMonth}&toYear=${toYear}` : '')
+          + (fromMonth && fromYear && !isNaN(fromMonth) && !isNaN(fromYear) ? `&fromDay=${fromDay}&fromMonth=${fromMonth}&fromYear=${fromYear}` : '')
+          + (toMonth && toYear && !isNaN(toMonth) && !isNaN(toYear) ? `&toDay=${toDay}&toMonth=${toMonth}&toYear=${toYear}` : '')
           + (page ? `&page=${page}` : '')
           + (size ? `&size=${size}` : '')
           + (status ? `&status=${status}` : '');

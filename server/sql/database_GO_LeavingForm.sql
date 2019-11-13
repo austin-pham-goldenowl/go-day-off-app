@@ -66,7 +66,7 @@ CREATE TABLE `leaveLetters` (
   `fReason` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
   `fApprover` varchar(10) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `fFromOpt` enum('allday','morning','afternoon') CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT 'allday',
-  `fToOpt` enum('allday','morning') CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT 'allday',
+  `fToOpt` enum('allday','morning', 'afternoon') CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT 'allday',
   PRIMARY KEY (`fId`),
   UNIQUE KEY `fId_UNIQUE` (`fId`),
   KEY `fk_leaveLetters_absenceTypes_idx` (`absenceTypes_fId`) USING BTREE,

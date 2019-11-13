@@ -16,10 +16,11 @@ export const FROM_OPTION_VALUES = ["allday", "morning", "afternoon"];
 
 export const TO_OPTION = {
   ALLDAY: "allday",
-  MORNING: "morning"
+  MORNING: "morning",
+  AFTERNOON: 'afternoon',
 }
 
-export const TO_OPTION_VALUES = ["allday", "morning"];
+export const TO_OPTION_VALUES = ["allday", "morning", "afternoon"];
 
 export const DAY_SESSION_OPTIONS = { //Jun added this object
   allday: "",
