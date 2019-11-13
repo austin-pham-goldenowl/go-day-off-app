@@ -53,6 +53,7 @@ import {
   LEAVE_REQUEST_APPROVED,
   LEAVE_REQUEST_PENDING,
 } from '../../constants/requestStatusType';
+import { DATE_FORMAT_HALF } from '../../constants/dateTimeFormats'
 
 import {
   DaySessionOptions
@@ -314,14 +315,14 @@ class LeaveRequestDetail extends React.Component {
                         <Grid item xs={6} className={classes.fieldWrapper}>
                           <div className={classes.fieldTitle}>
                             From:
-                            <span className={classes.fieldValue}>{!leaveLetter.fFromDT ? null :` ${moment(leaveLetter.fFromDT).format('MM/DD/YYYY')} (${DaySessionOptions[leaveLetter.fFromOpt]})`}</span>
+                            <span className={classes.fieldValue}>{!leaveLetter.fFromDT ? null :` ${moment(leaveLetter.fFromDT).format(DATE_FORMAT_HALF)} (${DaySessionOptions[leaveLetter.fFromOpt]})`}</span>
                           </div>
                         </Grid>
                         {/** ToDT */}
                         <Grid item xs={6} className={classes.fieldWrapper}>
                           <div className={classes.fieldTitle}>
                             To:
-                            <span className={classes.fieldValue}>{!leaveLetter.fToDT ? null :` ${moment(leaveLetter.fToDT).format('MM/DD/YYYY')} (${DaySessionOptions[leaveLetter.fToOpt]})`}</span>
+                            <span className={classes.fieldValue}>{!leaveLetter.fToDT ? null :` ${moment(leaveLetter.fToDT).format(DATE_FORMAT_HALF)} (${DaySessionOptions[leaveLetter.fToOpt]})`}</span>
                           </div>
                         </Grid>
                         {/** Reason */}
